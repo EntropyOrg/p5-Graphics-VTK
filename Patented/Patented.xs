@@ -85,6 +85,22 @@ vtkDecimate::GetAspectRatio()
 		RETVAL
 
 
+float
+vtkDecimate::GetAspectRatioMaxValue()
+		CODE:
+		RETVAL = THIS->GetAspectRatioMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetAspectRatioMinValue()
+		CODE:
+		RETVAL = THIS->GetAspectRatioMinValue();
+		OUTPUT:
+		RETVAL
+
+
 int
 vtkDecimate::GetBoundaryVertexDeletion()
 		CODE:
@@ -109,6 +125,22 @@ vtkDecimate::GetDegree()
 		RETVAL
 
 
+int
+vtkDecimate::GetDegreeMaxValue()
+		CODE:
+		RETVAL = THIS->GetDegreeMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDecimate::GetDegreeMinValue()
+		CODE:
+		RETVAL = THIS->GetDegreeMinValue();
+		OUTPUT:
+		RETVAL
+
+
 float
 vtkDecimate::GetErrorIncrement()
 		CODE:
@@ -118,9 +150,41 @@ vtkDecimate::GetErrorIncrement()
 
 
 float
+vtkDecimate::GetErrorIncrementMaxValue()
+		CODE:
+		RETVAL = THIS->GetErrorIncrementMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetErrorIncrementMinValue()
+		CODE:
+		RETVAL = THIS->GetErrorIncrementMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float
 vtkDecimate::GetFeatureAngleIncrement()
 		CODE:
 		RETVAL = THIS->GetFeatureAngleIncrement();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetFeatureAngleIncrementMaxValue()
+		CODE:
+		RETVAL = THIS->GetFeatureAngleIncrementMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetFeatureAngleIncrementMinValue()
+		CODE:
+		RETVAL = THIS->GetFeatureAngleIncrementMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -142,9 +206,41 @@ vtkDecimate::GetInitialError()
 
 
 float
+vtkDecimate::GetInitialErrorMaxValue()
+		CODE:
+		RETVAL = THIS->GetInitialErrorMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetInitialErrorMinValue()
+		CODE:
+		RETVAL = THIS->GetInitialErrorMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float
 vtkDecimate::GetInitialFeatureAngle()
 		CODE:
 		RETVAL = THIS->GetInitialFeatureAngle();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetInitialFeatureAngleMaxValue()
+		CODE:
+		RETVAL = THIS->GetInitialFeatureAngleMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetInitialFeatureAngleMinValue()
+		CODE:
+		RETVAL = THIS->GetInitialFeatureAngleMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -158,9 +254,41 @@ vtkDecimate::GetMaximumError()
 
 
 float
+vtkDecimate::GetMaximumErrorMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumErrorMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetMaximumErrorMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumErrorMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float
 vtkDecimate::GetMaximumFeatureAngle()
 		CODE:
 		RETVAL = THIS->GetMaximumFeatureAngle();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetMaximumFeatureAngleMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumFeatureAngleMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetMaximumFeatureAngleMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumFeatureAngleMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -174,6 +302,22 @@ vtkDecimate::GetMaximumIterations()
 
 
 int
+vtkDecimate::GetMaximumIterationsMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumIterationsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDecimate::GetMaximumIterationsMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumIterationsMinValue();
+		OUTPUT:
+		RETVAL
+
+
+int
 vtkDecimate::GetMaximumNumberOfSquawks()
 		CODE:
 		RETVAL = THIS->GetMaximumNumberOfSquawks();
@@ -182,9 +326,41 @@ vtkDecimate::GetMaximumNumberOfSquawks()
 
 
 int
+vtkDecimate::GetMaximumNumberOfSquawksMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumNumberOfSquawksMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDecimate::GetMaximumNumberOfSquawksMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumNumberOfSquawksMinValue();
+		OUTPUT:
+		RETVAL
+
+
+int
 vtkDecimate::GetMaximumSubIterations()
 		CODE:
 		RETVAL = THIS->GetMaximumSubIterations();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDecimate::GetMaximumSubIterationsMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumSubIterationsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDecimate::GetMaximumSubIterationsMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumSubIterationsMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -209,6 +385,22 @@ float
 vtkDecimate::GetTargetReduction()
 		CODE:
 		RETVAL = THIS->GetTargetReduction();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetTargetReductionMaxValue()
+		CODE:
+		RETVAL = THIS->GetTargetReductionMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDecimate::GetTargetReductionMinValue()
+		CODE:
+		RETVAL = THIS->GetTargetReductionMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -398,10 +590,42 @@ vtkDividingCubes::GetDistance()
 		RETVAL
 
 
+float
+vtkDividingCubes::GetDistanceMaxValue()
+		CODE:
+		RETVAL = THIS->GetDistanceMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkDividingCubes::GetDistanceMinValue()
+		CODE:
+		RETVAL = THIS->GetDistanceMinValue();
+		OUTPUT:
+		RETVAL
+
+
 int
 vtkDividingCubes::GetIncrement()
 		CODE:
 		RETVAL = THIS->GetIncrement();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDividingCubes::GetIncrementMaxValue()
+		CODE:
+		RETVAL = THIS->GetIncrementMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkDividingCubes::GetIncrementMinValue()
+		CODE:
+		RETVAL = THIS->GetIncrementMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -540,6 +764,24 @@ vtkGridSynchronizedTemplates3D::GetComputeScalars()
 		RETVAL
 
 
+int *
+vtkGridSynchronizedTemplates3D::GetExecuteExtent()
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetExecuteExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
 unsigned long
 vtkGridSynchronizedTemplates3D::GetMTime()
 		CODE:
@@ -560,6 +802,22 @@ int
 vtkGridSynchronizedTemplates3D::GetNumberOfThreads()
 		CODE:
 		RETVAL = THIS->GetNumberOfThreads();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkGridSynchronizedTemplates3D::GetNumberOfThreadsMaxValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfThreadsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkGridSynchronizedTemplates3D::GetNumberOfThreadsMinValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfThreadsMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -1082,21 +1340,11 @@ vtkMarchingContourFilter::SetComputeScalars(arg1)
 
 
 void
-vtkMarchingContourFilter::SetLocator(arg1 = 0)
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
+vtkMarchingContourFilter::SetLocator(locator)
+		vtkPointLocator *	locator
 		CODE:
-		THIS->SetLocator(arg1);
+		THIS->SetLocator(locator);
 		XSRETURN_EMPTY;
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
-		CODE:
-		THIS->SetLocator(* arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkMarchingContourFilter::SetLocator\n");
-
 
 
 void
@@ -1311,21 +1559,11 @@ vtkMarchingCubes::SetComputeScalars(arg1)
 
 
 void
-vtkMarchingCubes::SetLocator(arg1 = 0)
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
+vtkMarchingCubes::SetLocator(locator)
+		vtkPointLocator *	locator
 		CODE:
-		THIS->SetLocator(arg1);
+		THIS->SetLocator(locator);
 		XSRETURN_EMPTY;
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
-		CODE:
-		THIS->SetLocator(* arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkMarchingCubes::SetLocator\n");
-
 
 
 void
@@ -1384,7 +1622,8 @@ int  *
 vtkMarchingSquares::GetImageRange()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetImageRange();
 		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
@@ -1393,6 +1632,22 @@ vtkMarchingSquares::GetImageRange()
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
 		PUSHs(sv_2mortal(newSVnv(retval[4])));
 		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+vtkImageData *
+vtkMarchingSquares::GetInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		CODE:
+		RETVAL = THIS->GetInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
 
 
 vtkPointLocator *
@@ -1461,21 +1716,19 @@ vtkMarchingSquares::SetImageRange(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 =
 
 
 void
-vtkMarchingSquares::SetLocator(arg1 = 0)
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
+vtkMarchingSquares::SetInput(input)
+		vtkImageData *	input
 		CODE:
-		THIS->SetLocator(arg1);
+		THIS->SetInput(input);
 		XSRETURN_EMPTY;
-	CASE: items == 2 && sv_isobject(ST(1)) && sv_derived_from(ST(1),"Graphics::VTK::PointLocator")
-		vtkPointLocator *	arg1
-		CODE:
-		THIS->SetLocator(* arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkMarchingSquares::SetLocator\n");
 
+
+void
+vtkMarchingSquares::SetLocator(locator)
+		vtkPointLocator *	locator
+		CODE:
+		THIS->SetLocator(locator);
+		XSRETURN_EMPTY;
 
 
 void
@@ -1649,6 +1902,22 @@ vtkSweptSurface::GetAdjustDistance()
 		RETVAL
 
 
+float
+vtkSweptSurface::GetAdjustDistanceMaxValue()
+		CODE:
+		RETVAL = THIS->GetAdjustDistanceMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkSweptSurface::GetAdjustDistanceMinValue()
+		CODE:
+		RETVAL = THIS->GetAdjustDistanceMinValue();
+		OUTPUT:
+		RETVAL
+
+
 int
 vtkSweptSurface::GetCapping()
 		CODE:
@@ -1693,7 +1962,8 @@ float  *
 vtkSweptSurface::GetModelBounds()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetModelBounds();
 		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
@@ -1702,6 +1972,8 @@ vtkSweptSurface::GetModelBounds()
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
 		PUSHs(sv_2mortal(newSVnv(retval[4])));
 		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
 int
@@ -1716,12 +1988,15 @@ int  *
 vtkSweptSurface::GetSampleDimensions()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetSampleDimensions();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 vtkTransformCollection *
@@ -1815,7 +2090,7 @@ vtkSweptSurface::SetNumberOfInterpolationSteps(arg1)
 void
 vtkSweptSurface::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -1841,6 +2116,20 @@ PROTOTYPES: DISABLE
 
 
 void
+vtkSynchronizedTemplates2D::ComputeScalarsOff()
+		CODE:
+		THIS->ComputeScalarsOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkSynchronizedTemplates2D::ComputeScalarsOn()
+		CODE:
+		THIS->ComputeScalarsOn();
+		XSRETURN_EMPTY;
+
+
+void
 vtkSynchronizedTemplates2D::GenerateValues(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
 		int 	arg1
@@ -1859,6 +2148,28 @@ const char *
 vtkSynchronizedTemplates2D::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkSynchronizedTemplates2D::GetComputeScalars()
+		CODE:
+		RETVAL = THIS->GetComputeScalars();
+		OUTPUT:
+		RETVAL
+
+
+vtkImageData *
+vtkSynchronizedTemplates2D::GetInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		CODE:
+		RETVAL = THIS->GetInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
 		OUTPUT:
 		RETVAL
 
@@ -1894,6 +2205,22 @@ vtkSynchronizedTemplates2D::New()
 		RETVAL = vtkSynchronizedTemplates2D::New();
 		OUTPUT:
 		RETVAL
+
+
+void
+vtkSynchronizedTemplates2D::SetComputeScalars(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetComputeScalars(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkSynchronizedTemplates2D::SetInput(input)
+		vtkImageData *	input
+		CODE:
+		THIS->SetInput(input);
+		XSRETURN_EMPTY;
 
 
 void
@@ -2007,6 +2334,24 @@ vtkSynchronizedTemplates3D::GetComputeScalars()
 		RETVAL
 
 
+int *
+vtkSynchronizedTemplates3D::GetExecuteExtent()
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetExecuteExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
 vtkImageData *
 vtkSynchronizedTemplates3D::GetInput()
 		PREINIT:
@@ -2049,6 +2394,22 @@ int
 vtkSynchronizedTemplates3D::GetNumberOfThreads()
 		CODE:
 		RETVAL = THIS->GetNumberOfThreads();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkSynchronizedTemplates3D::GetNumberOfThreadsMaxValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfThreadsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkSynchronizedTemplates3D::GetNumberOfThreadsMinValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfThreadsMinValue();
 		OUTPUT:
 		RETVAL
 

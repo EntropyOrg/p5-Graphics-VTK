@@ -1,15 +1,19 @@
 # Script to produce perl bindings from VTK source code header files
 
+
+do 'cmakeParse';  # Get the cmakeParse routines
+
 #my $VTKdirName = "contrib"; # VTK director we are reading files from
 #my $dirName = "Contrib";    # Directory we will be putting files to 
 
 # VTK directories to parse
-my @VTKdirs = qw/ common graphics imaging patented contrib /;
-#my @VTKdirs = qw/ graphics  /;
+#my @VTKdirs = qw/ common graphics imaging patented contrib /;
+my @VTKdirs = qw/ Common Filtering Rendering Graphics Imaging IO Hybrid Patented/;
+#my @VTKdirs = qw/ Graphics/;
 
-my $vtkBaseDir = "/home/cerney/vtk/vtk3.2";
+my $vtkBaseDir = "/home/cerney/vtk/vtk40";
 
-my $version = '3.2.001';
+my $version = '4.0.001';
 
 my %constants;  # hash of constants that will be setup in the main VTK.pm file
 
@@ -18,7 +22,7 @@ foreach my $VTKdirName (@VTKdirs){
 
 	my $dirName = ucfirst($VTKdirName);    # Directory we will be putting files to 
 
-	my $makeFile = "$vtkBaseDir/$VTKdirName/Makefile";
+	my $makeFile = "$vtkBaseDir/$VTKdirName/CMakeLists.txt";
 
 	unless( -d $dirName){
 		warn ("'$dirName' not found, creating...\n");
@@ -78,9 +82,12 @@ use vars qw/ $VERSION /;
 
 # Load the Real Libs:
 use Graphics::VTK::Common;
+use Graphics::VTK::Filtering;
+use Graphics::VTK::Rendering;
 use Graphics::VTK::Graphics;
-use Graphics::VTK::Contrib;
 use Graphics::VTK::Imaging;
+use Graphics::VTK::IO;
+use Graphics::VTK::Hybrid;
 use Graphics::VTK::Patented;
 
 ';
@@ -206,110 +213,3 @@ close VTK;
 
 print "Completed\n";
 	
-####################################################################
-#  Sub to parse the concrete and abstact objects listed in the VTK
-#  makefile
-#  Inputs:  Makefile
-#  Outputs:  Array ref of concrete and abstact class names
-sub parseVTKmakefile{
-
-	my ($makeFile) = @_;
-	
-	
-	open(MAKEFILE, $makeFile) or die("Can't Open Makefile '$makeFile'\n");
-
-	my @concrete;      # Concrete objects in makefile
-	my @unix_concrete; # Unix Concrete objects in makefile
-	my @mesa;	   # Mesa objects in makefile
-	my @oglr;	   # OpenGL objects in makefile
-	my @win32;	   # win32 objects in makefile
-	my @abstract;      # Abstract objects in makefile
-	while( <MAKEFILE>){
-
-		if( /^CONCRETE[_H]*\s+\=/ .. ! /\S/ ) { # Concrete classes defined in the make file
-
-			unless( /CONCRETE/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @concrete, $1;
-				}
-
-			}
-
-
-		}
-
-		if( /^UNIX_CONCRETE\s+\=/ .. ! /\S/ ) { # Concrete classes defined in the make file
-
-			unless( /CONCRETE/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @unix_concrete, $1;
-				}
-
-			}
-
-
-		}
-
-		if( /^MESA_OBJ\s+\=/ .. ! /\S/ ) { # Mesa classes defined in the make file
-
-			unless( /MESA_OBJ/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @mesa, $1;
-				}
-
-			}
-		}
-
-		if( /^WIN32_OBJ\s+\=/ .. ! /\S/ ) { # win32 classes defined in the make file
-
-			unless( /WIN32_OBJ/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @win32, $1;
-				}
-
-			}
-
-
-		}
-		if( /^OGLR_OBJ\s+\=/ .. ! /\S/ ) { # Mesa classes defined in the make file
-
-			unless( /OGLR_OBJ/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @oglr, $1;
-				}
-
-			}
-
-
-		}
-
-		if( /^ABSTRACT[_H]*\s+\=/ .. ! /\S/ ) { # Concrete classes defined in the make file
-
-			unless( /ABSTRACT/){ # don't count the first line
-
-				if( /^s*(\w+)/ ){
-					push @abstract, $1;
-				}
-
-			}
-
-
-		}
-
-
-	}
-
-	close MAKEFILE;
-
-	# Make Return hash:
-	my %outputs = ( concrete => [@concrete], unix_concrete => [@unix_concrete],
-			mesa => [@mesa], oglr => [@oglr], win32 => [@win32],
-			abstract => [@abstract]);
-	return %outputs;
-	
-}

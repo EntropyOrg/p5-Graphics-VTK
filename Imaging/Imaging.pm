@@ -8,7 +8,7 @@ use vars qw/ $VERSION @ISA/;
 
 require DynaLoader;
 
-$VERSION = '3.2.001';
+$VERSION = '4.0.001';
 
 @ISA = qw/ DynaLoader /;
 
@@ -36,681 +36,212 @@ Additional Refinements: John Cerney <j-cerney1@raytheon.com>
 
 =cut
 
-package Graphics::VTK::ImageDecomposeFilter;
+package Graphics::VTK::BooleanTexture;
 
 
-@Graphics::VTK::ImageDecomposeFilter::ISA = qw( Graphics::VTK::ImageIterateFilter );
+@Graphics::VTK::BooleanTexture::ISA = qw( Graphics::VTK::StructuredPointsSource );
 
-=head1 Graphics::VTK::ImageDecomposeFilter
+=head1 Graphics::VTK::BooleanTexture
 
 =over 1
 
 =item *
 
-Inherits from ImageIterateFilter
+Inherits from StructuredPointsSource
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetDimensionality ();
-   vtkImageDecomposeFilter *New ();
-   void SetDimensionality (int dim);
-   void SetFilteredAxes (int axis0, int axis2, int axis3);
-   void SetFilteredAxes (int axis0, int axis2);
-   void SetFilteredAxes (int axis0);
-
-
-B<vtkImageDecomposeFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PermuteExtent (int *extent, int &min0, int &max0, int &min1, int &max1, int &min2, int &max2);
-      Don't know the size of pointer arg number 1
-
-   void PermuteIncrements (int *increments, int &inc0, int &inc1, int &inc2);
-      Don't know the size of pointer arg number 1
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::ImageFilter;
-
-
-@Graphics::VTK::ImageFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImageFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageToImageFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageFilter *New ();
-
-=cut
-
-package Graphics::VTK::ImageInPlaceFilter;
-
-
-@Graphics::VTK::ImageInPlaceFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImageInPlaceFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageToImageFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageInPlaceFilter *New ();
-
-=cut
-
-package Graphics::VTK::ImageIterateFilter;
-
-
-@Graphics::VTK::ImageIterateFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImageIterateFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageToImageFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void ComputeInputUpdateExtents (vtkDataObject *output);
-   const char *GetClassName();
-   int GetIteration ();
-   int GetNumberOfIterations ();
-   vtkImageIterateFilter *New ();
-
-
-B<vtkImageIterateFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::ImageMultipleInputFilter;
-
-
-@Graphics::VTK::ImageMultipleInputFilter::ISA = qw( Graphics::VTK::ImageSource );
-
-=head1 Graphics::VTK::ImageMultipleInputFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void AddInput (vtkImageData *input);
-   void BypassOff ();
-   void BypassOn ();
-   int GetBypass ();
-   const char *GetClassName();
-   vtkImageData *GetInput (int num);
-   vtkImageData *GetInput ();
-   int GetNumberOfThreads ();
-   vtkImageMultipleInputFilter *New ();
-   virtual void RemoveInput (vtkImageData *input);
-   void SetBypass (int );
-   virtual void SetInput (int num, vtkImageData *input);
-   void SetNumberOfThreads (int );
-
-
-B<vtkImageMultipleInputFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int threadId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImagePadFilter;
-
-
-@Graphics::VTK::ImagePadFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImagePadFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageToImageFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetOutputNumberOfScalarComponents ();
-   vtkImagePadFilter *New ();
-   void SetOutputNumberOfScalarComponents (int );
-   void SetOutputWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
-
-
-B<vtkImagePadFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int OutputWholeExtent[6]int OutputNumberOfScalarComponentsvoid ExecuteInformation (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetOutputWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetOutputWholeExtent ();
-      Can't Handle 'int *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetOutputWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageSpatialFilter;
-
-
-@Graphics::VTK::ImageSpatialFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImageSpatialFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageToImageFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int *GetKernelSize ();
-      (Returns a 3-element Perl list)
-   vtkImageSpatialFilter *New ();
-
-
-B<vtkImageSpatialFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void ComputeInputUpdateExtent (int extent[6], int wholeExtent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeOutputWholeExtent (int extent[6], int handleBoundaries);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int KernelSize[3]int KernelMiddle[3]int Strides[3]int HandleBoundariesvoid ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetKernelMiddle ();
-      Can't Handle 'int *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::ImageToImageFilter;
-
-
-@Graphics::VTK::ImageToImageFilter::ISA = qw( Graphics::VTK::ImageSource );
-
-=head1 Graphics::VTK::ImageToImageFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void ExecuteImageInformation ();
-   const char *GetClassName();
-   vtkImageData *GetInput ();
-   long GetInputMemoryLimit ();
-   int GetNumberOfThreads ();
-   vtkImageToImageFilter *New ();
-   virtual void SetInput (vtkImageData *input);
-   void SetInputMemoryLimit (int );
-   void SetNumberOfThreads (int );
-   virtual void UpdateImageInformation ();
-
-
-B<vtkImageToImageFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void BypassOff ();
-      Method is marked 'Do Not Use' in its descriptions
-
-   void BypassOn ();
-      Method is marked 'Do Not Use' in its descriptions
-
-   virtual void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int GetBypass ();
-      Method is marked 'Do Not Use' in its descriptions
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetBypass (int );
-      Method is marked 'Do Not Use' in its descriptions
-
-   virtual int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int threadId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageTwoInputFilter;
-
-
-@Graphics::VTK::ImageTwoInputFilter::ISA = qw( Graphics::VTK::ImageMultipleInputFilter );
-
-=head1 Graphics::VTK::ImageTwoInputFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageMultipleInputFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageData *GetInput1 ();
-   vtkImageData *GetInput2 ();
-   vtkImageTwoInputFilter *New ();
-   virtual void SetInput1 (vtkImageData *input);
-   virtual void SetInput2 (vtkImageData *input);
-
-=cut
-
-package Graphics::VTK::ImageFourierFilter;
-
-
-@Graphics::VTK::ImageFourierFilter::ISA = qw( Graphics::VTK::ImageDecomposeFilter );
-
-=head1 Graphics::VTK::ImageFourierFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageDecomposeFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageFourierFilter *New ();
-
-=cut
-
-package Graphics::VTK::ImagingFactory;
-
-
-@Graphics::VTK::ImagingFactory::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::ImagingFactory
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkObject *CreateInstance (char *vtkclassname);
-   const char *GetClassName();
-   vtkImagingFactory *New ();
-
-=cut
-
-package Graphics::VTK::AxisActor2D;
-
-
-@Graphics::VTK::AxisActor2D::ISA = qw( Graphics::VTK::Actor2D );
-
-=head1 Graphics::VTK::AxisActor2D
-
-=over 1
-
-=item *
-
-Inherits from Actor2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AdjustLabelsOff ();
-   void AdjustLabelsOn ();
-   void AxisVisibilityOff ();
-   void AxisVisibilityOn ();
-   void BoldOff ();
-   void BoldOn ();
-   int GetAdjustLabels ();
-   int GetAxisVisibility ();
-   int GetBold ();
-   const char *GetClassName();
-   float GetFontFactor ();
-   int GetFontFamily ();
-   int GetItalic ();
-   float GetLabelFactor ();
-   char *GetLabelFormat ();
-   int GetLabelVisibility ();
-   int GetNumberOfLabels ();
-   float *GetPoint1 ();
+   const char *GetClassName ();
+   unsigned char  *GetInIn ();
       (Returns a 2-element Perl list)
-   vtkCoordinate *GetPoint1Coordinate ();
-   float *GetPoint2 ();
+   unsigned char  *GetInOn ();
       (Returns a 2-element Perl list)
-   vtkCoordinate *GetPoint2Coordinate ();
-   float  *GetRange ();
+   unsigned char  *GetInOut ();
       (Returns a 2-element Perl list)
-   int GetShadow ();
-   int GetTickLength ();
-   int GetTickOffset ();
-   int GetTickVisibility ();
-   char *GetTitle ();
-   int GetTitleVisibility ();
-   void ItalicOff ();
-   void ItalicOn ();
-   void LabelVisibilityOff ();
-   void LabelVisibilityOn ();
-   vtkAxisActor2D *New ();
-   void ReleaseGraphicsResources (vtkWindow *);
-   int RenderOpaqueGeometry (vtkViewport *viewport);
-   int RenderOverlay (vtkViewport *viewport);
-   int RenderTranslucentGeometry (vtkViewport *);
-   void SetAdjustLabels (int );
-   void SetAxisVisibility (int );
-   void SetBold (int );
-   void SetFontFactor (float );
-   void SetFontFamily (int );
-   void SetFontFamilyToArial ();
-   void SetFontFamilyToCourier ();
-   void SetFontFamilyToTimes ();
-   void SetItalic (int );
-   void SetLabelFactor (float );
-   void SetLabelFormat (char *);
-   void SetLabelVisibility (int );
-   void SetNumberOfLabels (int );
-   void SetPoint1 (float , float);
-   void SetPoint2 (float , float);
-   void SetRange (float  , float );
-   void SetShadow (int );
-   void SetTickLength (int );
-   void SetTickOffset (int );
-   void SetTickVisibility (int );
-   void SetTitle (char *);
-   void SetTitleVisibility (int );
-   void ShadowOff ();
-   void ShadowOn ();
-   void ShallowCopy (vtkProp *prop);
-   void TickVisibilityOff ();
-   void TickVisibilityOn ();
-   void TitleVisibilityOff ();
-   void TitleVisibilityOn ();
+   unsigned char  *GetOnIn ();
+      (Returns a 2-element Perl list)
+   unsigned char  *GetOnOn ();
+      (Returns a 2-element Perl list)
+   unsigned char  *GetOnOut ();
+      (Returns a 2-element Perl list)
+   unsigned char  *GetOutIn ();
+      (Returns a 2-element Perl list)
+   unsigned char  *GetOutOn ();
+      (Returns a 2-element Perl list)
+   unsigned char  *GetOutOut ();
+      (Returns a 2-element Perl list)
+   int GetThickness ();
+   int GetXSize ();
+   int GetYSize ();
+   vtkBooleanTexture *New ();
+   void SetInIn (unsigned char , unsigned char );
+   void SetInOn (unsigned char , unsigned char );
+   void SetInOut (unsigned char , unsigned char );
+   void SetOnIn (unsigned char , unsigned char );
+   void SetOnOn (unsigned char , unsigned char );
+   void SetOnOut (unsigned char , unsigned char );
+   void SetOutIn (unsigned char , unsigned char );
+   void SetOutOn (unsigned char , unsigned char );
+   void SetOutOut (unsigned char , unsigned char );
+   void SetThickness (int );
+   void SetXSize (int );
+   void SetYSize (int );
 
 
-B<vtkAxisActor2D Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   vtkCoordinate *Point1CoordinatevtkCoordinate *Point2Coordinatechar *Titlefloat Range[2]int NumberOfLabelschar *LabelFormatint NumberOfLabelsBuiltint AdjustLabelsfloat FontFactorfloat LabelFactorint TickLengthint TickOffsetint Boldint Italicint Shadowint FontFamilyint AxisVisibilityint TickVisibilityint LabelVisibilityint TitleVisibilityint LastPoint1[2]int LastPoint2[2]int LastSize[2]int LastTitleFontSizeint LastLabelFontSizevoid BuildAxis (vtkViewport *viewport);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeRange (float inRange[2], float outRange[2], int inNumTicks, int &outNumTicks, float &interval);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   int SetFontSize (vtkViewport *viewport, vtkTextMapper *textMapper, int *size, float factor, int &stringWidth, int &stringHeight);
-      Don't know the size of pointer arg number 3
-
-   void SetOffsetPosition (float xTick[3], float theta, int stringHeight, int stringWidth, int offset, vtkActor2D *actor);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetPoint1 (float a[2]);
-      Method is redundant. Same as SetPoint1( float, float)
-
-   void SetPoint2 (float a[2]);
-      Method is redundant. Same as SetPoint2( float, float)
-
-   void SetRange (float  a[2]);
-      Method is redundant. Same as SetRange( float, float)
-
-
-=cut
-
-package Graphics::VTK::BMPReader;
-
-
-@Graphics::VTK::BMPReader::ISA = qw( Graphics::VTK::ImageReader );
-
-=head1 Graphics::VTK::BMPReader
-
-=over 1
-
-=item *
-
-Inherits from ImageReader
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetDepth ();
-   vtkBMPReader *New ();
-
-
-B<vtkBMPReader Unsupported Funcs:>
+B<vtkBooleanTexture Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
+   void SetInIn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetInOn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetInOut (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOnIn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOnOn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOnOut (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOutIn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOutOn (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
+   void SetOutOut (unsigned char  a[2]);
+      Arg types of 'unsigned char  *' not supported yet
 
 =cut
 
-package Graphics::VTK::BMPWriter;
+package Graphics::VTK::ExtractVOI;
 
 
-@Graphics::VTK::BMPWriter::ISA = qw( Graphics::VTK::ImageWriter );
+@Graphics::VTK::ExtractVOI::ISA = qw( Graphics::VTK::StructuredPointsToStructuredPointsFilter );
 
-=head1 Graphics::VTK::BMPWriter
+=head1 Graphics::VTK::ExtractVOI
 
 =over 1
 
 =item *
 
-Inherits from ImageWriter
+Inherits from StructuredPointsToStructuredPointsFilter
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkBMPWriter *New ();
-
-
-B<vtkBMPWriter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void WriteFile (ofstream *file, vtkImageData *data, int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void WriteFileHeader (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::GlyphSource2D;
-
-
-@Graphics::VTK::GlyphSource2D::ISA = qw( Graphics::VTK::PolyDataSource );
-
-=head1 Graphics::VTK::GlyphSource2D
-
-=over 1
-
-=item *
-
-Inherits from PolyDataSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void CrossOff ();
-   void CrossOn ();
-   void DashOff ();
-   void DashOn ();
-   void FilledOff ();
-   void FilledOn ();
-   float  *GetCenter ();
+   const char *GetClassName ();
+   int  *GetSampleRate ();
       (Returns a 3-element Perl list)
-   const char *GetClassName();
-   float  *GetColor ();
-      (Returns a 3-element Perl list)
-   int GetCross ();
-   int GetDash ();
-   int GetFilled ();
-   int GetGlyphType ();
-   float GetRotationAngle ();
-   float GetScale ();
-   float GetScale2 ();
-   vtkGlyphSource2D *New ();
-   void RotationAngleOff ();
-   void RotationAngleOn ();
-   void SetCenter (float  , float , float );
-   void SetColor (float  , float , float );
-   void SetCross (int );
-   void SetDash (int );
-   void SetFilled (int );
-   void SetGlyphType (int );
-   void SetGlyphTypeToArrow ();
-   void SetGlyphTypeToCircle ();
-   void SetGlyphTypeToCross ();
-   void SetGlyphTypeToDash ();
-   void SetGlyphTypeToDiamond ();
-   void SetGlyphTypeToHookedArrow ();
-   void SetGlyphTypeToNone ();
-   void SetGlyphTypeToSquare ();
-   void SetGlyphTypeToThickArrow ();
-   void SetGlyphTypeToThickCross ();
-   void SetGlyphTypeToTriangle ();
-   void SetGlyphTypeToVertex ();
-   void SetRotationAngle (float );
-   void SetScale (float );
-   void SetScale2 (float );
+   int  *GetVOI ();
+      (Returns a 6-element Perl list)
+   vtkExtractVOI *New ();
+   void SetSampleRate (int , int , int );
+   void SetVOI (int , int , int , int , int , int );
 
 
-B<vtkGlyphSource2D Unsupported Funcs:>
+B<vtkExtractVOI Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   unsigned char RGB[3]void CreateVertex (vtkPoints *pts, vtkCellArray *verts, vtkUnsignedCharArray *colors);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetCenter (float  a[3]);
-      Method is redundant. Same as SetCenter( float, float, float)
+   void SetSampleRate (int  a[3]);
+      Method is redundant. Same as SetSampleRate( int, int, int)
 
-   void SetColor (float  a[3]);
-      Method is redundant. Same as SetColor( float, float, float)
+   void SetVOI (int  a[6]);
+      Method is redundant. Same as SetVOI( int, int, int, int, int, int)
 
-   float Center[3]float Scalefloat Scale2float Color[3]int Filledint Dashint Crossint GlyphTypefloat RotationAnglevoid TransformGlyph (vtkPoints *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+=cut
+
+package Graphics::VTK::GaussianSplatter;
+
+
+@Graphics::VTK::GaussianSplatter::ISA = qw( Graphics::VTK::DataSetToStructuredPointsFilter );
+
+=head1 Graphics::VTK::GaussianSplatter
+
+=over 1
+
+=item *
+
+Inherits from DataSetToStructuredPointsFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void CappingOff ();
+   void CappingOn ();
+   void ComputeModelBounds ();
+   int GetAccumulationMode ();
+   const char *GetAccumulationModeAsString ();
+   int GetAccumulationModeMaxValue ();
+   int GetAccumulationModeMinValue ();
+   float GetCapValue ();
+   int GetCapping ();
+   const char *GetClassName ();
+   float GetEccentricity ();
+   float GetEccentricityMaxValue ();
+   float GetEccentricityMinValue ();
+   float GetExponentFactor ();
+   float  *GetModelBounds ();
+      (Returns a 6-element Perl list)
+   int GetNormalWarping ();
+   float GetNullValue ();
+   float GetRadius ();
+   float GetRadiusMaxValue ();
+   float GetRadiusMinValue ();
+   int  *GetSampleDimensions ();
+      (Returns a 3-element Perl list)
+   int GetScalarWarping ();
+   float GetScaleFactor ();
+   float GetScaleFactorMaxValue ();
+   float GetScaleFactorMinValue ();
+   vtkGaussianSplatter *New ();
+   void NormalWarpingOff ();
+   void NormalWarpingOn ();
+   void ScalarWarpingOff ();
+   void ScalarWarpingOn ();
+   void SetAccumulationMode (int );
+   void SetAccumulationModeToMax ();
+   void SetAccumulationModeToMin ();
+   void SetAccumulationModeToSum ();
+   void SetCapValue (float );
+   void SetCapping (int );
+   void SetEccentricity (float );
+   void SetExponentFactor (float );
+   void SetModelBounds (float , float , float , float , float , float );
+   void SetNormalWarping (int );
+   void SetNullValue (float );
+   void SetRadius (float );
+   void SetSampleDimensions (int i, int j, int k);
+   void SetScalarWarping (int );
+   void SetScaleFactor (float );
+
+
+B<vtkGaussianSplatter Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetModelBounds (float  a[6]);
+      Method is redundant. Same as SetModelBounds( float, float, float, float, float, float)
+
+   void SetSampleDimensions (int dim[3]);
+      Method is redundant. Same as SetSampleDimensions( int, int, int)
 
 
 =cut
@@ -733,15 +264,32 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
+   int *GetComponentExtent ();
+      (Returns a 6-element Perl list)
    float  *GetComponentOrigin ();
       (Returns a 3-element Perl list)
    float  *GetComponentSpacing ();
       (Returns a 3-element Perl list)
+   double  *GetMax ();
+      (Returns a 3-element Perl list)
+   double  *GetMean ();
+      (Returns a 3-element Perl list)
+   double  *GetMin ();
+      (Returns a 3-element Perl list)
+   int GetReverseStencil ();
+   double  *GetStandardDeviation ();
+      (Returns a 3-element Perl list)
+   vtkImageStencilData *GetStencil ();
+   long GetVoxelCount ();
    vtkImageAccumulate *New ();
+   void ReverseStencilOff ();
+   void ReverseStencilOn ();
    void SetComponentExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
-   void SetComponentOrigin (float  , float , float );
-   void SetComponentSpacing (float  , float , float );
+   void SetComponentOrigin (float , float , float );
+   void SetComponentSpacing (float , float , float );
+   void SetReverseStencil (int );
+   void SetStencil (vtkImageStencilData *stencil);
 
 
 B<vtkImageAccumulate Unsupported Funcs:>
@@ -749,22 +297,16 @@ B<vtkImageAccumulate Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float ComponentSpacing[3]float ComponentOrigin[3]int ComponentExtent[6]void ExecuteInformation (vtkImageData *input, vtkImageData *output);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void GetComponentExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetComponentExtent ();
-      Can't Handle 'int *' return type without a hint
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetComponentExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetComponentExtent( int, int, int, int, int, int)
 
    void SetComponentOrigin (float  a[3]);
       Method is redundant. Same as SetComponentOrigin( float, float, float)
@@ -799,7 +341,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void EdgesOn ();
    void FacesOff ();
    void FacesOn ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetCorners ();
    float GetDiffusionFactor ();
    float GetDiffusionThreshold ();
@@ -829,8 +371,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   int NumberOfIterationsfloat DiffusionThresholdfloat DiffusionFactorint Facesint Edgesint Cornersint GradientMagnitudeThresholdvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -859,7 +401,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void EdgesOn ();
    void FacesOff ();
    void FacesOn ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetCorners ();
    float GetDiffusionFactor ();
    float GetDiffusionThreshold ();
@@ -889,8 +431,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   int NumberOfIterationsfloat DiffusionThresholdfloat DiffusionFactorint Facesint Edgesint Cornersint GradientMagnitudeThresholdvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -914,7 +456,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    int GetAppendAxis ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetPreserveExtents ();
    vtkImageAppend *New ();
    void PreserveExtentsOff ();
@@ -928,16 +470,16 @@ B<vtkImageAppend Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void InitOutput (int outExt[6], vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -960,7 +502,7 @@ Inherits from ImageMultipleInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageAppendComponents *New ();
    virtual void SetInput2 (vtkImageData *input);
 
@@ -973,7 +515,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is marked 'Do Not Use' in its descriptions
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -997,17 +539,20 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    int GetBlendMode ();
-   char *GetBlendModeAsString (void );
-   const char *GetClassName();
+   const char *GetBlendModeAsString (void );
+   int GetBlendModeMaxValue ();
+   int GetBlendModeMinValue ();
+   const char *GetClassName ();
    float GetCompoundThreshold ();
    double GetOpacity (int idx);
+   vtkImageStencilData *GetStencil ();
    vtkImageBlend *New ();
    void SetBlendMode (int );
    void SetBlendModeToCompound ();
    void SetBlendModeToNormal ();
    void SetCompoundThreshold (float );
    void SetOpacity (int idx, double opacity);
-   virtual void UpdateData (vtkDataObject *output);
+   void SetStencil (vtkImageStencilData *);
 
 
 B<vtkImageBlend Unsupported Funcs:>
@@ -1015,13 +560,13 @@ B<vtkImageBlend Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1044,7 +589,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCutOff ();
       (Returns a 3-element Perl list)
    int GetOrder ();
@@ -1052,7 +597,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    float GetYCutOff ();
    float GetZCutOff ();
    vtkImageButterworthHighPass *New ();
-   void SetCutOff (float  , float , float );
+   void SetCutOff (float , float , float );
    void SetCutOff (float v);
    void SetOrder (int );
    void SetXCutOff (float v);
@@ -1070,8 +615,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetCutOff (float  a[3]);
       Method is redundant. Same as SetCutOff( float, float, float)
 
-   int Orderfloat CutOff[3]void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1094,7 +639,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCutOff ();
       (Returns a 3-element Perl list)
    int GetOrder ();
@@ -1102,7 +647,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    float GetYCutOff ();
    float GetZCutOff ();
    vtkImageButterworthLowPass *New ();
-   void SetCutOff (float  , float , float );
+   void SetCutOff (float , float , float );
    void SetCutOff (float v);
    void SetOrder (int );
    void SetXCutOff (float v);
@@ -1120,8 +665,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetCutOff (float  a[3]);
       Method is redundant. Same as SetCutOff( float, float, float)
 
-   int Orderfloat CutOff[3]void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1145,7 +690,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    int GetCacheSize ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageCacheFilter *New ();
    void SetCacheSize (int size);
    void UpdateData (vtkDataObject *outData);
@@ -1187,7 +732,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void FillPixel (int x, int y);
    void FillTriangle (int x0, int y0, int x1, int y1, int x2, int y2);
    void FillTube (int x0, int y0, int x1, int y1, float radius);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDefaultZ ();
    float  *GetDrawColor ();
       (Returns a 4-element Perl list)
@@ -1195,7 +740,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    vtkImageData *GetOutput ();
    vtkImageCanvasSource2D *New ();
    void SetDefaultZ (int );
-   void SetDrawColor (float  , float , float , float );
+   void SetDrawColor (float , float , float , float );
    void SetDrawColor (float a, float b, float c);
    void SetDrawColor (float a, float b);
    void SetDrawColor (float a);
@@ -1207,23 +752,14 @@ B<vtkImageCanvasSource2D Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   vtkImageData *ImageDatafloat DrawColor[4]int DefaultZint ClipSegment (int &a0, int &a1, int &b0, int &b1);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void DrawSegment3D (float *p0, float *p1);
       Don't know the size of pointer arg number 1
-
-   void GetDrawColor (int dim, float *color);
-      Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetDrawColor (int dim, float *color);
-      Don't know the size of pointer arg number 2
-
    void SetDrawColor (float  a[4]);
-      Method is redundant. Same as SetDrawColor_( float, float, float, float)
+      Method is redundant. Same as SetDrawColor( float, float, float, float)
 
    void SetExtent (int *extent);
       Don't know the size of pointer arg number 1
@@ -1252,7 +788,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void ClampOverflowOff ();
    void ClampOverflowOn ();
    int GetClampOverflow ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetOutputScalarType ();
    vtkImageCast *New ();
    void SetClampOverflow (int );
@@ -1277,7 +813,131 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageChangeInformation;
+
+
+@Graphics::VTK::ImageChangeInformation::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageChangeInformation
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void CenterImageOff ();
+   void CenterImageOn ();
+   int GetCenterImage ();
+   const char *GetClassName ();
+   int  *GetExtentTranslation ();
+      (Returns a 3-element Perl list)
+   vtkImageData *GetInformationInput ();
+   float  *GetOriginScale ();
+      (Returns a 3-element Perl list)
+   float  *GetOriginTranslation ();
+      (Returns a 3-element Perl list)
+   int  *GetOutputExtentStart ();
+      (Returns a 3-element Perl list)
+   float  *GetOutputOrigin ();
+      (Returns a 3-element Perl list)
+   float  *GetOutputSpacing ();
+      (Returns a 3-element Perl list)
+   float  *GetSpacingScale ();
+      (Returns a 3-element Perl list)
+   vtkImageChangeInformation *New ();
+   void SetCenterImage (int );
+   void SetExtentTranslation (int , int , int );
+   void SetInformationInput (vtkImageData *);
+   void SetOriginScale (float , float , float );
+   void SetOriginTranslation (float , float , float );
+   void SetOutputExtentStart (int , int , int );
+   void SetOutputOrigin (float , float , float );
+   void SetOutputSpacing (float , float , float );
+   void SetSpacingScale (float , float , float );
+
+
+B<vtkImageChangeInformation Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void ComputeInputUpdateExtent (int extent[6], int wholeExtent[6]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetExtentTranslation (int  a[3]);
+      Method is redundant. Same as SetExtentTranslation( int, int, int)
+
+   void SetOriginScale (float  a[3]);
+      Method is redundant. Same as SetOriginScale( float, float, float)
+
+   void SetOriginTranslation (float  a[3]);
+      Method is redundant. Same as SetOriginTranslation( float, float, float)
+
+   void SetOutputExtentStart (int  a[3]);
+      Method is redundant. Same as SetOutputExtentStart( int, int, int)
+
+   void SetOutputOrigin (float  a[3]);
+      Method is redundant. Same as SetOutputOrigin( float, float, float)
+
+   void SetOutputSpacing (float  a[3]);
+      Method is redundant. Same as SetOutputSpacing( float, float, float)
+
+   void SetSpacingScale (float  a[3]);
+      Method is redundant. Same as SetSpacingScale( float, float, float)
+
+
+=cut
+
+package Graphics::VTK::ImageCheckerboard;
+
+
+@Graphics::VTK::ImageCheckerboard::ISA = qw( Graphics::VTK::ImageTwoInputFilter );
+
+=head1 Graphics::VTK::ImageCheckerboard
+
+=over 1
+
+=item *
+
+Inherits from ImageTwoInputFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int  *GetNumberOfDivisions ();
+      (Returns a 3-element Perl list)
+   vtkImageCheckerboard *New ();
+   void SetNumberOfDivisions (int , int , int );
+
+
+B<vtkImageCheckerboard Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetNumberOfDivisions (int  a[3]);
+      Method is redundant. Same as SetNumberOfDivisions( int, int, int)
+
+   void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1300,7 +960,7 @@ Inherits from ImageDecomposeFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageCityBlockDistance *New ();
 
 
@@ -1309,7 +969,7 @@ B<vtkImageCityBlockDistance Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -1334,8 +994,10 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void ClipDataOff ();
    void ClipDataOn ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetClipData ();
+   int *GetOutputWholeExtent ();
+      (Returns a 6-element Perl list)
    vtkImageClip *New ();
    void ResetOutputWholeExtent ();
    void SetClipData (int );
@@ -1350,61 +1012,17 @@ Functions which are not supported supported for this class by the PerlVTK module
    void CopyData (vtkImageData *inData, vtkImageData *outData, int *ext);
       Don't know the size of pointer arg number 3
 
-   vtkTimeStamp CTimeint Initializedint OutputWholeExtent[6]int ClipDatavoid ExecuteInformation (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void GetOutputWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetOutputWholeExtent ();
-      Can't Handle 'int *' return type without a hint
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetOutputWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetOutputWholeExtent( int, int, int, int, int, int)
 
    int SplitExtentTmp (int piece, int numPieces, int *ext);
       Don't know the size of pointer arg number 3
-
-
-=cut
-
-package Graphics::VTK::ImageComposite;
-
-
-@Graphics::VTK::ImageComposite::ISA = qw( Graphics::VTK::Source );
-
-=head1 Graphics::VTK::ImageComposite
-
-=over 1
-
-=item *
-
-Inherits from Source
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AddInput (vtkImageData *);
-   const char *GetClassName();
-   vtkImageData *GetInput (int idx);
-   vtkStructuredPoints *GetOutput (int idx);
-   vtkStructuredPoints *GetOutput ();
-   vtkImageComposite *New ();
-   void RemoveInput (vtkImageData *);
-   void SetOutput (vtkStructuredPoints *output);
-
-
-B<vtkImageComposite Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
 
 
 =cut
@@ -1427,7 +1045,7 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    char unsigned GetConnectedValue ();
    char unsigned GetUnconnectedValue ();
    vtkImageConnector *New ();
@@ -1441,7 +1059,7 @@ B<vtkImageConnector Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void MarkData (vtkImageData *data, int dimensionality, int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -1467,7 +1085,7 @@ Inherits from ImagePadFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetConstant ();
    vtkImageConstantPad *New ();
    void SetConstant (float );
@@ -1480,8 +1098,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   float Constantvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1504,7 +1122,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageContinuousDilate3D *New ();
    void SetKernelSize (int size0, int size1, int size2);
 
@@ -1516,8 +1134,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   vtkImageEllipsoidSource *Ellipsevoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1540,7 +1158,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageContinuousErode3D *New ();
    void SetKernelSize (int size0, int size1, int size2);
 
@@ -1552,8 +1170,78 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   vtkImageEllipsoidSource *Ellipsevoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageConvolve;
+
+
+@Graphics::VTK::ImageConvolve::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageConvolve
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   float *GetKernel3x3 ();
+      (Returns a 9-element Perl list)
+   float *GetKernel3x3x3 ();
+      (Returns a 27-element Perl list)
+   float *GetKernel5x5 ();
+      (Returns a 25-element Perl list)
+   int  *GetKernelSize ();
+      (Returns a 3-element Perl list)
+   vtkImageConvolve *New ();
+
+
+B<vtkImageConvolve Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void GetKernel (float *kernel);
+      Don't know the size of pointer arg number 1
+
+   void GetKernel3x3 (float kernel[9]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void GetKernel3x3x3 (float kernel[27]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void GetKernel5x5 (float kernel[25]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   float *GetKernel ();
+      Can't Handle 'float *' return type without a hint
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetKernel (const float *kernel, int sizeX, int sizeY, int sizeZ);
+      Don't know the size of pointer arg number 1
+
+   void SetKernel3x3 (const float kernel[9]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   void SetKernel3x3x3 (const float kernel[27]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   void SetKernel5x5 (const float kernel[25]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1576,8 +1264,10 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
+   int GetDimensionalityMaxValue ();
+   int GetDimensionalityMinValue ();
    vtkImageCorrelation *New ();
    void SetDimensionality (int );
 
@@ -1587,13 +1277,13 @@ B<vtkImageCorrelation Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    virtual void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1616,13 +1306,13 @@ Inherits from ImageInPlaceFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCursorPosition ();
       (Returns a 3-element Perl list)
    int GetCursorRadius ();
    float GetCursorValue ();
    vtkImageCursor3D *New ();
-   void SetCursorPosition (float  , float , float );
+   void SetCursorPosition (float , float , float );
    void SetCursorRadius (int );
    void SetCursorValue (float );
 
@@ -1630,9 +1320,6 @@ B<Functions Supported for this class by the PerlVTK module:>
 B<vtkImageCursor3D Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   float CursorPosition[3]float CursorValueint CursorRadiusvoid Execute (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -1661,26 +1348,60 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetIncrementalUpdate ();
-   long unsigned GetMemoryLimit ();
-   void IncrementalUpdateOff ();
-   void IncrementalUpdateOn ();
+   const char *GetClassName ();
+   vtkExtentTranslator *GetExtentTranslator ();
+   int GetNumberOfStreamDivisions ();
    vtkImageDataStreamer *New ();
-   void SetIncrementalUpdate (int );
-   void SetMemoryLimit (unsigned long );
-   void SetSplitModeToBlock ();
-   void SetSplitModeToXSlab ();
-   void SetSplitModeToYSlab ();
-   void SetSplitModeToZSlab ();
-   void TriggerAsynchronousUpdate ();
+   void SetExtentTranslator (vtkExtentTranslator *);
+   void SetNumberOfStreamDivisions (int );
    void UpdateData (vtkDataObject *out);
-   void UpdateInformation ();
 
 
 B<vtkImageDataStreamer Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::ImageDecomposeFilter;
+
+
+@Graphics::VTK::ImageDecomposeFilter::ISA = qw( Graphics::VTK::ImageIterateFilter );
+
+=head1 Graphics::VTK::ImageDecomposeFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageIterateFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int GetDimensionality ();
+   void SetDimensionality (int dim);
+   void SetFilteredAxes (int axis0, int axis2, int axis3);
+   void SetFilteredAxes (int axis0, int axis2);
+   void SetFilteredAxes (int axis0);
+
+
+B<vtkImageDecomposeFilter Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PermuteExtent (int *extent, int &min0, int &max0, int &min1, int &max1, int &min2, int &max2);
+      Don't know the size of pointer arg number 1
+
+   void PermuteIncrements (int *increments, int &inc0, int &inc1, int &inc2);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -1712,7 +1433,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void AveragingOn ();
    int GetAllowShift ();
    int GetAveraging ();
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetError (void );
    vtkImageData *GetImage ();
    int GetThreshold ();
@@ -1731,10 +1452,7 @@ B<vtkImageDifference Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float ErrorPerThreadVTK_MAX_THREADS []float ThresholdedErrorPerThreadVTK_MAX_THREADS []int AllowShiftint Thresholdint Averagingvoid ExecuteInformation (vtkImageData *inputs, vtkImageData *output);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void GetError (float *e);
       Don't know the size of pointer arg number 1
@@ -1746,7 +1464,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1769,7 +1487,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetDilateValue ();
    float GetErodeValue ();
    vtkImageDilateErode3D *New ();
@@ -1785,8 +1503,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   vtkImageEllipsoidSource *Ellipsefloat DilateValuefloat ErodeValuevoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1809,7 +1527,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageDivergence *New ();
 
 
@@ -1818,10 +1536,10 @@ B<vtkImageDivergence Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1844,7 +1562,7 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageDotProduct *New ();
 
 
@@ -1853,7 +1571,7 @@ B<vtkImageDotProduct Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1878,14 +1596,16 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    float  *GetCenter ();
       (Returns a 3-element Perl list)
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetInValue ();
    float GetOutValue ();
    int GetOutputScalarType ();
    float  *GetRadius ();
       (Returns a 3-element Perl list)
+   int *GetWholeExtent ();
+      (Returns a 6-element Perl list)
    vtkImageEllipsoidSource *New ();
-   void SetCenter (float  , float , float );
+   void SetCenter (float , float , float );
    void SetInValue (float );
    void SetOutValue (float );
    void SetOutputScalarType (int );
@@ -1899,7 +1619,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetOutputScalarTypeToUnsignedInt ();
    void SetOutputScalarTypeToUnsignedLong ();
    void SetOutputScalarTypeToUnsignedShort ();
-   void SetRadius (float  , float , float );
+   void SetRadius (float , float , float );
    void SetWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
 
 
@@ -1907,14 +1627,8 @@ B<vtkImageEllipsoidSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int WholeExtent[6]float Center[3]float Radius[3]float InValuefloat OutValueint OutputScalarTypevoid ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void GetWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetWholeExtent ();
-      Can't Handle 'int *' return type without a hint
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -1926,7 +1640,60 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetRadius( float, float, float)
 
    void SetWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetWholeExtent( int, int, int, int, int, int)
+
+
+=cut
+
+package Graphics::VTK::ImageEuclideanDistance;
+
+
+@Graphics::VTK::ImageEuclideanDistance::ISA = qw( Graphics::VTK::ImageDecomposeFilter );
+
+=head1 Graphics::VTK::ImageEuclideanDistance
+
+=over 1
+
+=item *
+
+Inherits from ImageDecomposeFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void ConsiderAnisotropyOff ();
+   void ConsiderAnisotropyOn ();
+   int GetAlgorithm ();
+   const char *GetClassName ();
+   int GetConsiderAnisotropy ();
+   int GetInitialize ();
+   float GetMaximumDistance ();
+   void InitializeOff ();
+   void InitializeOn ();
+   void IterativeExecuteData (vtkImageData *in, vtkImageData *out);
+   vtkImageEuclideanDistance *New ();
+   void SetAlgorithm (int );
+   void SetAlgorithmToSaito ();
+   void SetAlgorithmToSaitoCached ();
+   void SetConsiderAnisotropy (int );
+   void SetInitialize (int );
+   void SetMaximumDistance (float );
+
+
+B<vtkImageEuclideanDistance Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -1949,7 +1716,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetThetaMaximum ();
    vtkImageEuclideanToPolar *New ();
    void SetThetaMaximum (float );
@@ -1962,8 +1729,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   float ThetaMaximumvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -1986,7 +1753,8 @@ Inherits from ProcessObject
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   void Export ();
+   const char *GetClassName ();
    int *GetDataDimensions ();
       (Returns a 3-element Perl list)
    int *GetDataExtent ();
@@ -1996,11 +1764,11 @@ B<Functions Supported for this class by the PerlVTK module:>
    float *GetDataOrigin ();
       (Returns a 3-element Perl list)
    int GetDataScalarType ();
+   const char *GetDataScalarTypeAsString ();
    float *GetDataSpacing ();
       (Returns a 3-element Perl list)
    int GetImageLowerLeft ();
    vtkImageData *GetInput ();
-   void *GetPointerToData ();
    void ImageLowerLeftOff ();
    void ImageLowerLeftOn ();
    vtkImageExport *New ();
@@ -2012,8 +1780,23 @@ B<vtkImageExport Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
+   virtual void *BufferPointerCallback ();
+      Can't Handle 'void *' return type without a hint
+
+   static void *BufferPointerCallbackFunction (void *);
+      Can't Handle 'static void *' return type without a hint
+
+   virtual int *DataExtentCallback ();
+      Can't Handle 'int *' return type without a hint
+
+   static int *DataExtentCallbackFunction (void *);
+      Can't Handle 'static int *' return type without a hint
+
    virtual void Export (void *);
       Don't know the size of pointer arg number 1
+
+   void *GetCallbackUserData ();
+      Can't Handle 'void *' return type without a hint
 
    void GetDataDimensions (int *ptr);
       Don't know the size of pointer arg number 1
@@ -2027,8 +1810,56 @@ Functions which are not supported supported for this class by the PerlVTK module
    void GetDataSpacing (float *ptr);
       Don't know the size of pointer arg number 1
 
+   void *GetExportVoidPointer ();
+      Can't Handle 'void *' return type without a hint
+
+   void *GetPointerToData ();
+      Can't Handle 'void *' return type without a hint
+
+   static int NumberOfComponentsCallbackFunction (void *);
+      Don't know the size of pointer arg number 1
+
+   virtual float *OriginCallback ();
+      Can't Handle 'float *' return type without a hint
+
+   static float *OriginCallbackFunction (void *);
+      Can't Handle 'static float *' return type without a hint
+
+   static int PipelineModifiedCallbackFunction (void *);
+      Don't know the size of pointer arg number 1
+
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
+
+   virtual void PropagateUpdateExtentCallback (int *);
+      Don't know the size of pointer arg number 1
+
+   static void PropagateUpdateExtentCallbackFunction (void *, int *);
+      Don't know the size of pointer arg number 1
+
+   static const char *ScalarTypeCallbackFunction (void *);
+      Don't know the size of pointer arg number 1
+
+   void SetExportVoidPointer (void *);
+      Don't know the size of pointer arg number 1
+
+   virtual float *SpacingCallback ();
+      Can't Handle 'float *' return type without a hint
+
+   static float *SpacingCallbackFunction (void *);
+      Can't Handle 'static float *' return type without a hint
+
+   static void UpdateDataCallbackFunction (void *);
+      Don't know the size of pointer arg number 1
+
+   static void UpdateInformationCallbackFunction (void *);
+      Don't know the size of pointer arg number 1
+
+   virtual int *WholeExtentCallback ();
+      Can't Handle 'int *' return type without a hint
+
+   static int *WholeExtentCallbackFunction (void *);
+      Can't Handle 'static int *' return type without a hint
 
 
 =cut
@@ -2051,7 +1882,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetComponents ();
       (Returns a 3-element Perl list)
    int GetNumberOfComponents ();
@@ -2065,14 +1896,11 @@ B<vtkImageExtractComponents Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int NumberOfComponentsint Components[3]void ExecuteInformation (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2095,7 +1923,8 @@ Inherits from ImageFourierFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
+   virtual void IterativeExecuteData (vtkImageData *in, vtkImageData *out);
    vtkImageFFT *New ();
 
 
@@ -2104,13 +1933,13 @@ B<vtkImageFFT Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int threadId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2133,7 +1962,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetFilteredAxis ();
    int GetPreserveImageExtent ();
    vtkImageFlip *New ();
@@ -2149,13 +1978,13 @@ B<vtkImageFlip Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2178,7 +2007,8 @@ Inherits from ImageDecomposeFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
+   virtual void IterativeExecuteData (vtkImageData *in, vtkImageData *out);
    vtkImageFourierCenter *New ();
 
 
@@ -2187,11 +2017,33 @@ B<vtkImageFourierCenter Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int threadId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
+
+=cut
+
+package Graphics::VTK::ImageFourierFilter;
+
+
+@Graphics::VTK::ImageFourierFilter::ISA = qw( Graphics::VTK::ImageDecomposeFilter );
+
+=head1 Graphics::VTK::ImageFourierFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageDecomposeFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
 
 =cut
 
@@ -2213,7 +2065,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
    float  *GetRadiusFactors ();
       (Returns a 3-element Perl list)
@@ -2222,12 +2074,12 @@ B<Functions Supported for this class by the PerlVTK module:>
    vtkImageGaussianSmooth *New ();
    void SetDimensionality (int );
    void SetRadiusFactor (float f);
-   void SetRadiusFactors (float  , float , float );
+   void SetRadiusFactors (float , float , float );
    void SetRadiusFactors (float f, float f2);
    void SetStandardDeviation (float a, float b, float c);
    void SetStandardDeviation (float a, float b);
    void SetStandardDeviation (float std);
-   void SetStandardDeviations (float  , float , float );
+   void SetStandardDeviations (float , float , float );
    void SetStandardDeviations (float a, float b);
 
 
@@ -2236,13 +2088,13 @@ B<vtkImageGaussianSmooth Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int Dimensionalityfloat StandardDeviations[3]float RadiusFactors[3]void ComputeKernel (double *kernel, int min, int max, double std);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeKernel (double *kernel, int min, int max, double std);
+      Don't know the size of pointer arg number 1
 
    void ExecuteAxis (int axis, vtkImageData *inData, int inExt[6], vtkImageData *outData, int outExt[6], int *pcycle, int target, int *pcount, int total);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -2254,7 +2106,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetStandardDeviations( float, float, float)
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2279,11 +2131,11 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    float  *GetCenter ();
       (Returns a 3-element Perl list)
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetMaximum ();
    float GetStandardDeviation ();
    vtkImageGaussianSource *New ();
-   void SetCenter (float  , float , float );
+   void SetCenter (float , float , float );
    void SetMaximum (float );
    void SetStandardDeviation (float );
    void SetWholeExtent (int xMinx, int xMax, int yMin, int yMax, int zMin, int zMax);
@@ -2293,91 +2145,11 @@ B<vtkImageGaussianSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float StandardDeviationint WholeExtent[6]float Center[3]float Maximumvoid ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetCenter (float  a[3]);
       Method is redundant. Same as SetCenter( float, float, float)
-
-
-=cut
-
-package Graphics::VTK::ImageGridSource;
-
-
-@Graphics::VTK::ImageGridSource::ISA = qw( Graphics::VTK::ImageSource );
-
-=head1 Graphics::VTK::ImageGridSource
-
-=over 1
-
-=item *
-
-Inherits from ImageSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int  *GetDataExtent ();
-      (Returns a 6-element Perl list)
-   float  *GetDataOrigin ();
-      (Returns a 3-element Perl list)
-   int GetDataScalarType ();
-   char *GetDataScalarTypeAsString ();
-   float  *GetDataSpacing ();
-      (Returns a 3-element Perl list)
-   float GetFillValue ();
-   int  *GetGridOrigin ();
-      (Returns a 3-element Perl list)
-   int  *GetGridSpacing ();
-      (Returns a 3-element Perl list)
-   float GetLineValue ();
-   vtkImageGridSource *New ();
-   void SetDataExtent (int  , int , int , int , int , int );
-   void SetDataOrigin (float  , float , float );
-   void SetDataScalarType (int );
-   void SetDataScalarTypeToFloat ();
-   void SetDataScalarTypeToInt ();
-   void SetDataScalarTypeToShort ();
-   void SetDataScalarTypeToUnsignedChar ();
-   void SetDataScalarTypeToUnsignedShort ();
-   void SetDataSpacing (float  , float , float );
-   void SetFillValue (float );
-   void SetGridOrigin (int  , int , int );
-   void SetGridSpacing (int  , int , int );
-   void SetLineValue (float );
-
-
-B<vtkImageGridSource Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int GridSpacing[3]int GridOrigin[3]float LineValuefloat FillValueint DataScalarTypeint DataExtent[6]float DataSpacing[3]float DataOrigin[3]void ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetDataExtent (int  a[6]);
-      Method is redundant. Same as SetDataExtent( int, int, int, int, int, int)
-
-   void SetDataOrigin (float  a[3]);
-      Method is redundant. Same as SetDataOrigin( float, float, float)
-
-   void SetDataSpacing (float  a[3]);
-      Method is redundant. Same as SetDataSpacing( float, float, float)
-
-   void SetGridOrigin (int  a[3]);
-      Method is redundant. Same as SetGridOrigin( int, int, int)
-
-   void SetGridSpacing (int  a[3]);
-      Method is redundant. Same as SetGridSpacing( int, int, int)
 
 
 =cut
@@ -2400,8 +2172,10 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
+   int GetDimensionalityMaxValue ();
+   int GetDimensionalityMinValue ();
    int GetHandleBoundaries ();
    void HandleBoundariesOff ();
    void HandleBoundariesOn ();
@@ -2415,13 +2189,13 @@ B<vtkImageGradient Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2444,8 +2218,10 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
+   int GetDimensionalityMaxValue ();
+   int GetDimensionalityMinValue ();
    int GetHandleBoundaries ();
    void HandleBoundariesOff ();
    void HandleBoundariesOn ();
@@ -2459,13 +2235,87 @@ B<vtkImageGradientMagnitude Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageGridSource;
+
+
+@Graphics::VTK::ImageGridSource::ISA = qw( Graphics::VTK::ImageSource );
+
+=head1 Graphics::VTK::ImageGridSource
+
+=over 1
+
+=item *
+
+Inherits from ImageSource
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int  *GetDataExtent ();
+      (Returns a 6-element Perl list)
+   float  *GetDataOrigin ();
+      (Returns a 3-element Perl list)
+   int GetDataScalarType ();
+   const char *GetDataScalarTypeAsString ();
+   float  *GetDataSpacing ();
+      (Returns a 3-element Perl list)
+   float GetFillValue ();
+   int  *GetGridOrigin ();
+      (Returns a 3-element Perl list)
+   int  *GetGridSpacing ();
+      (Returns a 3-element Perl list)
+   float GetLineValue ();
+   vtkImageGridSource *New ();
+   void SetDataExtent (int , int , int , int , int , int );
+   void SetDataOrigin (float , float , float );
+   void SetDataScalarType (int );
+   void SetDataScalarTypeToFloat ();
+   void SetDataScalarTypeToInt ();
+   void SetDataScalarTypeToShort ();
+   void SetDataScalarTypeToUnsignedChar ();
+   void SetDataScalarTypeToUnsignedShort ();
+   void SetDataSpacing (float , float , float );
+   void SetFillValue (float );
+   void SetGridOrigin (int , int , int );
+   void SetGridSpacing (int , int , int );
+   void SetLineValue (float );
+
+
+B<vtkImageGridSource Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetDataExtent (int  a[6]);
+      Method is redundant. Same as SetDataExtent( int, int, int, int, int, int)
+
+   void SetDataOrigin (float  a[3]);
+      Method is redundant. Same as SetDataOrigin( float, float, float)
+
+   void SetDataSpacing (float  a[3]);
+      Method is redundant. Same as SetDataSpacing( float, float, float)
+
+   void SetGridOrigin (int  a[3]);
+      Method is redundant. Same as SetGridOrigin( int, int, int)
+
+   void SetGridSpacing (int  a[3]);
+      Method is redundant. Same as SetGridSpacing( int, int, int)
 
 
 =cut
@@ -2488,7 +2338,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetMaximum ();
    vtkImageHSVToRGB *New ();
    void SetMaximum (float );
@@ -2501,8 +2351,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   float Maximumvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2525,7 +2375,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageHybridMedian2D *New ();
 
 
@@ -2537,7 +2387,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2560,14 +2410,14 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCutOff ();
       (Returns a 3-element Perl list)
    float GetXCutOff ();
    float GetYCutOff ();
    float GetZCutOff ();
    vtkImageIdealHighPass *New ();
-   void SetCutOff (float  , float , float );
+   void SetCutOff (float , float , float );
    void SetCutOff (float v);
    void SetXCutOff (float v);
    void SetYCutOff (float v);
@@ -2584,8 +2434,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetCutOff (float  a[3]);
       Method is redundant. Same as SetCutOff( float, float, float)
 
-   float CutOff[3]void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2608,14 +2458,14 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCutOff ();
       (Returns a 3-element Perl list)
    float GetXCutOff ();
    float GetYCutOff ();
    float GetZCutOff ();
    vtkImageIdealLowPass *New ();
-   void SetCutOff (float  , float , float );
+   void SetCutOff (float , float , float );
    void SetCutOff (float v);
    void SetXCutOff (float v);
    void SetYCutOff (float v);
@@ -2632,8 +2482,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetCutOff (float  a[3]);
       Method is redundant. Same as SetCutOff( float, float, float)
 
-   float CutOff[3]void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2656,20 +2506,23 @@ Inherits from ImageSource
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetDataExtent ();
       (Returns a 6-element Perl list)
    float  *GetDataOrigin ();
       (Returns a 3-element Perl list)
    int GetDataScalarType ();
-   char *GetDataScalarTypeAsString ();
+   const char *GetDataScalarTypeAsString ();
    float  *GetDataSpacing ();
       (Returns a 3-element Perl list)
-   void *GetImportVoidPointer ();
    int GetNumberOfScalarComponents ();
+   int  *GetWholeExtent ();
+      (Returns a 6-element Perl list)
    vtkImageImport *New ();
-   void SetDataExtent (int  , int , int , int , int , int );
-   void SetDataOrigin (float  , float , float );
+   virtual void PropagateUpdateExtent (vtkDataObject *output);
+   void SetDataExtent (int , int , int , int , int , int );
+   void SetDataExtentToWholeExtent ();
+   void SetDataOrigin (float , float , float );
    void SetDataScalarType (int );
    void SetDataScalarTypeToDouble ();
    void SetDataScalarTypeToFloat ();
@@ -2677,8 +2530,9 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetDataScalarTypeToShort ();
    void SetDataScalarTypeToUnsignedChar ();
    void SetDataScalarTypeToUnsignedShort ();
-   void SetDataSpacing (float  , float , float );
+   void SetDataSpacing (float , float , float );
    void SetNumberOfScalarComponents (int );
+   void SetWholeExtent (int , int , int , int , int , int );
 
 
 B<vtkImageImport Unsupported Funcs:>
@@ -2686,10 +2540,10 @@ B<vtkImageImport Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void CopyImportVoidPointer (void *ptr, int size);
-      Don't know the size of pointer arg number 1
+      Method is marked 'Do Not Use' in its descriptions
 
-   void *ImportVoidPointerint SaveUserArrayint NumberOfScalarComponentsint DataScalarTypeint DataExtent[6]float DataSpacing[3]float DataOrigin[3]void Execute (vtkImageData *data);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void *GetImportVoidPointer ();
+      Can't Handle 'void *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -2708,6 +2562,9 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    void SetImportVoidPointer (void *ptr, int save);
       Don't know the size of pointer arg number 1
+
+   void SetWholeExtent (int  a[6]);
+      Method is redundant. Same as SetWholeExtent( int, int, int, int, int, int)
 
 
 =cut
@@ -2731,7 +2588,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    int GetAreaThreshold ();
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetIslandValue ();
    float GetReplaceValue ();
    int GetSquareNeighborhood ();
@@ -2745,6 +2602,40 @@ B<Functions Supported for this class by the PerlVTK module:>
 
 
 B<vtkImageIslandRemoval2D Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::ImageIterateFilter;
+
+
+@Graphics::VTK::ImageIterateFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageIterateFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void ComputeInputUpdateExtents (vtkDataObject *output);
+   const char *GetClassName ();
+   int GetIteration ();
+   int GetNumberOfIterations ();
+
+
+B<vtkImageIterateFilter Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
@@ -2772,8 +2663,10 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
+   int GetDimensionalityMaxValue ();
+   int GetDimensionalityMinValue ();
    vtkImageLaplacian *New ();
    void SetDimensionality (int );
 
@@ -2782,14 +2675,14 @@ B<vtkImageLaplacian Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int Dimensionalityvoid ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2812,7 +2705,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetConstant ();
    vtkImageLogarithmicScale *New ();
    void SetConstant (float );
@@ -2825,8 +2718,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   float Constantvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2849,7 +2742,7 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetOperation ();
    float GetOutputTrueValue ();
    vtkImageLogic *New ();
@@ -2870,8 +2763,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   int Operationfloat OutputTrueValuevoid ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2894,7 +2787,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageLuminance *New ();
 
 
@@ -2903,7 +2796,7 @@ B<vtkImageLuminance Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2926,7 +2819,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetInterpolate ();
    int  *GetMagnificationFactors ();
       (Returns a 3-element Perl list)
@@ -2934,15 +2827,15 @@ B<Functions Supported for this class by the PerlVTK module:>
    void InterpolateOn ();
    vtkImageMagnify *New ();
    void SetInterpolate (int );
-   void SetMagnificationFactors (int  , int , int );
+   void SetMagnificationFactors (int , int , int );
 
 
 B<vtkImageMagnify Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int MagnificationFactors[3]int Interpolatevoid ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -2951,7 +2844,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetMagnificationFactors( int, int, int)
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -2974,7 +2867,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageMagnitude *New ();
 
 
@@ -2983,7 +2876,7 @@ B<vtkImageMagnitude Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3007,8 +2900,10 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void CopyOriginAndSample (vtkImageMandelbrotSource *source);
-   const char *GetClassName();
+   const char *GetClassName ();
    short unsigned GetMaximumNumberOfIterations ();
+   unsigned GetMaximumNumberOfIterationsMaxValue ();
+   unsigned GetMaximumNumberOfIterationsMinValue ();
    double  *GetOriginCX ();
       (Returns a 4-element Perl list)
    int  *GetProjectionAxes ();
@@ -3020,10 +2915,10 @@ B<Functions Supported for this class by the PerlVTK module:>
    vtkImageMandelbrotSource *New ();
    void Pan (double x, double y, double z);
    void SetMaximumNumberOfIterations (unsigned short );
-   void SetOriginCX (double  , double , double , double );
-   void SetProjectionAxes (int  , int , int );
+   void SetOriginCX (double , double , double , double );
+   void SetProjectionAxes (int , int , int );
    void SetSample (double v);
-   void SetSampleCX (double  , double , double , double );
+   void SetSampleCX (double , double , double , double );
    void SetWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
    void Zoom (double factor);
 
@@ -3031,12 +2926,6 @@ B<Functions Supported for this class by the PerlVTK module:>
 B<vtkImageMandelbrotSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   float EvaluateSet (double p[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int ProjectionAxes[3]int WholeExtent[6]double OriginCX[4]double SampleCX[4]unsigned short MaximumNumberOfIterationsvoid Execute (vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3051,67 +2940,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetSampleCX( double, double, double, double)
 
    void SetWholeExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageMapper;
-
-
-@Graphics::VTK::ImageMapper::ISA = qw( Graphics::VTK::Mapper2D );
-
-=head1 Graphics::VTK::ImageMapper
-
-=over 1
-
-=item *
-
-Inherits from Mapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   float GetColorLevel ();
-   float GetColorScale ();
-   float GetColorShift ();
-   float GetColorWindow ();
-   int  *GetCustomDisplayExtents ();
-      (Returns a 4-element Perl list)
-   vtkImageData *GetInput ();
-   unsigned long GetMTime ();
-   int GetRenderToRectangle ();
-   int GetUseCustomExtents ();
-   int GetWholeZMax ();
-   int GetWholeZMin ();
-   int GetZSlice ();
-   vtkImageMapper *New ();
-   virtual void RenderData (vtkViewport *, vtkImageData *, vtkActor2D *) = 0;
-   void RenderStart (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderToRectangleOff ();
-   void RenderToRectangleOn ();
-   void SetColorLevel (float );
-   void SetColorWindow (float );
-   void SetCustomDisplayExtents (int  [4]);
-   void SetInput (vtkImageData *);
-   void SetUseCustomExtents (int );
-   void SetZSlice (int );
-   void UseCustomExtentsOff ();
-   void UseCustomExtentsOn ();
-
-
-B<vtkImageMapper Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void Setint DisplayExtent[6]RenderToRectangle (int );
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetWholeExtent( int, int, int, int, int, int)
 
 
 =cut
@@ -3134,18 +2963,23 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   int GetActiveComponent ();
+   const char *GetClassName ();
    vtkScalarsToColors *GetLookupTable ();
    unsigned long GetMTime ();
    int GetOutputFormat ();
+   int GetPassAlphaToOutput ();
    vtkImageMapToColors *New ();
+   void PassAlphaToOutputOff ();
+   void PassAlphaToOutputOn ();
+   void SetActiveComponent (int );
    void SetLookupTable (vtkScalarsToColors *);
    void SetOutputFormat (int );
    void SetOutputFormatToLuminance ();
    void SetOutputFormatToLuminanceAlpha ();
    void SetOutputFormatToRGB ();
    void SetOutputFormatToRGBA ();
-   void UpdateData (vtkDataObject *output);
+   void SetPassAlphaToOutput (int );
 
 
 B<vtkImageMapToColors Unsupported Funcs:>
@@ -3156,7 +2990,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3179,7 +3013,7 @@ Inherits from ImageMapToColors
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageMapToRGBA *New ();
 
 =cut
@@ -3202,13 +3036,12 @@ Inherits from ImageMapToColors
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetLevel ();
    float GetWindow ();
    vtkImageMapToWindowLevelColors *New ();
    void SetLevel (float );
    void SetWindow (float );
-   void UpdateData (vtkDataObject *output);
 
 
 B<vtkImageMapToWindowLevelColors Unsupported Funcs:>
@@ -3219,7 +3052,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3242,7 +3075,7 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetMaskedOutputValueLength ();
    int GetNotMask ();
    vtkImageMask *New ();
@@ -3270,7 +3103,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Don't know the size of pointer arg number 2
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3293,13 +3126,13 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    unsigned int  *GetMasks ();
       (Returns a 4-element Perl list)
    int GetOperation ();
    vtkImageMaskBits *New ();
    void SetMask (unsigned int mask);
-   void SetMasks (unsigned int  , unsigned int , unsigned int , unsigned int );
+   void SetMasks (unsigned int , unsigned int , unsigned int , unsigned int );
    void SetMasks (unsigned int mask1, unsigned int mask2, unsigned int mask3);
    void SetMasks (unsigned int mask1, unsigned int mask2);
    void SetOperation (int );
@@ -3320,7 +3153,7 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetMasks (unsigned int  a[4]);
       Arg types of 'unsigned int  *' not supported yet
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3343,7 +3176,7 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    double GetConstantC ();
    double GetConstantK ();
    int GetOperation ();
@@ -3382,7 +3215,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3405,7 +3238,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetNumberOfElements ();
    vtkImageMedian3D *New ();
    void SetKernelSize (int size0, int size1, int size2);
@@ -3418,8 +3251,8 @@ Functions which are not supported supported for this class by the PerlVTK module
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   int NumberOfElementsvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3442,7 +3275,7 @@ Inherits from ImagePadFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageMirrorPad *New ();
 
 
@@ -3451,10 +3284,10 @@ B<vtkImageMirrorPad Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outRegion, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3477,7 +3310,7 @@ Inherits from ImageSource
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetMaximum ();
    float GetMinimum ();
    vtkImageNoiseSource *New ();
@@ -3489,9 +3322,6 @@ B<Functions Supported for this class by the PerlVTK module:>
 B<vtkImageNoiseSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   float Minimumfloat Maximumint WholeExtent[6]void ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3517,8 +3347,10 @@ Inherits from ImageTwoInputFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
+   int GetDimensionalityMaxValue ();
+   int GetDimensionalityMinValue ();
    int GetHandleBoundaries ();
    void HandleBoundariesOff ();
    void HandleBoundariesOn ();
@@ -3534,13 +3366,13 @@ B<vtkImageNonMaximumSuppression Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    virtual void ComputeInputUpdateExtent (int inExt[6], int outExt[6], int whichInput);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inDatas, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3563,7 +3395,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageNormalize *New ();
 
 
@@ -3572,7 +3404,7 @@ B<vtkImageNormalize Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3597,7 +3429,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void DebugOff ();
    void DebugOn ();
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetCloseValue ();
    vtkImageDilateErode3D *GetFilter0 ();
    vtkImageDilateErode3D *GetFilter1 ();
@@ -3623,6 +3455,52 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
+package Graphics::VTK::ImagePadFilter;
+
+
+@Graphics::VTK::ImagePadFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImagePadFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int GetOutputNumberOfScalarComponents ();
+   int *GetOutputWholeExtent ();
+      (Returns a 6-element Perl list)
+   vtkImagePadFilter *New ();
+   void SetOutputNumberOfScalarComponents (int );
+   void SetOutputWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ);
+
+
+B<vtkImagePadFilter Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
+
+   void GetOutputWholeExtent (int extent[6]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetOutputWholeExtent (int extent[6]);
+      Method is redundant. Same as SetOutputWholeExtent( int, int, int, int, int, int)
+
+
+=cut
+
 package Graphics::VTK::ImagePermute;
 
 
@@ -3641,11 +3519,11 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetFilteredAxes ();
       (Returns a 3-element Perl list)
    vtkImagePermute *New ();
-   void SetFilteredAxes (int  , int , int );
+   void SetFilteredAxes (int , int , int );
 
 
 B<vtkImagePermute Unsupported Funcs:>
@@ -3653,10 +3531,7 @@ B<vtkImagePermute Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int FilteredAxes[3]void ExecuteInformation (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3665,7 +3540,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetFilteredAxes( int, int, int)
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3689,11 +3564,13 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    float GetBuildTreeExecuteTime ();
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetInitializeExecuteTime ();
    float GetLookupIndexExecuteTime ();
    vtkLookupTable *GetLookupTable ();
    int GetNumberOfColors ();
+   int GetNumberOfColorsMaxValue ();
+   int GetNumberOfColorsMinValue ();
    vtkImageQuantizeRGBToIndex *New ();
    void SetNumberOfColors (int );
 
@@ -3703,7 +3580,7 @@ B<vtkImageQuantizeRGBToIndex Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3711,180 +3588,114 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
-package Graphics::VTK::Imager;
+package Graphics::VTK::ImageRFFT;
 
 
-@Graphics::VTK::Imager::ISA = qw( Graphics::VTK::Viewport );
+@Graphics::VTK::ImageRFFT::ISA = qw( Graphics::VTK::ImageFourierFilter );
 
-=head1 Graphics::VTK::Imager
+=head1 Graphics::VTK::ImageRFFT
 
 =over 1
 
 =item *
 
-Inherits from Viewport
+Inherits from ImageFourierFilter
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   virtual void Erase ();
-   const char *GetClassName();
-   vtkImageWindow *GetImageWindow ();
-   virtual float GetPickedZ ();
-   vtkWindow *GetVTKWindow ();
-   vtkImager *New ();
-   virtual vtkAssemblyPath *PickProp (float selectionX, float selectionY);
-   virtual int RenderOpaqueGeometry ();
-   virtual int RenderOverlay ();
-   virtual int RenderTranslucentGeometry ();
-
-=cut
-
-package Graphics::VTK::ImagerCollection;
+   const char *GetClassName ();
+   virtual void IterativeExecuteData (vtkImageData *in, vtkImageData *out);
+   vtkImageRFFT *New ();
 
 
-@Graphics::VTK::ImagerCollection::ISA = qw( Graphics::VTK::Collection );
-
-=head1 Graphics::VTK::ImagerCollection
-
-=over 1
-
-=item *
-
-Inherits from Collection
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AddItem (vtkImager *a);
-   const char *GetClassName();
-   vtkImager *GetLastItem ();
-   vtkImager *GetNextItem ();
-   vtkImagerCollection *New ();
-
-=cut
-
-package Graphics::VTK::ImageReader;
-
-
-@Graphics::VTK::ImageReader::ISA = qw( Graphics::VTK::ImageSource );
-
-=head1 Graphics::VTK::ImageReader
-
-=over 1
-
-=item *
-
-Inherits from ImageSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void ComputeInternalFileName (int slice);
-   void FileLowerLeftOff ();
-   void FileLowerLeftOn ();
-   const char *GetClassName();
-   int GetDataByteOrder ();
-   char *GetDataByteOrderAsString ();
-   int  *GetDataExtent ();
-      (Returns a 6-element Perl list)
-   short unsigned GetDataMask ();
-   float  *GetDataOrigin ();
-      (Returns a 3-element Perl list)
-   int GetDataScalarType ();
-   float  *GetDataSpacing ();
-      (Returns a 3-element Perl list)
-   int  *GetDataVOI ();
-      (Returns a 6-element Perl list)
-   int GetFileDimensionality ();
-   int GetFileLowerLeft ();
-   char *GetFileName ();
-   char *GetFilePattern ();
-   char *GetFilePrefix ();
-   int GetHeaderSize (int slice);
-   int GetHeaderSize ();
-   char *GetInternalFileName ();
-   int GetNumberOfScalarComponents ();
-   int GetSwapBytes ();
-   vtkTransform *GetTransform ();
-   vtkImageReader *New ();
-   void OpenFile ();
-   void SetDataByteOrder (int );
-   void SetDataByteOrderToBigEndian ();
-   void SetDataByteOrderToLittleEndian ();
-   void SetDataExtent (int  , int , int , int , int , int );
-   void SetDataMask (int val);
-   void SetDataOrigin (float  , float , float );
-   void SetDataScalarType (int type);
-   void SetDataScalarTypeToDouble ();
-   void SetDataScalarTypeToFloat ();
-   void SetDataScalarTypeToInt ();
-   void SetDataScalarTypeToShort ();
-   void SetDataScalarTypeToUnsignedChar ();
-   void SetDataScalarTypeToUnsignedShort ();
-   void SetDataSpacing (float  , float , float );
-   void SetDataVOI (int  , int , int , int , int , int );
-   void SetFileDimensionality (int );
-   void SetFileLowerLeft (int );
-   void SetFileName (char *);
-   void SetFilePattern (char *);
-   void SetFilePrefix (char *);
-   void SetHeaderSize (int size);
-   void SetNumberOfScalarComponents (int );
-   void SetSwapBytes (int );
-   void SetTransform (vtkTransform *);
-   void SwapBytesOff ();
-   void SwapBytesOn ();
-
-
-B<vtkImageReader Unsupported Funcs:>
+B<vtkImageRFFT Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void ComputeInverseTransformedExtent (int inExtent[6], int outExtent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
 
-   void ComputeInverseTransformedIncrements (int inIncr[3], int outIncr[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
+      Don't know the size of pointer arg number 1
 
-   void ComputeTransformedExtent (int inExtent[6], int outExtent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int threadId);
+      Don't know the size of pointer arg number 3
 
-   void ComputeTransformedIncrements (int inIncr[3], int outIncr[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void ComputeTransformedOrigin (float origin[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+=cut
 
-   char *InternalFileNamechar *FileNamechar *FilePrefixchar *FilePatternint NumberOfScalarComponentsint FileLowerLeftifstream *Fileunsigned long DataIncrements[4]int DataExtent[6]unsigned short DataMaskint SwapBytesint FileDimensionalityint HeaderSizeint DataScalarTypeint ManualHeaderSizeint InitializedvtkTransform *Transformvoid ComputeTransformedSpacing (float Spacing[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+package Graphics::VTK::ImageRGBToHSV;
 
-   int DataDimensions[3]float DataSpacing[3]float DataOrigin[3]int DataVOI[6]void ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void OpenAndSeekFile (int extent[6], int slice);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+@Graphics::VTK::ImageRGBToHSV::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageRGBToHSV
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   float GetMaximum ();
+   vtkImageRGBToHSV *New ();
+   void SetMaximum (float );
+
+
+B<vtkImageRGBToHSV Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetDataExtent (int  a[6]);
-      Method is redundant. Same as SetDataExtent( int, int, int, int, int, int)
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
+      Don't know the size of pointer arg number 3
 
-   void SetDataOrigin (float  a[3]);
-      Method is redundant. Same as SetDataOrigin( float, float, float)
 
-   void SetDataSpacing (float  a[3]);
-      Method is redundant. Same as SetDataSpacing( float, float, float)
+=cut
 
-   void SetDataVOI (int  a[6]);
-      Method is redundant. Same as SetDataVOI( int, int, int, int, int, int)
+package Graphics::VTK::ImageRange3D;
+
+
+@Graphics::VTK::ImageRange3D::ISA = qw( Graphics::VTK::ImageSpatialFilter );
+
+=head1 Graphics::VTK::ImageRange3D
+
+=over 1
+
+=item *
+
+Inherits from ImageSpatialFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkImageRange3D *New ();
+   void SetKernelSize (int size0, int size1, int size2);
+
+
+B<vtkImageRange3D Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -3908,7 +3719,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    float GetAxisMagnificationFactor (int axis);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDimensionality ();
    int GetInterpolate ();
    void InterpolateOff ();
@@ -3924,62 +3735,24 @@ B<vtkImageResample Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float MagnificationFactors[3]float OutputSpacing[3]int Interpolateint Dimensionalityvoid ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
 
-package Graphics::VTK::ImageRFFT;
+package Graphics::VTK::ImageReslice;
 
 
-@Graphics::VTK::ImageRFFT::ISA = qw( Graphics::VTK::ImageFourierFilter );
+@Graphics::VTK::ImageReslice::ISA = qw( Graphics::VTK::ImageToImageFilter );
 
-=head1 Graphics::VTK::ImageRFFT
-
-=over 1
-
-=item *
-
-Inherits from ImageFourierFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageRFFT *New ();
-
-
-B<vtkImageRFFT Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int SplitExtent (int splitExt[6], int startExt[6], int num, int total);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int threadId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageRGBToHSV;
-
-
-@Graphics::VTK::ImageRGBToHSV::ISA = qw( Graphics::VTK::ImageToImageFilter );
-
-=head1 Graphics::VTK::ImageRGBToHSV
+=head1 Graphics::VTK::ImageReslice
 
 =over 1
 
@@ -3992,57 +3765,125 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   float GetMaximum ();
-   vtkImageRGBToHSV *New ();
-   void SetMaximum (float );
+   void AutoCropOutputOff ();
+   void AutoCropOutputOn ();
+   int GetAutoCropOutput ();
+   float  *GetBackgroundColor ();
+      (Returns a 4-element Perl list)
+   float GetBackgroundLevel ();
+   const char *GetClassName ();
+   vtkImageData *GetInformationInput ();
+   int GetInterpolate ();
+   int GetInterpolationMode ();
+   const char *GetInterpolationModeAsString ();
+   unsigned long GetMTime ();
+   int GetMirror ();
+   int GetOptimization ();
+   int GetOutputDimensionality ();
+   int  *GetOutputExtent ();
+      (Returns a 6-element Perl list)
+   float  *GetOutputOrigin ();
+      (Returns a 3-element Perl list)
+   float  *GetOutputSpacing ();
+      (Returns a 3-element Perl list)
+   vtkMatrix4x4 *GetResliceAxes ();
+   double *GetResliceAxesDirectionCosines ();
+      (Returns a 9-element Perl list)
+   double *GetResliceAxesOrigin ();
+      (Returns a 3-element Perl list)
+   vtkAbstractTransform *GetResliceTransform ();
+   vtkImageStencilData *GetStencil ();
+   int GetTransformInputSampling ();
+   int GetWrap ();
+   void InterpolateOff ();
+   void InterpolateOn ();
+   void MirrorOff ();
+   void MirrorOn ();
+   vtkImageReslice *New ();
+   void OptimizationOff ();
+   void OptimizationOn ();
+   void SetAutoCropOutput (int );
+   void SetBackgroundColor (float , float , float , float );
+   void SetBackgroundLevel (float v);
+   void SetInformationInput (vtkImageData *);
+   void SetInterpolate (int t);
+   void SetInterpolationMode (int );
+   void SetInterpolationModeToCubic ();
+   void SetInterpolationModeToLinear ();
+   void SetInterpolationModeToNearestNeighbor ();
+   void SetMirror (int );
+   void SetOptimization (int );
+   void SetOutputDimensionality (int );
+   void SetOutputExtent (int , int , int , int , int , int );
+   void SetOutputExtentToDefault ();
+   void SetOutputOrigin (float , float , float );
+   void SetOutputOriginToDefault ();
+   void SetOutputSpacing (float , float , float );
+   void SetOutputSpacingToDefault ();
+   void SetResliceAxes (vtkMatrix4x4 *);
+   void SetResliceAxesDirectionCosines (double x0, double x1, double x2, double y0, double y1, double y2, double z0, double z1, double z2);
+   void SetResliceAxesOrigin (double x, double y, double z);
+   void SetResliceTransform (vtkAbstractTransform *);
+   void SetStencil (vtkImageStencilData *stencil);
+   void SetTransformInputSampling (int );
+   void SetWrap (int );
+   void TransformInputSamplingOff ();
+   void TransformInputSamplingOn ();
+   void WrapOff ();
+   void WrapOn ();
 
 
-B<vtkImageRGBToHSV Unsupported Funcs:>
+B<vtkImageReslice Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void PrintSelf (ostream &os, vtkIndent indent);
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
+
+   void GetAutoCroppedOutputBounds (vtkImageData *input, float bounds[6]);
+      Don't know the size of pointer arg number 2
+
+   void GetResliceAxesDirectionCosines (double x[3], double y[3], double z[3]);
+      Don't know the size of pointer arg number 1
+
+   void GetResliceAxesDirectionCosines (double xyz[9]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void GetResliceAxesOrigin (double xyz[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void OptimizedComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
+
+   void OptimizedThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
+      Don't know the size of pointer arg number 3
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   float Maximumvoid ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void SetBackgroundColor (float  a[4]);
+      Method is redundant. Same as SetBackgroundColor( float, float, float, float)
 
+   void SetOutputExtent (int  a[6]);
+      Method is redundant. Same as SetOutputExtent( int, int, int, int, int, int)
 
-=cut
+   void SetOutputOrigin (float  a[3]);
+      Method is redundant. Same as SetOutputOrigin( float, float, float)
 
-package Graphics::VTK::ImageRange3D;
+   void SetOutputSpacing (float  a[3]);
+      Method is redundant. Same as SetOutputSpacing( float, float, float)
 
+   void SetResliceAxesDirectionCosines (const double x[3], const double y[3], const double z[3]);
+      Don't know the size of pointer arg number 1
 
-@Graphics::VTK::ImageRange3D::ISA = qw( Graphics::VTK::ImageSpatialFilter );
+   void SetResliceAxesDirectionCosines (const double xyz[9]);
+      Method is redundant. Same as SetResliceAxesDirectionCosines( double, double, double, double, double, double, double, double, double)
 
-=head1 Graphics::VTK::ImageRange3D
+   void SetResliceAxesOrigin (const double xyz[3]);
+      Method is redundant. Same as SetResliceAxesOrigin( double, double, double)
 
-=over 1
-
-=item *
-
-Inherits from ImageSpatialFilter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageRange3D *New ();
-   void SetKernelSize (int size0, int size1, int size2);
-
-
-B<vtkImageRange3D Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4067,7 +3908,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void AddSeed (int i0, int i1, int i2);
    void AddSeed (int i0, int i1);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageConnector *GetConnector ();
    int GetDimensionality ();
    int GetInputConnectValue ();
@@ -4115,7 +3956,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void ClampOverflowOff ();
    void ClampOverflowOn ();
    int GetClampOverflow ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetOutputScalarType ();
    float GetScale ();
    float GetShift ();
@@ -4144,7 +3985,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4170,7 +4011,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void AveragingOff ();
    void AveragingOn ();
    int GetAveraging ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetMaximum ();
    int GetMean ();
    int GetMedian ();
@@ -4193,8 +4034,8 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetMean (int );
    void SetMedian (int );
    void SetMinimum (int );
-   void SetShift (int  , int , int );
-   void SetShrinkFactors (int  , int , int );
+   void SetShift (int , int , int );
+   void SetShrinkFactors (int , int , int );
 
 
 B<vtkImageShrink3D Unsupported Funcs:>
@@ -4202,10 +4043,7 @@ B<vtkImageShrink3D Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int ShrinkFactors[3]int Shift[3]int Meanint Minimumint Maximumint Medianvoid ExecuteInformation (vtkImageData *inData, vtkImageData *outData);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -4217,7 +4055,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetShrinkFactors( int, int, int)
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4241,7 +4079,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    float GetAmplitude ();
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetDirection ();
       (Returns a 3-element Perl list)
    float GetPeriod ();
@@ -4258,14 +4096,11 @@ B<vtkImageSinusoidSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int WholeExtent[6]float Direction[3]float Periodfloat Phasefloat Amplitudevoid ExecuteInformation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetDirection (float *);
-      Don't know the size of pointer arg number 1
+   void SetDirection (float dir[3]);
+      Method is redundant. Same as SetDirection( float, float, float)
 
 
 =cut
@@ -4288,8 +4123,9 @@ Inherits from ImageIterateFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetPrune ();
+   virtual void IterativeExecuteData (vtkImageData *in, vtkImageData *out);
    vtkImageSkeleton2D *New ();
    void PruneOff ();
    void PruneOn ();
@@ -4301,14 +4137,14 @@ B<vtkImageSkeleton2D Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int Prunevoid ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4331,7 +4167,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageSobel2D *New ();
 
 
@@ -4343,7 +4179,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4366,7 +4202,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageSobel3D *New ();
 
 
@@ -4378,7 +4214,211 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int outExt[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageSpatialFilter;
+
+
+@Graphics::VTK::ImageSpatialFilter::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageSpatialFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int *GetKernelMiddle ();
+      (Returns a 3-element Perl list)
+   int *GetKernelSize ();
+      (Returns a 3-element Perl list)
+   vtkImageSpatialFilter *New ();
+
+
+B<vtkImageSpatialFilter Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void ComputeInputUpdateExtent (int extent[6], int wholeExtent[6]);
+      Don't know the size of pointer arg number 1
+
+   void ComputeOutputWholeExtent (int extent[6], int handleBoundaries);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::ImageStencil;
+
+
+@Graphics::VTK::ImageStencil::ISA = qw( Graphics::VTK::ImageToImageFilter );
+
+=head1 Graphics::VTK::ImageStencil
+
+=over 1
+
+=item *
+
+Inherits from ImageToImageFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   float  *GetBackgroundColor ();
+      (Returns a 4-element Perl list)
+   vtkImageData *GetBackgroundInput ();
+   float GetBackgroundValue ();
+   const char *GetClassName ();
+   int GetReverseStencil ();
+   vtkImageStencilData *GetStencil ();
+   vtkImageStencil *New ();
+   void ReverseStencilOff ();
+   void ReverseStencilOn ();
+   void SetBackgroundColor (float , float , float , float );
+   virtual void SetBackgroundInput (vtkImageData *input);
+   void SetBackgroundValue (float val);
+   void SetReverseStencil (int );
+   virtual void SetStencil (vtkImageStencilData *stencil);
+
+
+B<vtkImageStencil Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetBackgroundColor (float  a[4]);
+      Method is redundant. Same as SetBackgroundColor( float, float, float, float)
+
+   void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageStencilData;
+
+
+@Graphics::VTK::ImageStencilData::ISA = qw( Graphics::VTK::DataObject );
+
+=head1 Graphics::VTK::ImageStencilData
+
+=over 1
+
+=item *
+
+Inherits from DataObject
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void AllocateExtents ();
+   void DeepCopy (vtkDataObject *o);
+   const char *GetClassName ();
+   int GetDataObjectType ();
+   int  *GetExtent ();
+      (Returns a 6-element Perl list)
+   int GetExtentType ();
+   int GetNextExtent (int &r1, int &r2, int xMin, int xMax, int yIdx, int zIdx, int &iter);
+   float  *GetOldOrigin ();
+      (Returns a 3-element Perl list)
+   float  *GetOldSpacing ();
+      (Returns a 3-element Perl list)
+   float  *GetOrigin ();
+      (Returns a 3-element Perl list)
+   float  *GetSpacing ();
+      (Returns a 3-element Perl list)
+   void Initialize ();
+   void InsertNextExtent (int r1, int r2, int yIdx, int zIdx);
+   void InternalImageStencilDataCopy (vtkImageStencilData *s);
+   vtkImageStencilData *New ();
+   void PropagateUpdateExtent ();
+   void SetExtent (int , int , int , int , int , int );
+   void SetOldOrigin (float , float , float );
+   void SetOldSpacing (float , float , float );
+   void SetOrigin (float , float , float );
+   void SetSpacing (float , float , float );
+   void ShallowCopy (vtkDataObject *f);
+   void TriggerAsynchronousUpdate ();
+   void UpdateData ();
+
+
+B<vtkImageStencilData Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetExtent (int  a[6]);
+      Method is redundant. Same as SetExtent( int, int, int, int, int, int)
+
+   void SetOldOrigin (float  a[3]);
+      Method is redundant. Same as SetOldOrigin( float, float, float)
+
+   void SetOldSpacing (float  a[3]);
+      Method is redundant. Same as SetOldSpacing( float, float, float)
+
+   void SetOrigin (float  a[3]);
+      Method is redundant. Same as SetOrigin( float, float, float)
+
+   void SetSpacing (float  a[3]);
+      Method is redundant. Same as SetSpacing( float, float, float)
+
+
+=cut
+
+package Graphics::VTK::ImageStencilSource;
+
+
+@Graphics::VTK::ImageStencilSource::ISA = qw( Graphics::VTK::Source );
+
+=head1 Graphics::VTK::ImageStencilSource
+
+=over 1
+
+=item *
+
+Inherits from Source
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkImageStencilData *GetOutput ();
+   vtkImageStencilSource *New ();
+   void SetOutput (vtkImageStencilData *output);
+
+
+B<vtkImageStencilSource Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   virtual void ThreadedExecute (vtkImageStencilData *output, int extent[6], int threadId);
+      Don't know the size of pointer arg number 2
 
 
 =cut
@@ -4401,7 +4441,7 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetInValue ();
    float GetLowerThreshold ();
    float GetOutValue ();
@@ -4442,7 +4482,51 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 3
+
+
+=cut
+
+package Graphics::VTK::ImageToImageStencil;
+
+
+@Graphics::VTK::ImageToImageStencil::ISA = qw( Graphics::VTK::ImageStencilSource );
+
+=head1 Graphics::VTK::ImageToImageStencil
+
+=over 1
+
+=item *
+
+Inherits from ImageStencilSource
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkImageData *GetInput ();
+   float GetLowerThreshold ();
+   float GetUpperThreshold ();
+   vtkImageToImageStencil *New ();
+   void SetInput (vtkImageData *input);
+   void SetLowerThreshold (float );
+   void SetUpperThreshold (float );
+   void ThresholdBetween (float lower, float upper);
+   void ThresholdByLower (float thresh);
+   void ThresholdByUpper (float thresh);
+
+
+B<vtkImageToImageStencil Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void ThreadedExecute (vtkImageStencilData *output, int extent[6], int threadId);
+      Don't know the size of pointer arg number 2
 
 
 =cut
@@ -4465,20 +4549,19 @@ Inherits from ImageToImageFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetTranslation ();
       (Returns a 3-element Perl list)
    vtkImageTranslateExtent *New ();
-   void SetTranslation (int  , int , int );
-   void UpdateData (vtkDataObject *data);
+   void SetTranslation (int , int , int );
 
 
 B<vtkImageTranslateExtent Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int Translation[3]void ComputeInputUpdateExtent (int extent[6], int wholeExtent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void ComputeInputUpdateExtent (int extent[6], int wholeExtent[6]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -4507,7 +4590,7 @@ Inherits from ImageSpatialFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageVariance3D *New ();
    void SetKernelSize (int size0, int size1, int size2);
 
@@ -4520,167 +4603,7 @@ Functions which are not supported supported for this class by the PerlVTK module
       I/O Streams not Supported yet
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outData, int extent[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageViewer;
-
-
-@Graphics::VTK::ImageViewer::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::ImageViewer
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkActor2D *GetActor2D ();
-   const char *GetClassName();
-   float GetColorLevel ();
-   float GetColorWindow ();
-   int GetGrayScaleHint ();
-   vtkImageMapper *GetImageMapper ();
-   vtkImageWindow *GetImageWindow ();
-   vtkImager *GetImager ();
-   vtkImageData *GetInput ();
-   int GetWholeZMax ();
-   int GetWholeZMin ();
-   char *GetWindowName ();
-   int GetZSlice ();
-   void GrayScaleHintOff ();
-   void GrayScaleHintOn ();
-   vtkImageViewer *New ();
-   virtual void Render (void );
-   void SetColorLevel (float s);
-   void SetColorWindow (float s);
-   void SetGrayScaleHint (int a);
-   void SetInput (vtkImageData *in);
-   void SetPosition (int a, int b);
-   void SetSize (int a, int b);
-   void SetZSlice (int s);
-
-
-B<vtkImageViewer Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int *GetPosition ();
-      Can't Handle 'int *' return type without a hint
-
-   int *GetSize ();
-      Can't Handle 'int *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetDisplayId (void *a);
-      Don't know the size of pointer arg number 1
-
-   void SetParentId (void *a);
-      Don't know the size of pointer arg number 1
-
-   virtual void SetPosition (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void SetSize (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetWindowId (void *a);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::ImageWindow;
-
-
-@Graphics::VTK::ImageWindow::ISA = qw( Graphics::VTK::Window );
-
-=head1 Graphics::VTK::ImageWindow
-
-=over 1
-
-=item *
-
-Inherits from Window
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AddImager (vtkImager *im);
-   virtual void ClosePPMImageFile ();
-   virtual void EraseWindow ();
-   virtual void Frame () = 0;
-   const char *GetClassName();
-   char *GetFileName ();
-   virtual void *GetGenericContext () = 0;
-   virtual void *GetGenericDisplayId () = 0;
-   virtual void *GetGenericDrawable ();
-   virtual void *GetGenericParentId () = 0;
-   virtual void *GetGenericWindowId () = 0;
-   int GetGrayScaleHint ();
-   vtkImagerCollection *GetImagers ();
-   void GrayScaleHintOff ();
-   void GrayScaleHintOn ();
-   virtual void MakeCurrent ();
-   vtkImageWindow *New ();
-   virtual int OpenPPMImageFile ();
-   void RemoveImager (vtkImager *im);
-   virtual void Render ();
-   virtual void SaveImageAsPPM ();
-   void SetFileName (char *);
-   void SetGrayScaleHint (int );
-   virtual void SetPosition (int x, int y) = 0;
-   virtual void SetSize (int , int ) = 0;
-   virtual void SetWindowInfo (char *);
-   virtual void SwapBuffers () = 0;
-   virtual void WritePPMImageFile ();
-
-
-B<vtkImageWindow Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual int *GetPosition () = 0;
-      Can't Handle 'int *' return type without a hint
-
-   virtual void GetPosition (int *x, int *y);
-      Don't know the size of pointer arg number 1
-
-   virtual int *GetSize () = 0;
-      Can't Handle 'int *' return type without a hint
-
-   virtual void GetSize (int *x, int *y);
-      Don't know the size of pointer arg number 1
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual void SetDisplayId (void *) = 0;
-      Don't know the size of pointer arg number 1
-
-   virtual void SetParentId (void *) = 0;
-      Don't know the size of pointer arg number 1
-
-   virtual void SetPosition (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void SetSize (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void SetWindowId (void *) = 0;
-      Don't know the size of pointer arg number 1
+      Don't know the size of pointer arg number 3
 
 
 =cut
@@ -4703,7 +4626,7 @@ Inherits from ImagePadFilter
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImageWrapPad *New ();
 
 
@@ -4712,1290 +4635,268 @@ B<vtkImageWrapPad Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void ComputeInputUpdateExtent (int inExt[6], int outExt[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void ThreadedExecute (vtkImageData *inData, vtkImageData *outRegion, int ext[6], int id);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImageWriter;
-
-
-@Graphics::VTK::ImageWriter::ISA = qw( Graphics::VTK::ProcessObject );
-
-=head1 Graphics::VTK::ImageWriter
-
-=over 1
-
-=item *
-
-Inherits from ProcessObject
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetFileDimensionality ();
-   char *GetFileName ();
-   char *GetFilePattern ();
-   char *GetFilePrefix ();
-   vtkImageData *GetInput ();
-   long unsigned GetMemoryLimit ();
-   vtkImageWriter *New ();
-   void SetFileDimensionality (int );
-   void SetFileName (char *);
-   void SetFilePattern (char *filePattern);
-   void SetFilePrefix (char *filePrefix);
-   virtual void SetInput (vtkImageData *input);
-   void SetMemoryLimit (unsigned long );
-   virtual void Write ();
-
-
-B<vtkImageWriter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   int FileDimensionalitychar *FilePrefixchar *FilePatternchar *FileNameint FileNumberint FileLowerLeftchar *InternalFileNameunsigned long MemoryLimitvoid RecursiveWrite (int dim, vtkImageData *region, ofstream *file);
       Don't know the size of pointer arg number 3
 
-   void RecursiveWrite (int dim, vtkImageData *cache, vtkImageData *data, ofstream *file);
-      Don't know the size of pointer arg number 4
-
-   virtual void WriteFile (ofstream *file, vtkImageData *data, int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void WriteFileHeader (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-   virtual void WriteFileTrailer (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
 
 =cut
 
-package Graphics::VTK::LabeledDataMapper;
+package Graphics::VTK::ImplicitFunctionToImageStencil;
 
 
-@Graphics::VTK::LabeledDataMapper::ISA = qw( Graphics::VTK::Mapper2D );
+@Graphics::VTK::ImplicitFunctionToImageStencil::ISA = qw( Graphics::VTK::ImageStencilSource );
 
-=head1 Graphics::VTK::LabeledDataMapper
+=head1 Graphics::VTK::ImplicitFunctionToImageStencil
 
 =over 1
 
 =item *
 
-Inherits from Mapper2D
+Inherits from ImageStencilSource
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void BoldOff ();
-   void BoldOn ();
-   int GetBold ();
-   const char *GetClassName();
-   int GetFieldDataArray ();
-   int GetFontFamily ();
-   int GetFontSize ();
-   vtkDataSet *GetInput ();
-   int GetItalic ();
-   char *GetLabelFormat ();
-   int GetLabelMode ();
-   int GetLabeledComponent ();
-   int GetShadow ();
-   void ItalicOff ();
-   void ItalicOn ();
-   vtkLabeledDataMapper *New ();
-   virtual void ReleaseGraphicsResources (vtkWindow *);
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-   void SetBold (int );
-   void SetFieldDataArray (int );
-   void SetFontFamily (int );
-   void SetFontFamilyToArial ();
-   void SetFontFamilyToCourier ();
-   void SetFontFamilyToTimes ();
-   void SetFontSize (int );
-   void SetInput (vtkDataSet *);
-   void SetItalic (int );
-   void SetLabelFormat (char *);
-   void SetLabelMode (int );
-   void SetLabelModeToLabelFieldData ();
-   void SetLabelModeToLabelIds ();
-   void SetLabelModeToLabelNormals ();
-   void SetLabelModeToLabelScalars ();
-   void SetLabelModeToLabelTCoords ();
-   void SetLabelModeToLabelTensors ();
-   void SetLabelModeToLabelVectors ();
-   void SetLabeledComponent (int );
-   void SetShadow (int );
-   void ShadowOff ();
-   void ShadowOn ();
+   const char *GetClassName ();
+   vtkImplicitFunction *GetInput ();
+   float GetThreshold ();
+   vtkImplicitFunctionToImageStencil *New ();
+   void SetInput (vtkImplicitFunction *);
+   void SetThreshold (float );
 
 
-B<vtkLabeledDataMapper Unsupported Funcs:>
+B<vtkImplicitFunctionToImageStencil Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-
-=cut
-
-package Graphics::VTK::ParallelCoordinatesActor;
-
-
-@Graphics::VTK::ParallelCoordinatesActor::ISA = qw( Graphics::VTK::Actor2D );
-
-=head1 Graphics::VTK::ParallelCoordinatesActor
-
-=over 1
-
-=item *
-
-Inherits from Actor2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void BoldOff ();
-   void BoldOn ();
-   int GetBold ();
-   const char *GetClassName();
-   int GetFontFamily ();
-   int GetIndependentVariables ();
-   vtkDataObject *GetInput ();
-   int GetItalic ();
-   char *GetLabelFormat ();
-   int GetNumberOfLabels ();
-   int GetShadow ();
-   char *GetTitle ();
-   void ItalicOff ();
-   void ItalicOn ();
-   vtkParallelCoordinatesActor *New ();
-   void ReleaseGraphicsResources (vtkWindow *);
-   int RenderOpaqueGeometry (vtkViewport *);
-   int RenderOverlay (vtkViewport *);
-   int RenderTranslucentGeometry (vtkViewport *);
-   void SetBold (int );
-   void SetFontFamily (int );
-   void SetFontFamilyToArial ();
-   void SetFontFamilyToCourier ();
-   void SetFontFamilyToTimes ();
-   void SetIndependentVariables (int );
-   void SetIndependentVariablesToColumns ();
-   void SetIndependentVariablesToRows ();
-   void SetInput (vtkDataObject *);
-   void SetItalic (int );
-   void SetLabelFormat (char *);
-   void SetNumberOfLabels (int );
-   void SetShadow (int );
-   void SetTitle (char *);
-   void ShadowOff ();
-   void ShadowOn ();
-
-
-B<vtkParallelCoordinatesActor Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int PlaceAxes (vtkViewport *viewport, int *size);
+   void ThreadedExecute (vtkImageStencilData *output, int extent[6], int threadId);
       Don't know the size of pointer arg number 2
 
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
 
 =cut
 
-package Graphics::VTK::PNMReader;
+package Graphics::VTK::PointLoad;
 
 
-@Graphics::VTK::PNMReader::ISA = qw( Graphics::VTK::ImageReader );
+@Graphics::VTK::PointLoad::ISA = qw( Graphics::VTK::StructuredPointsSource );
 
-=head1 Graphics::VTK::PNMReader
+=head1 Graphics::VTK::PointLoad
 
 =over 1
 
 =item *
 
-Inherits from ImageReader
+Inherits from StructuredPointsSource
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkPNMReader *New ();
-
-=cut
-
-package Graphics::VTK::PNMWriter;
-
-
-@Graphics::VTK::PNMWriter::ISA = qw( Graphics::VTK::ImageWriter );
-
-=head1 Graphics::VTK::PNMWriter
-
-=over 1
-
-=item *
-
-Inherits from ImageWriter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkPNMWriter *New ();
+   void ComputeEffectiveStressOff ();
+   void ComputeEffectiveStressOn ();
+   const char *GetClassName ();
+   int GetComputeEffectiveStress ();
+   float GetLoadValue ();
+   float  *GetModelBounds ();
+      (Returns a 6-element Perl list)
+   float GetPoissonsRatio ();
+   int  *GetSampleDimensions ();
+      (Returns a 3-element Perl list)
+   vtkPointLoad *New ();
+   void SetComputeEffectiveStress (int );
+   void SetLoadValue (float );
+   void SetModelBounds (float , float , float , float , float , float );
+   void SetPoissonsRatio (float );
+   void SetSampleDimensions (int i, int j, int k);
 
 
-B<vtkPNMWriter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void WriteFile (ofstream *file, vtkImageData *data, int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void WriteFileHeader (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::PolyDataMapper2D;
-
-
-@Graphics::VTK::PolyDataMapper2D::ISA = qw( Graphics::VTK::Mapper2D );
-
-=head1 Graphics::VTK::PolyDataMapper2D
-
-=over 1
-
-=item *
-
-Inherits from Mapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void CreateDefaultLookupTable ();
-   const char *GetClassName();
-   int GetColorMode ();
-   char *GetColorModeAsString ();
-   vtkScalars *GetColors ();
-   vtkPolyData *GetInput ();
-   vtkScalarsToColors *GetLookupTable ();
-   virtual unsigned long GetMTime ();
-   float  *GetScalarRange ();
-      (Returns a 2-element Perl list)
-   int GetScalarVisibility ();
-   vtkCoordinate *GetTransformCoordinate ();
-   vtkPolyDataMapper2D *New ();
-   void ScalarVisibilityOff ();
-   void ScalarVisibilityOn ();
-   void SetColorMode (int );
-   void SetColorModeToDefault ();
-   void SetColorModeToLuminance ();
-   void SetColorModeToMapScalars ();
-   void SetInput (vtkPolyData *);
-   void SetLookupTable (vtkScalarsToColors *lut);
-   void SetScalarRange (float  , float );
-   void SetScalarVisibility (int );
-   void SetTransformCoordinate (vtkCoordinate *);
-   void ShallowCopy (vtkPolyDataMapper2D *m);
-
-
-B<vtkPolyDataMapper2D Unsupported Funcs:>
+B<vtkPointLoad Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetScalarRange (float  a[2]);
-      Method is redundant. Same as SetScalarRange( float, float)
+   void SetModelBounds (float  a[6]);
+      Method is redundant. Same as SetModelBounds( float, float, float, float, float, float)
+
+   void SetSampleDimensions (int dim[3]);
+      Method is redundant. Same as SetSampleDimensions( int, int, int)
 
 
 =cut
 
-package Graphics::VTK::PostScriptWriter;
+package Graphics::VTK::SampleFunction;
 
 
-@Graphics::VTK::PostScriptWriter::ISA = qw( Graphics::VTK::ImageWriter );
+@Graphics::VTK::SampleFunction::ISA = qw( Graphics::VTK::StructuredPointsSource );
 
-=head1 Graphics::VTK::PostScriptWriter
+=head1 Graphics::VTK::SampleFunction
 
 =over 1
 
 =item *
 
-Inherits from ImageWriter
+Inherits from StructuredPointsSource
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkPostScriptWriter *New ();
-
-
-B<vtkPostScriptWriter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void WriteFile (ofstream *file, vtkImageData *data, int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void WriteFileHeader (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-   virtual void WriteFileTrailer (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::ScalarBarActor;
-
-
-@Graphics::VTK::ScalarBarActor::ISA = qw( Graphics::VTK::Actor2D );
-
-=head1 Graphics::VTK::ScalarBarActor
-
-=over 1
-
-=item *
-
-Inherits from Actor2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void BoldOff ();
-   void BoldOn ();
-   int GetBold ();
-   const char *GetClassName();
-   int GetFontFamily ();
-   int GetItalic ();
-   char *GetLabelFormat ();
-   vtkScalarsToColors *GetLookupTable ();
-   int GetMaximumNumberOfColors ();
-   int GetNumberOfLabels ();
-   int GetOrientation ();
-   int GetShadow ();
-   char *GetTitle ();
-   void ItalicOff ();
-   void ItalicOn ();
-   vtkScalarBarActor *New ();
-   virtual void ReleaseGraphicsResources (vtkWindow *);
-   int RenderOpaqueGeometry (vtkViewport *viewport);
-   int RenderOverlay (vtkViewport *viewport);
-   int RenderTranslucentGeometry (vtkViewport *);
-   void SetBold (int );
-   void SetFontFamily (int );
-   void SetFontFamilyToArial ();
-   void SetFontFamilyToCourier ();
-   void SetFontFamilyToTimes ();
-   void SetItalic (int );
-   void SetLabelFormat (char *);
-   void SetLookupTable (vtkScalarsToColors *);
-   void SetMaximumNumberOfColors (int );
-   void SetNumberOfLabels (int );
-   void SetOrientation (int );
-   void SetOrientationToHorizontal ();
-   void SetOrientationToVertical ();
-   void SetShadow (int );
-   void SetTitle (char *);
-   void ShadowOff ();
-   void ShadowOn ();
-   void ShallowCopy (vtkProp *prop);
-
-
-B<vtkScalarBarActor Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void AllocateAndSizeLabels (int *labelSize, int *size, vtkViewport *viewport, float *range);
-      Don't know the size of pointer arg number 1
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   vtkScalarsToColors *LookupTableint MaximumNumberOfColorsint NumberOfLabelsint NumberOfLabelsBuiltint Orientationchar *Titleint Boldint Italicint Shadowint FontFamilychar *LabelFormatvtkTextMapper *TitleMappervtkActor2D *TitleActorvtkTextMapper *TextMappersvtkActor2D *TextActorsvtkPolyData *ScalarBarvtkPolyDataMapper2D *ScalarBarMappervtkActor2D *ScalarBarActorvtkTimeStamp BuildTimeint LastSize[2]int LastOrigin[2]void SizeTitle (int *titleSize, int *size, vtkViewport *viewport);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ScaledTextActor;
-
-
-@Graphics::VTK::ScaledTextActor::ISA = qw( Graphics::VTK::Actor2D );
-
-=head1 Graphics::VTK::ScaledTextActor
-
-=over 1
-
-=item *
-
-Inherits from Actor2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   float GetMaximumLineHeight ();
-   int  *GetMinimumSize ();
-      (Returns a 2-element Perl list)
-   vtkScaledTextActor *New ();
-   void SetMapper (vtkTextMapper *mapper);
-   void SetMaximumLineHeight (float );
-   void SetMinimumSize (int  , int );
-   void ShallowCopy (vtkProp *prop);
-
-
-B<vtkScaledTextActor Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   int MinimumSize[2]float MaximumLineHeightvtkActor2D *TextActorvtkTimeStamp BuildTimeint LastSize[2]int LastOrigin[2]void SetMapper (vtkMapper2D *mapper);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetMinimumSize (int  a[2]);
-      Method is redundant. Same as SetMinimumSize( int, int)
-
-
-=cut
-
-package Graphics::VTK::TextMapper;
-
-
-@Graphics::VTK::TextMapper::ISA = qw( Graphics::VTK::Mapper2D );
-
-=head1 Graphics::VTK::TextMapper
-
-=over 1
-
-=item *
-
-Inherits from Mapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void BoldOff ();
-   void BoldOn ();
-   int GetBold ();
-   const char *GetClassName();
-   int GetFontFamily ();
-   int GetFontSize ();
-   int GetHeight (vtkViewport *);
-   char *GetInput ();
-   int GetItalic ();
-   int GetJustification ();
-   float GetLineOffset ();
-   float GetLineSpacing ();
-   int GetNumberOfLines (char *input);
-   int GetNumberOfLines ();
-   int GetShadow ();
-   int GetVerticalJustification ();
-   int GetWidth (vtkViewport *);
-   void ItalicOff ();
-   void ItalicOn ();
-   vtkTextMapper *New ();
-   void SetBold (int val);
-   void SetFontFamily (int val);
-   void SetFontFamilyToArial ();
-   void SetFontFamilyToCourier ();
-   void SetFontFamilyToTimes ();
-   virtual void SetFontSize (int size);
-   void SetInput (char *inputString);
-   void SetItalic (int val);
-   void SetJustification (int );
-   void SetJustificationToCentered ();
-   void SetJustificationToLeft ();
-   void SetJustificationToRight ();
-   void SetLineOffset (float );
-   void SetLineSpacing (float );
-   void SetShadow (int val);
-   void SetVerticalJustification (int );
-   void SetVerticalJustificationToBottom ();
-   void SetVerticalJustificationToCentered ();
-   void SetVerticalJustificationToTop ();
-   void ShadowOff ();
-   void ShadowOn ();
-   void ShallowCopy (vtkTextMapper *tm);
-
-
-B<vtkTextMapper Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetMultiLineSize (vtkViewport *viewport, int size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void GetSize (vtkViewport *, int size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::TIFFReader;
-
-
-@Graphics::VTK::TIFFReader::ISA = qw( Graphics::VTK::ImageReader );
-
-=head1 Graphics::VTK::TIFFReader
-
-=over 1
-
-=item *
-
-Inherits from ImageReader
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkTIFFReader *New ();
-
-=cut
-
-package Graphics::VTK::TIFFWriter;
-
-
-@Graphics::VTK::TIFFWriter::ISA = qw( Graphics::VTK::ImageWriter );
-
-=head1 Graphics::VTK::TIFFWriter
-
-=over 1
-
-=item *
-
-Inherits from ImageWriter
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkTIFFWriter *New ();
-
-
-B<vtkTIFFWriter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void WriteFile (ofstream *file, vtkImageData *data, int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void WriteFileHeader (ofstream *, vtkImageData *);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::MesaImager;
-
-
-@Graphics::VTK::MesaImager::ISA = qw( Graphics::VTK::Imager );
-
-=head1 Graphics::VTK::MesaImager
-
-=over 1
-
-=item *
-
-Inherits from Imager
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void Erase ();
-   const char *GetClassName();
-   vtkMesaImager *New ();
-   int RenderOpaqueGeometry ();
-
-=cut
-
-package Graphics::VTK::MesaImageMapper;
-
-
-@Graphics::VTK::MesaImageMapper::ISA = qw( Graphics::VTK::ImageMapper );
-
-=head1 Graphics::VTK::MesaImageMapper
-
-=over 1
-
-=item *
-
-Inherits from ImageMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkMesaImageMapper *New ();
-   void RenderData (vtkViewport *viewport, vtkImageData *data, vtkActor2D *actor);
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::MesaImageWindow;
-
-
-@Graphics::VTK::MesaImageWindow::ISA = qw( Graphics::VTK::XImageWindow );
-
-=head1 Graphics::VTK::MesaImageWindow
-
-=over 1
-
-=item *
-
-Inherits from XImageWindow
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void EraseWindow ();
-   void Frame ();
-   const char *GetClassName();
-   virtual int GetDesiredDepth ();
-   virtual void *GetGenericContext ();
-   virtual void *GetGenericDisplayId ();
-   virtual void *GetGenericDrawable ();
-   virtual void *GetGenericParentId ();
-   virtual void *GetGenericWindowId ();
-   void MakeCurrent ();
-   virtual void MakeDefaultWindow ();
-   vtkMesaImageWindow *New ();
-   void Render ();
-   virtual void SetOffScreenRendering (int i);
-   void SwapBuffers ();
-
-
-B<vtkMesaImageWindow Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual Colormap GetDesiredColormap ();
-      Can't Handle ColorMap return type yet
-
-   virtual Visual *GetDesiredVisual ();
-      Can't Handle Visual return type yet
-
-   XVisualInfo *GetDesiredVisualInfo ();
-      Can't Handle 'XVisualInfo *' return type yet
-
-   virtual unsigned char *GetPixelData (int x, int y, int x2, int y2, int front);
-      Can't Handle 'unsigned char *' return type without a hint
-
-   virtual float *GetRGBAPixelData (int x, int y, int x2, int y2, int front);
-      Can't Handle 'float *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual void SetPixelData (int x, int y, int x2, int y2, unsigned char *, int front);
-      Don't know the size of pointer arg number 5
-
-   virtual void SetRGBAPixelData (int x, int y, int x2, int y2, float *, int front, int blend);
-      Don't know the size of pointer arg number 5
-
-
-=cut
-
-package Graphics::VTK::XMesaTextMapper;
-
-
-@Graphics::VTK::XMesaTextMapper::ISA = qw( Graphics::VTK::XTextMapper );
-
-=head1 Graphics::VTK::XMesaTextMapper
-
-=over 1
-
-=item *
-
-Inherits from XTextMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkXMesaTextMapper *New ();
-   virtual void ReleaseGraphicsResources (vtkWindow *);
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-
-
-B<vtkXMesaTextMapper Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int GetListBaseForFont (vtkTextMapper *tm, vtkViewport *vp, Font );
-      Arg types of 'Font' not supported
-
-=cut
-
-package Graphics::VTK::MesaPolyDataMapper2D;
-
-
-@Graphics::VTK::MesaPolyDataMapper2D::ISA = qw( Graphics::VTK::PolyDataMapper2D );
-
-=head1 Graphics::VTK::MesaPolyDataMapper2D
-
-=over 1
-
-=item *
-
-Inherits from PolyDataMapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkMesaPolyDataMapper2D *New ();
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::OpenGLImager;
-
-
-@Graphics::VTK::OpenGLImager::ISA = qw( Graphics::VTK::Imager );
-
-=head1 Graphics::VTK::OpenGLImager
-
-=over 1
-
-=item *
-
-Inherits from Imager
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void Erase ();
-   const char *GetClassName();
-   vtkOpenGLImager *New ();
-   int RenderOpaqueGeometry ();
-
-=cut
-
-package Graphics::VTK::OpenGLImageMapper;
-
-
-@Graphics::VTK::OpenGLImageMapper::ISA = qw( Graphics::VTK::ImageMapper );
-
-=head1 Graphics::VTK::OpenGLImageMapper
-
-=over 1
-
-=item *
-
-Inherits from ImageMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkOpenGLImageMapper *New ();
-   void RenderData (vtkViewport *viewport, vtkImageData *data, vtkActor2D *actor);
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::OpenGLPolyDataMapper2D;
-
-
-@Graphics::VTK::OpenGLPolyDataMapper2D::ISA = qw( Graphics::VTK::PolyDataMapper2D );
-
-=head1 Graphics::VTK::OpenGLPolyDataMapper2D
-
-=over 1
-
-=item *
-
-Inherits from PolyDataMapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkOpenGLPolyDataMapper2D *New ();
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::XImageMapper;
-
-
-@Graphics::VTK::XImageMapper::ISA = qw( Graphics::VTK::ImageMapper );
-
-=head1 Graphics::VTK::XImageMapper
-
-=over 1
-
-=item *
-
-Inherits from ImageMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetNumberOfColors ();
-   int GetXWindowDepth (vtkWindow *window);
-   int GetXWindowVisualClass (vtkWindow *window);
-   vtkXImageMapper *New ();
-   void RenderData (vtkViewport *viewport, vtkImageData *data, vtkActor2D *actor);
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-
-
-B<vtkXImageMapper Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetXColors (int colors[]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetXWindowColorMasks (vtkWindow *window, unsigned long *rmask, unsigned long *gmask, unsigned long *bmask);
-      Don't know the size of pointer arg number 2
-
-   void GetXWindowVisualId (vtkWindow *window, Visual *visualID);
-      Don't know the size of pointer arg number 2
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::XImageWindow;
-
-
-@Graphics::VTK::XImageWindow::ISA = qw( Graphics::VTK::ImageWindow );
-
-=head1 Graphics::VTK::XImageWindow
-
-=over 1
-
-=item *
-
-Inherits from ImageWindow
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void EraseWindow ();
-   void Frame ();
-   const char *GetClassName();
-   virtual int GetDesiredDepth ();
-   void *GetGenericContext ();
-   void *GetGenericDisplayId ();
-   void *GetGenericDrawable ();
-   void *GetGenericParentId ();
-   void *GetGenericWindowId ();
-   int GetNumberOfColors ();
-   int GetVisualClass ();
-   int GetVisualDepth ();
-   vtkXImageWindow *New ();
-   void SetBackgroundColor (float r, float g, float b);
-   void SetParentId (Window );
-   void SetPosition (int , int );
-   void SetSize (int x, int y);
-   void SetWindowId (Window );
-   void SetWindowName (char *name);
-   void SwapBuffers ();
-
-
-B<vtkXImageWindow Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetDefaultVisualInfo (XVisualInfo *info);
-      Don't know the size of pointer arg number 1
-
-   virtual Colormap GetDesiredColormap ();
-      Can't Handle ColorMap return type yet
-
-   virtual Visual *GetDesiredVisual ();
-      Can't Handle Visual return type yet
-
-   Display *GetDisplayId ();
-      Can't Handle Display return type yet
-
-   GC GetGC ();
-      Can't Handle GC return type yet
-
-   Window GetParentId ();
-      Can't Handle Window return type yet
-
-   unsigned char *GetPixelData (int x1, int y1, int x2, int y2, int );
-      Can't Handle 'unsigned char *' return type without a hint
-
-   int *GetPosition ();
-      Can't Handle 'int *' return type without a hint
-
-   void GetPosition (int *x, int *y);
-      Don't know the size of pointer arg number 1
-
-   void GetShiftsScalesAndMasks (int &rshift, int &gshift, int &bshift, int &rscale, int &gscale, int &bscale, unsigned long &rmask, unsigned long &gmask, unsigned long &bmask);
-      Arg types of 'unsigned long &' not supported yet
-   int *GetSize ();
-      Can't Handle 'int *' return type without a hint
-
-   void GetSize (int *x, int *y);
-      Don't know the size of pointer arg number 1
-
-   Visual *GetVisualId ();
-      Can't Handle Visual return type yet
-
-   Window GetWindowId ();
-      Can't Handle Window return type yet
-
-   Colormap MakeColorMap (Visual *visual);
-      Can't Handle ColorMap return type yet
-
-   Window ParentIdWindow WindowIdDisplay *DisplayIdVisual *VisualIdint VisualDepthint VisualClassColormap ColorMapGC Gcint OffsetXColor Colors[256]int NumberOfColorsPixmap Drawableint OwnDisplayint PixmapWidthint PixmapHeightvoid MakeDefaultWindow ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetDisplayId (Display *);
-      Don't know the size of pointer arg number 1
-
-   void SetDisplayId (void *);
-      Don't know the size of pointer arg number 1
-
-   void SetParentId (void *);
-      Don't know the size of pointer arg number 1
-
-   void SetPosition (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetSize (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetWindowId (void *);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::XPolyDataMapper2D;
-
-
-@Graphics::VTK::XPolyDataMapper2D::ISA = qw( Graphics::VTK::PolyDataMapper2D );
-
-=head1 Graphics::VTK::XPolyDataMapper2D
-
-=over 1
-
-=item *
-
-Inherits from PolyDataMapper2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkXPolyDataMapper2D *New ();
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::XTextMapper;
-
-
-@Graphics::VTK::XTextMapper::ISA = qw( Graphics::VTK::TextMapper );
-
-=head1 Graphics::VTK::XTextMapper
-
-=over 1
-
-=item *
-
-Inherits from TextMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkXTextMapper *New ();
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-   void SetFontSize (int size);
-
-
-B<vtkXTextMapper Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void DetermineSize (vtkViewport *viewport, int size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetSize (vtkViewport *viewport, int size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::Win32ImageMapper;
-
-
-@Graphics::VTK::Win32ImageMapper::ISA = qw( Graphics::VTK::ImageMapper );
-
-=head1 Graphics::VTK::Win32ImageMapper
-
-=over 1
-
-=item *
-
-Inherits from ImageMapper
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkLookupTable *GetLookupTable ();
+   void CappingOff ();
+   void CappingOn ();
+   void ComputeNormalsOff ();
+   void ComputeNormalsOn ();
+   float GetCapValue ();
+   int GetCapping ();
+   const char *GetClassName ();
+   int GetComputeNormals ();
+   vtkImplicitFunction *GetImplicitFunction ();
    unsigned long GetMTime ();
-   vtkWin32ImageMapper *New ();
-   void RenderData (vtkViewport *viewport, vtkImageData *data, vtkActor2D *actor);
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-   void SetLookupTable (vtkLookupTable *);
+   float  *GetModelBounds ();
+      (Returns a 6-element Perl list)
+   int  *GetSampleDimensions ();
+      (Returns a 3-element Perl list)
+   vtkSampleFunction *New ();
+   void SetCapValue (float );
+   void SetCapping (int );
+   void SetComputeNormals (int );
+   void SetImplicitFunction (vtkImplicitFunction *);
+   void SetModelBounds (float , float , float , float , float , float );
+   void SetSampleDimensions (int i, int j, int k);
+   void SetScalars (vtkDataArray *);
 
 
-B<vtkWin32ImageMapper Unsupported Funcs:>
+B<vtkSampleFunction Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   HBITMAP CreateBitmapObject (HBITMAP oldBitmap, BITMAPINFO &dataHeader, HDC windowDC, unsigned char &DataOut, vtkImageData *data, int width, int height);
-      Arg types of 'unsigned char &' not supported yet
-   void GenerateBitmapData (vtkImageData *data, void *inptr, unsigned char *DataOut, int dim, int DisplayExtent[6], float cwindow, float clevel, float cshift, float cscale, vtkLookupTable *lut);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
+   void SetModelBounds (float  a[6]);
+      Method is redundant. Same as SetModelBounds( float, float, float, float, float, float)
+
+   void SetSampleDimensions (int dim[3]);
+      Method is redundant. Same as SetSampleDimensions( int, int, int)
+
 
 =cut
 
-package Graphics::VTK::Win32OpenGLTextMapper;
+package Graphics::VTK::ShepardMethod;
 
 
-@Graphics::VTK::Win32OpenGLTextMapper::ISA = qw( Graphics::VTK::Win32TextMapper );
+@Graphics::VTK::ShepardMethod::ISA = qw( Graphics::VTK::DataSetToStructuredPointsFilter );
 
-=head1 Graphics::VTK::Win32OpenGLTextMapper
+=head1 Graphics::VTK::ShepardMethod
 
 =over 1
 
 =item *
 
-Inherits from Win32TextMapper
+Inherits from DataSetToStructuredPointsFilter
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetListBaseForFont (vtkTextMapper *tm, vtkViewport *vp);
-   vtkWin32OpenGLTextMapper *New ();
-   virtual void ReleaseGraphicsResources (vtkWindow *);
-   void RenderGeometry (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderOpaqueGeometry (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
-   void RenderTranslucentGeometry (vtkViewport *viewport, vtkActor2D *actor);
-
-=cut
-
-package Graphics::VTK::Win32OpenGLImageWindow;
-
-
-@Graphics::VTK::Win32OpenGLImageWindow::ISA = qw( Graphics::VTK::ImageWindow );
-
-=head1 Graphics::VTK::Win32OpenGLImageWindow
-
-=over 1
-
-=item *
-
-Inherits from ImageWindow
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void Clean ();
-   void Frame ();
-   const char *GetClassName();
-   vtkWin32OpenGLImageWindow *GetOutput ();
-   void MakeCurrent ();
-   virtual void MakeDefaultWindow ();
-   vtkWin32OpenGLImageWindow *New ();
-   virtual void OpenGLInit ();
-   void Render ();
-   void ResumeScreenRendering ();
-   virtual void SetPosition (int , int );
-   virtual void SetSize (int , int );
-   virtual void SetWindowName (char *);
-   void SetupMemoryRendering (int x, int y, HDC prn);
-   virtual void SetupPalette (HDC hDC);
-   virtual void SetupPixelFormat (HDC hDC, DWORD dwFlags, int debug, int bpp, int zbpp);
-   void SwapBuffers ();
+   const char *GetClassName ();
+   float GetMaximumDistance ();
+   float GetMaximumDistanceMaxValue ();
+   float GetMaximumDistanceMinValue ();
+   float  *GetModelBounds ();
+      (Returns a 6-element Perl list)
+   float GetNullValue ();
+   int  *GetSampleDimensions ();
+      (Returns a 3-element Perl list)
+   vtkShepardMethod *New ();
+   void SetMaximumDistance (float );
+   void SetModelBounds (float , float , float , float , float , float );
+   void SetNullValue (float );
+   void SetSampleDimensions (int i, int j, int k);
 
 
-B<vtkWin32OpenGLImageWindow Unsupported Funcs:>
+B<vtkShepardMethod Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   HDC GetMemoryDC ();
-      Can't Handle HDC return type yet
-
-   unsigned char *GetMemoryData ();
-      Can't Handle 'unsigned char *' return type without a hint
-
-   virtual unsigned char *GetPixelData (int x, int y, int x2, int y2, int front);
-      Can't Handle 'unsigned char *' return type without a hint
-
-   virtual int *GetPosition ();
-      Can't Handle 'int *' return type without a hint
-
-   virtual float *GetRGBAPixelData (int x, int y, int x2, int y2, int front);
-      Can't Handle 'float *' return type without a hint
-
-   virtual int *GetSize ();
-      Can't Handle 'int *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual void ReleaseRGBAPixelData (float *data);
+   float ComputeModelBounds (float origin[3], float ar[3]);
       Don't know the size of pointer arg number 1
 
-   virtual void SetPixelData (int x, int y, int x2, int y2, unsigned char *, int front);
-      Don't know the size of pointer arg number 5
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
-   virtual void SetRGBAPixelData (int x, int y, int x2, int y2, float *, int front, int blend);
-      Don't know the size of pointer arg number 5
+   void SetModelBounds (float  a[6]);
+      Method is redundant. Same as SetModelBounds( float, float, float, float, float, float)
+
+   void SetSampleDimensions (int dim[3]);
+      Method is redundant. Same as SetSampleDimensions( int, int, int)
 
 
 =cut
 
-package Graphics::VTK::Win32ImageWindow;
+package Graphics::VTK::SimpleImageFilterExample;
 
 
-@Graphics::VTK::Win32ImageWindow::ISA = qw( Graphics::VTK::ImageWindow );
+@Graphics::VTK::SimpleImageFilterExample::ISA = qw( Graphics::VTK::SimpleImageToImageFilter );
 
-=head1 Graphics::VTK::Win32ImageWindow
+=head1 Graphics::VTK::SimpleImageFilterExample
 
 =over 1
 
 =item *
 
-Inherits from ImageWindow
+Inherits from SimpleImageToImageFilter
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void EraseWindow ();
-   void Frame ();
-   const char *GetClassName();
-   vtkWin32ImageWindow *GetOutput ();
-   void MakeDefaultWindow ();
-   vtkWin32ImageWindow *New ();
-   void ResumeScreenRendering ();
-   void SetBackgroundColor (float r, float g, float b);
-   void SetPosition (int , int );
-   void SetSize (int , int );
-   void SetupMemoryRendering (int x, int y, HDC prn);
-   void SwapBuffers ();
+   const char *GetClassName ();
+   vtkSimpleImageFilterExample *New ();
+
+=cut
+
+package Graphics::VTK::SurfaceReconstructionFilter;
 
 
-B<vtkWin32ImageWindow Unsupported Funcs:>
+@Graphics::VTK::SurfaceReconstructionFilter::ISA = qw( Graphics::VTK::DataSetToStructuredPointsFilter );
+
+=head1 Graphics::VTK::SurfaceReconstructionFilter
+
+=over 1
+
+=item *
+
+Inherits from DataSetToStructuredPointsFilter
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int GetNeighborhoodSize ();
+   float GetSampleSpacing ();
+   vtkSurfaceReconstructionFilter *New ();
+   void SetNeighborhoodSize (int );
+   void SetSampleSpacing (float );
+
+
+B<vtkSurfaceReconstructionFilter Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   unsigned char *GetDIBPtr ();
-      Can't Handle 'unsigned char *' return type without a hint
-
-   HDC GetMemoryDC ();
-      Can't Handle HDC return type yet
-
-   unsigned char *GetMemoryData ();
-      Can't Handle 'unsigned char *' return type without a hint
-
-   unsigned char *GetPixelData (int x1, int y1, int x2, int y2, int );
-      Can't Handle 'unsigned char *' return type without a hint
-
-   int *GetPosition ();
-      Can't Handle 'int *' return type without a hint
-
-   int *GetSize ();
-      Can't Handle 'int *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -6003,60 +4904,131 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
-package Graphics::VTK::Win32TextMapper;
+package Graphics::VTK::TriangularTexture;
 
 
-@Graphics::VTK::Win32TextMapper::ISA = qw( Graphics::VTK::TextMapper );
+@Graphics::VTK::TriangularTexture::ISA = qw( Graphics::VTK::StructuredPointsSource );
 
-=head1 Graphics::VTK::Win32TextMapper
+=head1 Graphics::VTK::TriangularTexture
 
 =over 1
 
 =item *
 
-Inherits from TextMapper
+Inherits from StructuredPointsSource
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkWin32TextMapper *New ();
-   void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
+   const char *GetClassName ();
+   float GetScaleFactor ();
+   int GetTexturePattern ();
+   int GetTexturePatternMaxValue ();
+   int GetTexturePatternMinValue ();
+   int GetXSize ();
+   int GetYSize ();
+   vtkTriangularTexture *New ();
+   void SetScaleFactor (float );
+   void SetTexturePattern (int );
+   void SetXSize (int );
+   void SetYSize (int );
 
 
-B<vtkWin32TextMapper Unsupported Funcs:>
+B<vtkTriangularTexture Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void GetSize (vtkViewport *viewport, int size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
 
-package Graphics::VTK::Win32PolyDataMapper2D;
+package Graphics::VTK::VoxelModeller;
 
 
-@Graphics::VTK::Win32PolyDataMapper2D::ISA = qw( Graphics::VTK::PolyDataMapper2D );
+@Graphics::VTK::VoxelModeller::ISA = qw( Graphics::VTK::DataSetToStructuredPointsFilter );
 
-=head1 Graphics::VTK::Win32PolyDataMapper2D
+=head1 Graphics::VTK::VoxelModeller
 
 =over 1
 
 =item *
 
-Inherits from PolyDataMapper2D
+Inherits from DataSetToStructuredPointsFilter
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkWin32PolyDataMapper2D *New ();
-   virtual void RenderOverlay (vtkViewport *viewport, vtkActor2D *actor);
+   const char *GetClassName ();
+   float GetMaximumDistance ();
+   float GetMaximumDistanceMaxValue ();
+   float GetMaximumDistanceMinValue ();
+   float  *GetModelBounds ();
+      (Returns a 6-element Perl list)
+   int  *GetSampleDimensions ();
+      (Returns a 3-element Perl list)
+   vtkVoxelModeller *New ();
+   void SetMaximumDistance (float );
+   void SetModelBounds (float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
+   void SetSampleDimensions (int i, int j, int k);
+   void Write (char *);
+
+
+B<vtkVoxelModeller Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   float ComputeModelBounds (float origin[3], float ar[3]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetModelBounds (float bounds[6]);
+      Method is redundant. Same as SetModelBounds( float, float, float, float, float, float)
+
+   void SetSampleDimensions (int dim[3]);
+      Method is redundant. Same as SetSampleDimensions( int, int, int)
+
+
+=cut
+
+package Graphics::VTK::WindowToImageFilter;
+
+
+@Graphics::VTK::WindowToImageFilter::ISA = qw( Graphics::VTK::ImageSource );
+
+=head1 Graphics::VTK::WindowToImageFilter
+
+=over 1
+
+=item *
+
+Inherits from ImageSource
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkWindow *GetInput ();
+   vtkWindowToImageFilter *New ();
+   void SetInput (vtkWindow *input);
+
+
+B<vtkWindowToImageFilter Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
 
 =cut
 

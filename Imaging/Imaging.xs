@@ -16,24 +16,9 @@ the 'THIS' that appears in XS code. */
 #endif
 
 #include "vtkPerl.h"
-#include "vtkImaging.h"
-#include "vtkImageDecomposeFilter.h"
-#include "vtkImageFilter.h"
-#include "vtkImageInPlaceFilter.h"
-#include "vtkImageIterateFilter.h"
-#include "vtkImageMultipleInputFilter.h"
-#include "vtkImagePadFilter.h"
-#include "vtkImageSpatialFilter.h"
-#include "vtkImageToImageFilter.h"
-#include "vtkImageTwoInputFilter.h"
-#include "vtkImageFourierFilter.h"
-#include "vtkImagingFactory.h"
-#include "vtkDataSetCollection.h"
-
-#include "vtkAxisActor2D.h"
-#include "vtkBMPReader.h"
-#include "vtkBMPWriter.h"
-#include "vtkGlyphSource2D.h"
+#include "vtkBooleanTexture.h"
+#include "vtkExtractVOI.h"
+#include "vtkGaussianSplatter.h"
 #include "vtkImageAccumulate.h"
 #include "vtkImageAnisotropicDiffusion2D.h"
 #include "vtkImageAnisotropicDiffusion3D.h"
@@ -45,38 +30,44 @@ the 'THIS' that appears in XS code. */
 #include "vtkImageCacheFilter.h"
 #include "vtkImageCanvasSource2D.h"
 #include "vtkImageCast.h"
+#include "vtkImageChangeInformation.h"
+#include "vtkImageCheckerboard.h"
 #include "vtkImageCityBlockDistance.h"
 #include "vtkImageClip.h"
-#include "vtkImageComposite.h"
 #include "vtkImageConnector.h"
 #include "vtkImageConstantPad.h"
 #include "vtkImageContinuousDilate3D.h"
 #include "vtkImageContinuousErode3D.h"
+#include "vtkImageConvolve.h"
 #include "vtkImageCorrelation.h"
 #include "vtkImageCursor3D.h"
 #include "vtkImageDataStreamer.h"
+#include "vtkImageDecomposeFilter.h"
 #include "vtkImageDifference.h"
 #include "vtkImageDilateErode3D.h"
 #include "vtkImageDivergence.h"
 #include "vtkImageDotProduct.h"
 #include "vtkImageEllipsoidSource.h"
+#include "vtkImageEuclideanDistance.h"
 #include "vtkImageEuclideanToPolar.h"
 #include "vtkImageExport.h"
 #include "vtkImageExtractComponents.h"
 #include "vtkImageFFT.h"
 #include "vtkImageFlip.h"
 #include "vtkImageFourierCenter.h"
+#include "vtkImageFourierFilter.h"
 #include "vtkImageGaussianSmooth.h"
 #include "vtkImageGaussianSource.h"
-#include "vtkImageGridSource.h"
 #include "vtkImageGradient.h"
 #include "vtkImageGradientMagnitude.h"
+#include "vtkImageGridSource.h"
 #include "vtkImageHSVToRGB.h"
 #include "vtkImageHybridMedian2D.h"
 #include "vtkImageIdealHighPass.h"
 #include "vtkImageIdealLowPass.h"
 #include "vtkImageImport.h"
 #include "vtkImageIslandRemoval2D.h"
+#include "vtkImageIterateFilter.h"
 #include "vtkImageLaplacian.h"
 #include "vtkImageLogarithmicScale.h"
 #include "vtkImageLogic.h"
@@ -84,7 +75,6 @@ the 'THIS' that appears in XS code. */
 #include "vtkImageMagnify.h"
 #include "vtkImageMagnitude.h"
 #include "vtkImageMandelbrotSource.h"
-#include "vtkImageMapper.h"
 #include "vtkImageMapToColors.h"
 #include "vtkImageMapToRGBA.h"
 #include "vtkImageMapToWindowLevelColors.h"
@@ -97,15 +87,14 @@ the 'THIS' that appears in XS code. */
 #include "vtkImageNonMaximumSuppression.h"
 #include "vtkImageNormalize.h"
 #include "vtkImageOpenClose3D.h"
+#include "vtkImagePadFilter.h"
 #include "vtkImagePermute.h"
 #include "vtkImageQuantizeRGBToIndex.h"
-#include "vtkImager.h"
-#include "vtkImagerCollection.h"
-#include "vtkImageReader.h"
-#include "vtkImageResample.h"
 #include "vtkImageRFFT.h"
 #include "vtkImageRGBToHSV.h"
 #include "vtkImageRange3D.h"
+#include "vtkImageResample.h"
+#include "vtkImageReslice.h"
 #include "vtkImageSeedConnectivity.h"
 #include "vtkImageShiftScale.h"
 #include "vtkImageShrink3D.h"
@@ -113,50 +102,25 @@ the 'THIS' that appears in XS code. */
 #include "vtkImageSkeleton2D.h"
 #include "vtkImageSobel2D.h"
 #include "vtkImageSobel3D.h"
+#include "vtkImageSpatialFilter.h"
+#include "vtkImageStencil.h"
+#include "vtkImageStencilData.h"
+#include "vtkImageStencilSource.h"
 #include "vtkImageThreshold.h"
+#include "vtkImageToImageStencil.h"
 #include "vtkImageTranslateExtent.h"
 #include "vtkImageVariance3D.h"
-#include "vtkImageViewer.h"
-#include "vtkImageWindow.h"
 #include "vtkImageWrapPad.h"
-#include "vtkImageWriter.h"
-#include "vtkLabeledDataMapper.h"
-#include "vtkParallelCoordinatesActor.h"
-#include "vtkPNMReader.h"
-#include "vtkPNMWriter.h"
-#include "vtkPolyDataMapper2D.h"
-#include "vtkPostScriptWriter.h"
-#include "vtkScalarBarActor.h"
-#include "vtkScaledTextActor.h"
-#include "vtkTextMapper.h"
-#include "vtkTIFFReader.h"
-#include "vtkTIFFWriter.h"
-#ifdef USE_MESA
-#include "vtkMesaImager.h"
-#include "vtkMesaImageMapper.h"
-#include "vtkMesaImageWindow.h"
-#include "vtkXMesaTextMapper.h"
-#include "vtkMesaPolyDataMapper2D.h"
-#endif
-#ifndef USE_MESA
-#include "vtkOpenGLImager.h"
-#include "vtkOpenGLImageMapper.h"
-#include "vtkOpenGLPolyDataMapper2D.h"
-#endif
-#ifndef WIN32
-#include "vtkXImageMapper.h"
-#include "vtkXImageWindow.h"
-#include "vtkXPolyDataMapper2D.h"
-#include "vtkXTextMapper.h"
-#endif
-#ifdef WIN32
-#include "vtkWin32ImageMapper.h"
-#include "vtkWin32OpenGLTextMapper.h"
-#include "vtkWin32OpenGLImageWindow.h"
-#include "vtkWin32ImageWindow.h"
-#include "vtkWin32TextMapper.h"
-#include "vtkWin32PolyDataMapper2D.h"
-#endif
+#include "vtkImplicitFunctionToImageStencil.h"
+#include "vtkPointLoad.h"
+#include "vtkSampleFunction.h"
+#include "vtkShepardMethod.h"
+#include "vtkSimpleImageFilterExample.h"
+#include "vtkSurfaceReconstructionFilter.h"
+#include "vtkTriangularTexture.h"
+#include "vtkVoxelModeller.h"
+#include "vtkWindowToImageFilter.h"
+#include "vtkWindow.h"
 /* Routine to call a perl code ref, used by all the Set...Method methods
    like SetExecuteMethod.
 */
@@ -172,329 +136,399 @@ callperlsub(void * codeRef){
 
 }
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageDecomposeFilter PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::BooleanTexture PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
 const char *
-vtkImageDecomposeFilter::GetClassName()
+vtkBooleanTexture::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkImageDecomposeFilter::GetDimensionality()
+unsigned char  *
+vtkBooleanTexture::GetInIn()
+		PREINIT:
+		unsigned char  * retval;
 		CODE:
-		RETVAL = THIS->GetDimensionality();
+		SP -= items;
+		retval = THIS->GetInIn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetInOn()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetInOn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetInOut()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetInOut();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOnIn()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOnIn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOnOn()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOnOn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOnOut()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOnOut();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOutIn()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutIn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOutOn()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutOn();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+unsigned char  *
+vtkBooleanTexture::GetOutOut()
+		PREINIT:
+		unsigned char  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutOut();
+		EXTEND(SP, 2);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUTBACK;
+		return;
+
+
+int
+vtkBooleanTexture::GetThickness()
+		CODE:
+		RETVAL = THIS->GetThickness();
 		OUTPUT:
 		RETVAL
 
 
-static vtkImageDecomposeFilter*
-vtkImageDecomposeFilter::New()
+int
+vtkBooleanTexture::GetXSize()
 		CODE:
-		RETVAL = vtkImageDecomposeFilter::New();
+		RETVAL = THIS->GetXSize();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkBooleanTexture::GetYSize()
+		CODE:
+		RETVAL = THIS->GetYSize();
+		OUTPUT:
+		RETVAL
+
+
+static vtkBooleanTexture*
+vtkBooleanTexture::New()
+		CODE:
+		RETVAL = vtkBooleanTexture::New();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkImageDecomposeFilter::SetDimensionality(dim)
-		int 	dim
+vtkBooleanTexture::SetInIn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
 		CODE:
-		THIS->SetDimensionality(dim);
+		THIS->SetInIn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetInIn\n");
+
+
+
+void
+vtkBooleanTexture::SetInOn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetInOn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetInOn\n");
+
+
+
+void
+vtkBooleanTexture::SetInOut(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetInOut(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetInOut\n");
+
+
+
+void
+vtkBooleanTexture::SetOnIn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOnIn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOnIn\n");
+
+
+
+void
+vtkBooleanTexture::SetOnOn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOnOn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOnOn\n");
+
+
+
+void
+vtkBooleanTexture::SetOnOut(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOnOut(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOnOut\n");
+
+
+
+void
+vtkBooleanTexture::SetOutIn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOutIn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOutIn\n");
+
+
+
+void
+vtkBooleanTexture::SetOutOn(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOutOn(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOutOn\n");
+
+
+
+void
+vtkBooleanTexture::SetOutOut(arg1 = 0, arg2 = 0)
+	CASE: items == 3
+		unsigned char 	arg1
+		unsigned char 	arg2
+		CODE:
+		THIS->SetOutOut(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkBooleanTexture::SetOutOut\n");
+
+
+
+void
+vtkBooleanTexture::SetThickness(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetThickness(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkImageDecomposeFilter::SetFilteredAxes(arg1 = 0, arg2 = 0, arg3 = 0)
+vtkBooleanTexture::SetXSize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetXSize(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkBooleanTexture::SetYSize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetYSize(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ExtractVOI PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkExtractVOI::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkExtractVOI::GetSampleRate()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSampleRate();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int  *
+vtkExtractVOI::GetVOI()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetVOI();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+static vtkExtractVOI*
+vtkExtractVOI::New()
+		CODE:
+		RETVAL = vtkExtractVOI::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkExtractVOI::SetSampleRate(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
 		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
-		THIS->SetFilteredAxes(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetFilteredAxes(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE: items == 2
-		int 	arg1
-		CODE:
-		THIS->SetFilteredAxes(arg1);
+		THIS->SetSampleRate(arg1, arg2, arg3);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageDecomposeFilter::SetFilteredAxes\n");
-
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageFilter*
-vtkImageFilter::New()
-		CODE:
-		RETVAL = vtkImageFilter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageInPlaceFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageInPlaceFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageInPlaceFilter*
-vtkImageInPlaceFilter::New()
-		CODE:
-		RETVAL = vtkImageInPlaceFilter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageIterateFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
+		croak("Unsupported number of args and/or types supplied to vtkExtractVOI::SetSampleRate\n");
 
 
 
 void
-vtkImageIterateFilter::ComputeInputUpdateExtents(output)
-		vtkDataObject *	output
-		CODE:
-		THIS->ComputeInputUpdateExtents(output);
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkImageIterateFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageIterateFilter::GetIteration()
-		CODE:
-		RETVAL = THIS->GetIteration();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageIterateFilter::GetNumberOfIterations()
-		CODE:
-		RETVAL = THIS->GetNumberOfIterations();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageIterateFilter*
-vtkImageIterateFilter::New()
-		CODE:
-		RETVAL = vtkImageIterateFilter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageMultipleInputFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkImageMultipleInputFilter::AddInput(arg1 = 0)
-	CASE: items == 2
-		vtkImageData *	arg1
-		CODE:
-		THIS->AddInput(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageMultipleInputFilter::AddInput\n");
-
-
-
-void
-vtkImageMultipleInputFilter::BypassOff()
-		CODE:
-		THIS->BypassOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMultipleInputFilter::BypassOn()
-		CODE:
-		THIS->BypassOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkImageMultipleInputFilter::GetBypass()
-		CODE:
-		RETVAL = THIS->GetBypass();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkImageMultipleInputFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageMultipleInputFilter::GetInput(arg1 = 0)
-	CASE: items == 2
-		int 	arg1
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput(arg1);
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-	CASE: items == 1
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageMultipleInputFilter::GetInput\n");
-
-
-
-int
-vtkImageMultipleInputFilter::GetNumberOfThreads()
-		CODE:
-		RETVAL = THIS->GetNumberOfThreads();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageMultipleInputFilter*
-vtkImageMultipleInputFilter::New()
-		CODE:
-		RETVAL = vtkImageMultipleInputFilter::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageMultipleInputFilter::RemoveInput(arg1 = 0)
-	CASE: items == 2
-		vtkImageData *	arg1
-		CODE:
-		THIS->RemoveInput(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageMultipleInputFilter::RemoveInput\n");
-
-
-
-void
-vtkImageMultipleInputFilter::SetBypass(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetBypass(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMultipleInputFilter::SetInput(num, input)
-		int 	num
-		vtkImageData *	input
-		CODE:
-		THIS->SetInput(num, input);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMultipleInputFilter::SetNumberOfThreads(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfThreads(arg1);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImagePadFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImagePadFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImagePadFilter::GetOutputNumberOfScalarComponents()
-		CODE:
-		RETVAL = THIS->GetOutputNumberOfScalarComponents();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImagePadFilter*
-vtkImagePadFilter::New()
-		CODE:
-		RETVAL = vtkImagePadFilter::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImagePadFilter::SetOutputNumberOfScalarComponents(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetOutputNumberOfScalarComponents(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImagePadFilter::SetOutputWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+vtkExtractVOI::SetVOI(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
 	CASE: items == 7
 		int 	arg1
 		int 	arg2
@@ -503,331 +537,90 @@ vtkImagePadFilter::SetOutputWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, 
 		int 	arg5
 		int 	arg6
 		CODE:
-		THIS->SetOutputWholeExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		THIS->SetVOI(arg1, arg2, arg3, arg4, arg5, arg6);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImagePadFilter::SetOutputWholeExtent\n");
+		croak("Unsupported number of args and/or types supplied to vtkExtractVOI::SetVOI\n");
 
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageSpatialFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageSpatialFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int *
-vtkImageSpatialFilter::GetKernelSize()
-		PREINIT:
-		int * retval;
-		PPCODE:
-		retval = THIS->GetKernelSize();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-static vtkImageSpatialFilter*
-vtkImageSpatialFilter::New()
-		CODE:
-		RETVAL = vtkImageSpatialFilter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageToImageFilter PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::GaussianSplatter PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
 void
-vtkImageToImageFilter::ExecuteImageInformation()
+vtkGaussianSplatter::CappingOff()
 		CODE:
-		THIS->ExecuteImageInformation();
+		THIS->CappingOff();
 		XSRETURN_EMPTY;
 
 
+void
+vtkGaussianSplatter::CappingOn()
+		CODE:
+		THIS->CappingOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::ComputeModelBounds()
+		CODE:
+		THIS->ComputeModelBounds();
+		XSRETURN_EMPTY;
+
+
+int
+vtkGaussianSplatter::GetAccumulationMode()
+		CODE:
+		RETVAL = THIS->GetAccumulationMode();
+		OUTPUT:
+		RETVAL
+
+
 const char *
-vtkImageToImageFilter::GetClassName()
+vtkGaussianSplatter::GetAccumulationModeAsString()
 		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageToImageFilter::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-long
-vtkImageToImageFilter::GetInputMemoryLimit()
-		CODE:
-		RETVAL = THIS->GetInputMemoryLimit();
+		RETVAL = THIS->GetAccumulationModeAsString();
 		OUTPUT:
 		RETVAL
 
 
 int
-vtkImageToImageFilter::GetNumberOfThreads()
+vtkGaussianSplatter::GetAccumulationModeMaxValue()
 		CODE:
-		RETVAL = THIS->GetNumberOfThreads();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageToImageFilter*
-vtkImageToImageFilter::New()
-		CODE:
-		RETVAL = vtkImageToImageFilter::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageToImageFilter::SetInput(input)
-		vtkImageData *	input
-		CODE:
-		THIS->SetInput(input);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageToImageFilter::SetInputMemoryLimit(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetInputMemoryLimit(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageToImageFilter::SetNumberOfThreads(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfThreads(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageToImageFilter::UpdateImageInformation()
-		CODE:
-		THIS->UpdateImageInformation();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageTwoInputFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageTwoInputFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageTwoInputFilter::GetInput1()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput1();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageTwoInputFilter::GetInput2()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput2();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageTwoInputFilter*
-vtkImageTwoInputFilter::New()
-		CODE:
-		RETVAL = vtkImageTwoInputFilter::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageTwoInputFilter::SetInput1(input)
-		vtkImageData *	input
-		CODE:
-		THIS->SetInput1(input);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageTwoInputFilter::SetInput2(input)
-		vtkImageData *	input
-		CODE:
-		THIS->SetInput2(input);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageFourierFilter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageFourierFilter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageFourierFilter*
-vtkImageFourierFilter::New()
-		CODE:
-		RETVAL = vtkImageFourierFilter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImagingFactory PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-vtkObject *
-vtkImagingFactory::CreateInstance(vtkclassname)
-		char *	vtkclassname
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkObject";
-		CODE:
-		RETVAL = THIS->CreateInstance(vtkclassname);
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkImagingFactory::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImagingFactory*
-vtkImagingFactory::New()
-		CODE:
-		RETVAL = vtkImagingFactory::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::AxisActor2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkAxisActor2D::AdjustLabelsOff()
-		CODE:
-		THIS->AdjustLabelsOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::AdjustLabelsOn()
-		CODE:
-		THIS->AdjustLabelsOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::AxisVisibilityOff()
-		CODE:
-		THIS->AxisVisibilityOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::AxisVisibilityOn()
-		CODE:
-		THIS->AxisVisibilityOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::BoldOff()
-		CODE:
-		THIS->BoldOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::BoldOn()
-		CODE:
-		THIS->BoldOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkAxisActor2D::GetAdjustLabels()
-		CODE:
-		RETVAL = THIS->GetAdjustLabels();
+		RETVAL = THIS->GetAccumulationModeMaxValue();
 		OUTPUT:
 		RETVAL
 
 
 int
-vtkAxisActor2D::GetAxisVisibility()
+vtkGaussianSplatter::GetAccumulationModeMinValue()
 		CODE:
-		RETVAL = THIS->GetAxisVisibility();
+		RETVAL = THIS->GetAccumulationModeMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkGaussianSplatter::GetCapValue()
+		CODE:
+		RETVAL = THIS->GetCapValue();
 		OUTPUT:
 		RETVAL
 
 
 int
-vtkAxisActor2D::GetBold()
+vtkGaussianSplatter::GetCapping()
 		CODE:
-		RETVAL = THIS->GetBold();
+		RETVAL = THIS->GetCapping();
 		OUTPUT:
 		RETVAL
 
 
 const char *
-vtkAxisActor2D::GetClassName()
+vtkGaussianSplatter::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
@@ -835,856 +628,309 @@ vtkAxisActor2D::GetClassName()
 
 
 float
-vtkAxisActor2D::GetFontFactor()
+vtkGaussianSplatter::GetEccentricity()
 		CODE:
-		RETVAL = THIS->GetFontFactor();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkAxisActor2D::GetFontFamily()
-		CODE:
-		RETVAL = THIS->GetFontFamily();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkAxisActor2D::GetItalic()
-		CODE:
-		RETVAL = THIS->GetItalic();
+		RETVAL = THIS->GetEccentricity();
 		OUTPUT:
 		RETVAL
 
 
 float
-vtkAxisActor2D::GetLabelFactor()
+vtkGaussianSplatter::GetEccentricityMaxValue()
 		CODE:
-		RETVAL = THIS->GetLabelFactor();
+		RETVAL = THIS->GetEccentricityMaxValue();
 		OUTPUT:
 		RETVAL
 
 
-char *
-vtkAxisActor2D::GetLabelFormat()
+float
+vtkGaussianSplatter::GetEccentricityMinValue()
 		CODE:
-		RETVAL = THIS->GetLabelFormat();
+		RETVAL = THIS->GetEccentricityMinValue();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkAxisActor2D::GetLabelVisibility()
+float
+vtkGaussianSplatter::GetExponentFactor()
 		CODE:
-		RETVAL = THIS->GetLabelVisibility();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkAxisActor2D::GetNumberOfLabels()
-		CODE:
-		RETVAL = THIS->GetNumberOfLabels();
-		OUTPUT:
-		RETVAL
-
-
-float *
-vtkAxisActor2D::GetPoint1()
-		PREINIT:
-		float * retval;
-		PPCODE:
-		retval = THIS->GetPoint1();
-		EXTEND(SP, 2);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-
-
-vtkCoordinate *
-vtkAxisActor2D::GetPoint1Coordinate()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkCoordinate";
-		CODE:
-		RETVAL = THIS->GetPoint1Coordinate();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-float *
-vtkAxisActor2D::GetPoint2()
-		PREINIT:
-		float * retval;
-		PPCODE:
-		retval = THIS->GetPoint2();
-		EXTEND(SP, 2);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-
-
-vtkCoordinate *
-vtkAxisActor2D::GetPoint2Coordinate()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkCoordinate";
-		CODE:
-		RETVAL = THIS->GetPoint2Coordinate();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
+		RETVAL = THIS->GetExponentFactor();
 		OUTPUT:
 		RETVAL
 
 
 float  *
-vtkAxisActor2D::GetRange()
+vtkGaussianSplatter::GetModelBounds()
 		PREINIT:
 		float  * retval;
-		PPCODE:
-		retval = THIS->GetRange();
-		EXTEND(SP, 2);
+		CODE:
+		SP -= items;
+		retval = THIS->GetModelBounds();
+		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
 int
-vtkAxisActor2D::GetShadow()
+vtkGaussianSplatter::GetNormalWarping()
 		CODE:
-		RETVAL = THIS->GetShadow();
+		RETVAL = THIS->GetNormalWarping();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkAxisActor2D::GetTickLength()
+float
+vtkGaussianSplatter::GetNullValue()
 		CODE:
-		RETVAL = THIS->GetTickLength();
+		RETVAL = THIS->GetNullValue();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkAxisActor2D::GetTickOffset()
+float
+vtkGaussianSplatter::GetRadius()
 		CODE:
-		RETVAL = THIS->GetTickOffset();
+		RETVAL = THIS->GetRadius();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkAxisActor2D::GetTickVisibility()
+float
+vtkGaussianSplatter::GetRadiusMaxValue()
 		CODE:
-		RETVAL = THIS->GetTickVisibility();
+		RETVAL = THIS->GetRadiusMaxValue();
 		OUTPUT:
 		RETVAL
 
 
-char *
-vtkAxisActor2D::GetTitle()
+float
+vtkGaussianSplatter::GetRadiusMinValue()
 		CODE:
-		RETVAL = THIS->GetTitle();
+		RETVAL = THIS->GetRadiusMinValue();
 		OUTPUT:
 		RETVAL
 
 
-int
-vtkAxisActor2D::GetTitleVisibility()
-		CODE:
-		RETVAL = THIS->GetTitleVisibility();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkAxisActor2D::ItalicOff()
-		CODE:
-		THIS->ItalicOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::ItalicOn()
-		CODE:
-		THIS->ItalicOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::LabelVisibilityOff()
-		CODE:
-		THIS->LabelVisibilityOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::LabelVisibilityOn()
-		CODE:
-		THIS->LabelVisibilityOn();
-		XSRETURN_EMPTY;
-
-
-static vtkAxisActor2D*
-vtkAxisActor2D::New()
-		CODE:
-		RETVAL = vtkAxisActor2D::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkAxisActor2D::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-int
-vtkAxisActor2D::RenderOpaqueGeometry(viewport)
-		vtkViewport *	viewport
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry(viewport);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkAxisActor2D::RenderOverlay(viewport)
-		vtkViewport *	viewport
-		CODE:
-		RETVAL = THIS->RenderOverlay(viewport);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkAxisActor2D::RenderTranslucentGeometry(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->RenderTranslucentGeometry(arg1);
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkAxisActor2D::SetAdjustLabels(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetAdjustLabels(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetAxisVisibility(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetAxisVisibility(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetBold(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetBold(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetFontFactor(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetFontFactor(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetFontFamily(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFontFamily(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetFontFamilyToArial()
-		CODE:
-		THIS->SetFontFamilyToArial();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetFontFamilyToCourier()
-		CODE:
-		THIS->SetFontFamilyToCourier();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetFontFamilyToTimes()
-		CODE:
-		THIS->SetFontFamilyToTimes();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetItalic(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetItalic(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetLabelFactor(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetLabelFactor(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetLabelFormat(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetLabelFormat(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetLabelVisibility(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetLabelVisibility(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetNumberOfLabels(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfLabels(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetPoint1(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		float 	arg1
-		float	arg2
-		CODE:
-		THIS->SetPoint1(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkAxisActor2D::SetPoint1\n");
-
-
-
-void
-vtkAxisActor2D::SetPoint2(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		float 	arg1
-		float	arg2
-		CODE:
-		THIS->SetPoint2(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkAxisActor2D::SetPoint2\n");
-
-
-
-void
-vtkAxisActor2D::SetRange(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		float  	arg1
-		float 	arg2
-		CODE:
-		THIS->SetRange(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkAxisActor2D::SetRange\n");
-
-
-
-void
-vtkAxisActor2D::SetShadow(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetShadow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetTickLength(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetTickLength(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetTickOffset(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetTickOffset(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetTickVisibility(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetTickVisibility(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetTitle(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetTitle(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::SetTitleVisibility(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetTitleVisibility(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::ShadowOff()
-		CODE:
-		THIS->ShadowOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::ShadowOn()
-		CODE:
-		THIS->ShadowOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::ShallowCopy(prop)
-		vtkProp *	prop
-		CODE:
-		THIS->ShallowCopy(prop);
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::TickVisibilityOff()
-		CODE:
-		THIS->TickVisibilityOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::TickVisibilityOn()
-		CODE:
-		THIS->TickVisibilityOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::TitleVisibilityOff()
-		CODE:
-		THIS->TitleVisibilityOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkAxisActor2D::TitleVisibilityOn()
-		CODE:
-		THIS->TitleVisibilityOn();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::BMPReader PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkBMPReader::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkBMPReader::GetDepth()
-		CODE:
-		RETVAL = THIS->GetDepth();
-		OUTPUT:
-		RETVAL
-
-
-static vtkBMPReader*
-vtkBMPReader::New()
-		CODE:
-		RETVAL = vtkBMPReader::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::BMPWriter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkBMPWriter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkBMPWriter*
-vtkBMPWriter::New()
-		CODE:
-		RETVAL = vtkBMPWriter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::GlyphSource2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkGlyphSource2D::CrossOff()
-		CODE:
-		THIS->CrossOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::CrossOn()
-		CODE:
-		THIS->CrossOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::DashOff()
-		CODE:
-		THIS->DashOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::DashOn()
-		CODE:
-		THIS->DashOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::FilledOff()
-		CODE:
-		THIS->FilledOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::FilledOn()
-		CODE:
-		THIS->FilledOn();
-		XSRETURN_EMPTY;
-
-
-float  *
-vtkGlyphSource2D::GetCenter()
+int  *
+vtkGaussianSplatter::GetSampleDimensions()
 		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetCenter();
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSampleDimensions();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-const char *
-vtkGlyphSource2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-float  *
-vtkGlyphSource2D::GetColor()
-		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetColor();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
-vtkGlyphSource2D::GetCross()
+vtkGaussianSplatter::GetScalarWarping()
 		CODE:
-		RETVAL = THIS->GetCross();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkGlyphSource2D::GetDash()
-		CODE:
-		RETVAL = THIS->GetDash();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkGlyphSource2D::GetFilled()
-		CODE:
-		RETVAL = THIS->GetFilled();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkGlyphSource2D::GetGlyphType()
-		CODE:
-		RETVAL = THIS->GetGlyphType();
+		RETVAL = THIS->GetScalarWarping();
 		OUTPUT:
 		RETVAL
 
 
 float
-vtkGlyphSource2D::GetRotationAngle()
+vtkGaussianSplatter::GetScaleFactor()
 		CODE:
-		RETVAL = THIS->GetRotationAngle();
+		RETVAL = THIS->GetScaleFactor();
 		OUTPUT:
 		RETVAL
 
 
 float
-vtkGlyphSource2D::GetScale()
+vtkGaussianSplatter::GetScaleFactorMaxValue()
 		CODE:
-		RETVAL = THIS->GetScale();
+		RETVAL = THIS->GetScaleFactorMaxValue();
 		OUTPUT:
 		RETVAL
 
 
 float
-vtkGlyphSource2D::GetScale2()
+vtkGaussianSplatter::GetScaleFactorMinValue()
 		CODE:
-		RETVAL = THIS->GetScale2();
+		RETVAL = THIS->GetScaleFactorMinValue();
 		OUTPUT:
 		RETVAL
 
 
-static vtkGlyphSource2D*
-vtkGlyphSource2D::New()
+static vtkGaussianSplatter*
+vtkGaussianSplatter::New()
 		CODE:
-		RETVAL = vtkGlyphSource2D::New();
+		RETVAL = vtkGaussianSplatter::New();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkGlyphSource2D::RotationAngleOff()
+vtkGaussianSplatter::NormalWarpingOff()
 		CODE:
-		THIS->RotationAngleOff();
+		THIS->NormalWarpingOff();
 		XSRETURN_EMPTY;
 
 
 void
-vtkGlyphSource2D::RotationAngleOn()
+vtkGaussianSplatter::NormalWarpingOn()
 		CODE:
-		THIS->RotationAngleOn();
+		THIS->NormalWarpingOn();
 		XSRETURN_EMPTY;
 
 
 void
-vtkGlyphSource2D::SetCenter(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		float  	arg1
+vtkGaussianSplatter::ScalarWarpingOff()
+		CODE:
+		THIS->ScalarWarpingOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::ScalarWarpingOn()
+		CODE:
+		THIS->ScalarWarpingOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetAccumulationMode(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetAccumulationMode(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetAccumulationModeToMax()
+		CODE:
+		THIS->SetAccumulationModeToMax();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetAccumulationModeToMin()
+		CODE:
+		THIS->SetAccumulationModeToMin();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetAccumulationModeToSum()
+		CODE:
+		THIS->SetAccumulationModeToSum();
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetCapValue(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetCapValue(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetCapping(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetCapping(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetEccentricity(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetEccentricity(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetExponentFactor(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetExponentFactor(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetModelBounds(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		float 	arg1
 		float 	arg2
 		float 	arg3
+		float 	arg4
+		float 	arg5
+		float 	arg6
 		CODE:
-		THIS->SetCenter(arg1, arg2, arg3);
+		THIS->SetModelBounds(arg1, arg2, arg3, arg4, arg5, arg6);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkGlyphSource2D::SetCenter\n");
+		croak("Unsupported number of args and/or types supplied to vtkGaussianSplatter::SetModelBounds\n");
 
 
 
 void
-vtkGlyphSource2D::SetColor(arg1 = 0, arg2 = 0, arg3 = 0)
+vtkGaussianSplatter::SetNormalWarping(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetNormalWarping(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetNullValue(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetNullValue(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetRadius(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetRadius(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkGaussianSplatter::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
-		float 	arg2
-		float 	arg3
+		int 	arg1
+		int 	arg2
+		int 	arg3
 		CODE:
-		THIS->SetColor(arg1, arg2, arg3);
+		THIS->SetSampleDimensions(arg1, arg2, arg3);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkGlyphSource2D::SetColor\n");
+		croak("Unsupported number of args and/or types supplied to vtkGaussianSplatter::SetSampleDimensions\n");
 
 
 
 void
-vtkGlyphSource2D::SetCross(arg1)
+vtkGaussianSplatter::SetScalarWarping(arg1)
 		int 	arg1
 		CODE:
-		THIS->SetCross(arg1);
+		THIS->SetScalarWarping(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkGlyphSource2D::SetDash(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetDash(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetFilled(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFilled(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphType(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetGlyphType(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToArrow()
-		CODE:
-		THIS->SetGlyphTypeToArrow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToCircle()
-		CODE:
-		THIS->SetGlyphTypeToCircle();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToCross()
-		CODE:
-		THIS->SetGlyphTypeToCross();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToDash()
-		CODE:
-		THIS->SetGlyphTypeToDash();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToDiamond()
-		CODE:
-		THIS->SetGlyphTypeToDiamond();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToHookedArrow()
-		CODE:
-		THIS->SetGlyphTypeToHookedArrow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToNone()
-		CODE:
-		THIS->SetGlyphTypeToNone();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToSquare()
-		CODE:
-		THIS->SetGlyphTypeToSquare();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToThickArrow()
-		CODE:
-		THIS->SetGlyphTypeToThickArrow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToThickCross()
-		CODE:
-		THIS->SetGlyphTypeToThickCross();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToTriangle()
-		CODE:
-		THIS->SetGlyphTypeToTriangle();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetGlyphTypeToVertex()
-		CODE:
-		THIS->SetGlyphTypeToVertex();
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetRotationAngle(arg1)
+vtkGaussianSplatter::SetScaleFactor(arg1)
 		float 	arg1
 		CODE:
-		THIS->SetRotationAngle(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetScale(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetScale(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkGlyphSource2D::SetScale2(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetScale2(arg1);
+		THIS->SetScaleFactor(arg1);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageAccumulate PREFIX = vtk
@@ -1701,28 +947,147 @@ vtkImageAccumulate::GetClassName()
 		RETVAL
 
 
+int *
+vtkImageAccumulate::GetComponentExtent()
+	CASE: items == 1
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetComponentExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageAccumulate::GetComponentExtent\n");
+
+
+
 float  *
 vtkImageAccumulate::GetComponentOrigin()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetComponentOrigin();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 float  *
 vtkImageAccumulate::GetComponentSpacing()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetComponentSpacing();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+double  *
+vtkImageAccumulate::GetMax()
+		PREINIT:
+		double  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetMax();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+double  *
+vtkImageAccumulate::GetMean()
+		PREINIT:
+		double  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetMean();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+double  *
+vtkImageAccumulate::GetMin()
+		PREINIT:
+		double  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetMin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int
+vtkImageAccumulate::GetReverseStencil()
+		CODE:
+		RETVAL = THIS->GetReverseStencil();
+		OUTPUT:
+		RETVAL
+
+
+double  *
+vtkImageAccumulate::GetStandardDeviation()
+		PREINIT:
+		double  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetStandardDeviation();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+vtkImageStencilData *
+vtkImageAccumulate::GetStencil()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageStencilData";
+		CODE:
+		RETVAL = THIS->GetStencil();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+long
+vtkImageAccumulate::GetVoxelCount()
+		CODE:
+		RETVAL = THIS->GetVoxelCount();
+		OUTPUT:
+		RETVAL
 
 
 static vtkImageAccumulate*
@@ -1731,6 +1096,20 @@ vtkImageAccumulate::New()
 		RETVAL = vtkImageAccumulate::New();
 		OUTPUT:
 		RETVAL
+
+
+void
+vtkImageAccumulate::ReverseStencilOff()
+		CODE:
+		THIS->ReverseStencilOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageAccumulate::ReverseStencilOn()
+		CODE:
+		THIS->ReverseStencilOn();
+		XSRETURN_EMPTY;
 
 
 void
@@ -1754,7 +1133,7 @@ vtkImageAccumulate::SetComponentExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, a
 void
 vtkImageAccumulate::SetComponentOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -1769,7 +1148,7 @@ vtkImageAccumulate::SetComponentOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
 void
 vtkImageAccumulate::SetComponentSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -1779,6 +1158,22 @@ vtkImageAccumulate::SetComponentSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
 		CODE:
 		croak("Unsupported number of args and/or types supplied to vtkImageAccumulate::SetComponentSpacing\n");
 
+
+
+void
+vtkImageAccumulate::SetReverseStencil(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetReverseStencil(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageAccumulate::SetStencil(stencil)
+		vtkImageStencilData *	stencil
+		CODE:
+		THIS->SetStencil(stencil);
+		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageAnisotropicDiffusion2D PREFIX = vtk
 
@@ -2276,6 +1671,22 @@ vtkImageBlend::GetBlendModeAsString()
 		RETVAL
 
 
+int
+vtkImageBlend::GetBlendModeMaxValue()
+		CODE:
+		RETVAL = THIS->GetBlendModeMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageBlend::GetBlendModeMinValue()
+		CODE:
+		RETVAL = THIS->GetBlendModeMinValue();
+		OUTPUT:
+		RETVAL
+
+
 const char *
 vtkImageBlend::GetClassName()
 		CODE:
@@ -2297,6 +1708,20 @@ vtkImageBlend::GetOpacity(idx)
 		int 	idx
 		CODE:
 		RETVAL = THIS->GetOpacity(idx);
+		OUTPUT:
+		RETVAL
+
+
+vtkImageStencilData *
+vtkImageBlend::GetStencil()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageStencilData";
+		CODE:
+		RETVAL = THIS->GetStencil();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
 		OUTPUT:
 		RETVAL
 
@@ -2349,10 +1774,10 @@ vtkImageBlend::SetOpacity(idx, opacity)
 
 
 void
-vtkImageBlend::UpdateData(output)
-		vtkDataObject *	output
+vtkImageBlend::SetStencil(arg1)
+		vtkImageStencilData *	arg1
 		CODE:
-		THIS->UpdateData(output);
+		THIS->SetStencil(arg1);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageButterworthHighPass PREFIX = vtk
@@ -2373,12 +1798,15 @@ float  *
 vtkImageButterworthHighPass::GetCutOff()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCutOff();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
@@ -2424,7 +1852,7 @@ vtkImageButterworthHighPass::New()
 void
 vtkImageButterworthHighPass::SetCutOff(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -2490,12 +1918,15 @@ float  *
 vtkImageButterworthLowPass::GetCutOff()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCutOff();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
@@ -2541,7 +1972,7 @@ vtkImageButterworthLowPass::New()
 void
 vtkImageButterworthLowPass::SetCutOff(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -2751,16 +2182,18 @@ vtkImageCanvasSource2D::GetDefaultZ()
 
 float  *
 vtkImageCanvasSource2D::GetDrawColor()
-	CASE: items == 1
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDrawColor();
 		EXTEND(SP, 4);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
 
 
 vtkImageData *
@@ -2810,7 +2243,7 @@ vtkImageCanvasSource2D::SetDefaultZ(arg1)
 void
 vtkImageCanvasSource2D::SetDrawColor(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
 	CASE: items == 5
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		float 	arg4
@@ -3003,6 +2436,340 @@ vtkImageCast::SetOutputScalarTypeToUnsignedShort()
 		THIS->SetOutputScalarTypeToUnsignedShort();
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageChangeInformation PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkImageChangeInformation::CenterImageOff()
+		CODE:
+		THIS->CenterImageOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageChangeInformation::CenterImageOn()
+		CODE:
+		THIS->CenterImageOn();
+		XSRETURN_EMPTY;
+
+
+int
+vtkImageChangeInformation::GetCenterImage()
+		CODE:
+		RETVAL = THIS->GetCenterImage();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkImageChangeInformation::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageChangeInformation::GetExtentTranslation()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetExtentTranslation();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+vtkImageData *
+vtkImageChangeInformation::GetInformationInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		CODE:
+		RETVAL = THIS->GetInformationInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+float  *
+vtkImageChangeInformation::GetOriginScale()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOriginScale();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageChangeInformation::GetOriginTranslation()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOriginTranslation();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int  *
+vtkImageChangeInformation::GetOutputExtentStart()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputExtentStart();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageChangeInformation::GetOutputOrigin()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageChangeInformation::GetOutputSpacing()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageChangeInformation::GetSpacingScale()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSpacingScale();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkImageChangeInformation*
+vtkImageChangeInformation::New()
+		CODE:
+		RETVAL = vtkImageChangeInformation::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageChangeInformation::SetCenterImage(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetCenterImage(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageChangeInformation::SetExtentTranslation(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetExtentTranslation(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetExtentTranslation\n");
+
+
+
+void
+vtkImageChangeInformation::SetInformationInput(arg1)
+		vtkImageData *	arg1
+		CODE:
+		THIS->SetInformationInput(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageChangeInformation::SetOriginScale(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOriginScale(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetOriginScale\n");
+
+
+
+void
+vtkImageChangeInformation::SetOriginTranslation(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOriginTranslation(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetOriginTranslation\n");
+
+
+
+void
+vtkImageChangeInformation::SetOutputExtentStart(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetOutputExtentStart(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetOutputExtentStart\n");
+
+
+
+void
+vtkImageChangeInformation::SetOutputOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOutputOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetOutputOrigin\n");
+
+
+
+void
+vtkImageChangeInformation::SetOutputSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOutputSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetOutputSpacing\n");
+
+
+
+void
+vtkImageChangeInformation::SetSpacingScale(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetSpacingScale(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageChangeInformation::SetSpacingScale\n");
+
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageCheckerboard PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageCheckerboard::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageCheckerboard::GetNumberOfDivisions()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetNumberOfDivisions();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkImageCheckerboard*
+vtkImageCheckerboard::New()
+		CODE:
+		RETVAL = vtkImageCheckerboard::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageCheckerboard::SetNumberOfDivisions(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetNumberOfDivisions(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageCheckerboard::SetNumberOfDivisions\n");
+
+
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageCityBlockDistance PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -3060,6 +2827,29 @@ vtkImageClip::GetClipData()
 		RETVAL
 
 
+int *
+vtkImageClip::GetOutputWholeExtent()
+	CASE: items == 1
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputWholeExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageClip::GetOutputWholeExtent\n");
+
+
+
 static vtkImageClip*
 vtkImageClip::New()
 		CODE:
@@ -3105,107 +2895,6 @@ vtkImageClip::SetOutputWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 
 		CODE:
 		croak("Unsupported number of args and/or types supplied to vtkImageClip::SetOutputWholeExtent\n");
 
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageComposite PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkImageComposite::AddInput(arg1 = 0)
-	CASE: items == 2
-		vtkImageData *	arg1
-		CODE:
-		THIS->AddInput(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageComposite::AddInput\n");
-
-
-
-const char *
-vtkImageComposite::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageComposite::GetInput(idx)
-		int 	idx
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput(idx);
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkStructuredPoints *
-vtkImageComposite::GetOutput(arg1 = 0)
-	CASE: items == 2
-		int 	arg1
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkStructuredPoints";
-		CODE:
-		RETVAL = THIS->GetOutput(arg1);
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-	CASE: items == 1
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkStructuredPoints";
-		CODE:
-		RETVAL = THIS->GetOutput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageComposite::GetOutput\n");
-
-
-
-static vtkImageComposite*
-vtkImageComposite::New()
-		CODE:
-		RETVAL = vtkImageComposite::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageComposite::RemoveInput(arg1 = 0)
-	CASE: items == 2
-		vtkImageData *	arg1
-		CODE:
-		THIS->RemoveInput(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageComposite::RemoveInput\n");
-
-
-
-void
-vtkImageComposite::SetOutput(output)
-		vtkStructuredPoints *	output
-		CODE:
-		THIS->SetOutput(output);
-		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageConnector PREFIX = vtk
 
@@ -3366,6 +3055,157 @@ vtkImageContinuousErode3D::SetKernelSize(size0, size1, size2)
 		THIS->SetKernelSize(size0, size1, size2);
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageConvolve PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageConvolve::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+float *
+vtkImageConvolve::GetKernel3x3()
+	CASE: items == 1
+		PREINIT:
+		float * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernel3x3();
+		EXTEND(SP, 9);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUSHs(sv_2mortal(newSVnv(retval[6])));
+		PUSHs(sv_2mortal(newSVnv(retval[7])));
+		PUSHs(sv_2mortal(newSVnv(retval[8])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageConvolve::GetKernel3x3\n");
+
+
+
+float *
+vtkImageConvolve::GetKernel3x3x3()
+	CASE: items == 1
+		PREINIT:
+		float * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernel3x3x3();
+		EXTEND(SP, 27);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUSHs(sv_2mortal(newSVnv(retval[6])));
+		PUSHs(sv_2mortal(newSVnv(retval[7])));
+		PUSHs(sv_2mortal(newSVnv(retval[8])));
+		PUSHs(sv_2mortal(newSVnv(retval[9])));
+		PUSHs(sv_2mortal(newSVnv(retval[10])));
+		PUSHs(sv_2mortal(newSVnv(retval[11])));
+		PUSHs(sv_2mortal(newSVnv(retval[12])));
+		PUSHs(sv_2mortal(newSVnv(retval[13])));
+		PUSHs(sv_2mortal(newSVnv(retval[14])));
+		PUSHs(sv_2mortal(newSVnv(retval[15])));
+		PUSHs(sv_2mortal(newSVnv(retval[16])));
+		PUSHs(sv_2mortal(newSVnv(retval[17])));
+		PUSHs(sv_2mortal(newSVnv(retval[18])));
+		PUSHs(sv_2mortal(newSVnv(retval[19])));
+		PUSHs(sv_2mortal(newSVnv(retval[20])));
+		PUSHs(sv_2mortal(newSVnv(retval[21])));
+		PUSHs(sv_2mortal(newSVnv(retval[22])));
+		PUSHs(sv_2mortal(newSVnv(retval[23])));
+		PUSHs(sv_2mortal(newSVnv(retval[24])));
+		PUSHs(sv_2mortal(newSVnv(retval[25])));
+		PUSHs(sv_2mortal(newSVnv(retval[26])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageConvolve::GetKernel3x3x3\n");
+
+
+
+float *
+vtkImageConvolve::GetKernel5x5()
+	CASE: items == 1
+		PREINIT:
+		float * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernel5x5();
+		EXTEND(SP, 25);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUSHs(sv_2mortal(newSVnv(retval[6])));
+		PUSHs(sv_2mortal(newSVnv(retval[7])));
+		PUSHs(sv_2mortal(newSVnv(retval[8])));
+		PUSHs(sv_2mortal(newSVnv(retval[9])));
+		PUSHs(sv_2mortal(newSVnv(retval[10])));
+		PUSHs(sv_2mortal(newSVnv(retval[11])));
+		PUSHs(sv_2mortal(newSVnv(retval[12])));
+		PUSHs(sv_2mortal(newSVnv(retval[13])));
+		PUSHs(sv_2mortal(newSVnv(retval[14])));
+		PUSHs(sv_2mortal(newSVnv(retval[15])));
+		PUSHs(sv_2mortal(newSVnv(retval[16])));
+		PUSHs(sv_2mortal(newSVnv(retval[17])));
+		PUSHs(sv_2mortal(newSVnv(retval[18])));
+		PUSHs(sv_2mortal(newSVnv(retval[19])));
+		PUSHs(sv_2mortal(newSVnv(retval[20])));
+		PUSHs(sv_2mortal(newSVnv(retval[21])));
+		PUSHs(sv_2mortal(newSVnv(retval[22])));
+		PUSHs(sv_2mortal(newSVnv(retval[23])));
+		PUSHs(sv_2mortal(newSVnv(retval[24])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageConvolve::GetKernel5x5\n");
+
+
+
+int  *
+vtkImageConvolve::GetKernelSize()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernelSize();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkImageConvolve*
+vtkImageConvolve::New()
+		CODE:
+		RETVAL = vtkImageConvolve::New();
+		OUTPUT:
+		RETVAL
+
+
+
+
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageCorrelation PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -3384,6 +3224,22 @@ int
 vtkImageCorrelation::GetDimensionality()
 		CODE:
 		RETVAL = THIS->GetDimensionality();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageCorrelation::GetDimensionalityMaxValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageCorrelation::GetDimensionalityMinValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -3421,12 +3277,15 @@ float  *
 vtkImageCursor3D::GetCursorPosition()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCursorPosition();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
@@ -3456,7 +3315,7 @@ vtkImageCursor3D::New()
 void
 vtkImageCursor3D::SetCursorPosition(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -3497,34 +3356,26 @@ vtkImageDataStreamer::GetClassName()
 		RETVAL
 
 
+vtkExtentTranslator *
+vtkImageDataStreamer::GetExtentTranslator()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkExtentTranslator";
+		CODE:
+		RETVAL = THIS->GetExtentTranslator();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
 int
-vtkImageDataStreamer::GetIncrementalUpdate()
+vtkImageDataStreamer::GetNumberOfStreamDivisions()
 		CODE:
-		RETVAL = THIS->GetIncrementalUpdate();
+		RETVAL = THIS->GetNumberOfStreamDivisions();
 		OUTPUT:
 		RETVAL
-
-
-unsigned long
-vtkImageDataStreamer::GetMemoryLimit()
-		CODE:
-		RETVAL = THIS->GetMemoryLimit();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageDataStreamer::IncrementalUpdateOff()
-		CODE:
-		THIS->IncrementalUpdateOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::IncrementalUpdateOn()
-		CODE:
-		THIS->IncrementalUpdateOn();
-		XSRETURN_EMPTY;
 
 
 static vtkImageDataStreamer*
@@ -3536,53 +3387,18 @@ vtkImageDataStreamer::New()
 
 
 void
-vtkImageDataStreamer::SetIncrementalUpdate(arg1)
+vtkImageDataStreamer::SetExtentTranslator(arg1)
+		vtkExtentTranslator *	arg1
+		CODE:
+		THIS->SetExtentTranslator(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageDataStreamer::SetNumberOfStreamDivisions(arg1)
 		int 	arg1
 		CODE:
-		THIS->SetIncrementalUpdate(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::SetMemoryLimit(arg1)
-		unsigned long 	arg1
-		CODE:
-		THIS->SetMemoryLimit(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::SetSplitModeToBlock()
-		CODE:
-		THIS->SetSplitModeToBlock();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::SetSplitModeToXSlab()
-		CODE:
-		THIS->SetSplitModeToXSlab();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::SetSplitModeToYSlab()
-		CODE:
-		THIS->SetSplitModeToYSlab();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::SetSplitModeToZSlab()
-		CODE:
-		THIS->SetSplitModeToZSlab();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageDataStreamer::TriggerAsynchronousUpdate()
-		CODE:
-		THIS->TriggerAsynchronousUpdate();
+		THIS->SetNumberOfStreamDivisions(arg1);
 		XSRETURN_EMPTY;
 
 
@@ -3593,12 +3409,60 @@ vtkImageDataStreamer::UpdateData(out)
 		THIS->UpdateData(out);
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageDecomposeFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageDecomposeFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageDecomposeFilter::GetDimensionality()
+		CODE:
+		RETVAL = THIS->GetDimensionality();
+		OUTPUT:
+		RETVAL
+
 
 void
-vtkImageDataStreamer::UpdateInformation()
+vtkImageDecomposeFilter::SetDimensionality(dim)
+		int 	dim
 		CODE:
-		THIS->UpdateInformation();
+		THIS->SetDimensionality(dim);
 		XSRETURN_EMPTY;
+
+
+void
+vtkImageDecomposeFilter::SetFilteredAxes(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetFilteredAxes(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE: items == 3
+		int 	arg1
+		int 	arg2
+		CODE:
+		THIS->SetFilteredAxes(arg1, arg2);
+		XSRETURN_EMPTY;
+	CASE: items == 2
+		int 	arg1
+		CODE:
+		THIS->SetFilteredAxes(arg1);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageDecomposeFilter::SetFilteredAxes\n");
+
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageDifference PREFIX = vtk
 
@@ -3879,12 +3743,15 @@ float  *
 vtkImageEllipsoidSource::GetCenter()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCenter();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 const char *
@@ -3923,12 +3790,38 @@ float  *
 vtkImageEllipsoidSource::GetRadius()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetRadius();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int *
+vtkImageEllipsoidSource::GetWholeExtent()
+	CASE: items == 1
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetWholeExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageEllipsoidSource::GetWholeExtent\n");
+
 
 
 static vtkImageEllipsoidSource*
@@ -3942,7 +3835,7 @@ vtkImageEllipsoidSource::New()
 void
 vtkImageEllipsoidSource::SetCenter(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -4051,7 +3944,7 @@ vtkImageEllipsoidSource::SetOutputScalarTypeToUnsignedShort()
 void
 vtkImageEllipsoidSource::SetRadius(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -4079,6 +3972,142 @@ vtkImageEllipsoidSource::SetWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, 
 		CODE:
 		croak("Unsupported number of args and/or types supplied to vtkImageEllipsoidSource::SetWholeExtent\n");
 
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageEuclideanDistance PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkImageEuclideanDistance::ConsiderAnisotropyOff()
+		CODE:
+		THIS->ConsiderAnisotropyOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::ConsiderAnisotropyOn()
+		CODE:
+		THIS->ConsiderAnisotropyOn();
+		XSRETURN_EMPTY;
+
+
+int
+vtkImageEuclideanDistance::GetAlgorithm()
+		CODE:
+		RETVAL = THIS->GetAlgorithm();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkImageEuclideanDistance::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageEuclideanDistance::GetConsiderAnisotropy()
+		CODE:
+		RETVAL = THIS->GetConsiderAnisotropy();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageEuclideanDistance::GetInitialize()
+		CODE:
+		RETVAL = THIS->GetInitialize();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkImageEuclideanDistance::GetMaximumDistance()
+		CODE:
+		RETVAL = THIS->GetMaximumDistance();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageEuclideanDistance::InitializeOff()
+		CODE:
+		THIS->InitializeOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::InitializeOn()
+		CODE:
+		THIS->InitializeOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::IterativeExecuteData(in, out)
+		vtkImageData *	in
+		vtkImageData *	out
+		CODE:
+		THIS->IterativeExecuteData(in, out);
+		XSRETURN_EMPTY;
+
+
+static vtkImageEuclideanDistance*
+vtkImageEuclideanDistance::New()
+		CODE:
+		RETVAL = vtkImageEuclideanDistance::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageEuclideanDistance::SetAlgorithm(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetAlgorithm(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::SetAlgorithmToSaito()
+		CODE:
+		THIS->SetAlgorithmToSaito();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::SetAlgorithmToSaitoCached()
+		CODE:
+		THIS->SetAlgorithmToSaitoCached();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::SetConsiderAnisotropy(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetConsiderAnisotropy(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::SetInitialize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetInitialize(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageEuclideanDistance::SetMaximumDistance(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetMaximumDistance(arg1);
+		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageEuclideanToPolar PREFIX = vtk
 
@@ -4123,6 +4152,18 @@ PROTOTYPES: DISABLE
 
 
 
+void
+vtkImageExport::Export()
+	CASE: items == 1
+		CODE:
+		THIS->Export();
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageExport::Export\n");
+
+
+
 const char *
 vtkImageExport::GetClassName()
 		CODE:
@@ -4136,12 +4177,19 @@ vtkImageExport::GetDataDimensions()
 	CASE: items == 1
 		PREINIT:
 		int * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataDimensions();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageExport::GetDataDimensions\n");
+
 
 
 int *
@@ -4149,7 +4197,8 @@ vtkImageExport::GetDataExtent()
 	CASE: items == 1
 		PREINIT:
 		int * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataExtent();
 		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
@@ -4158,6 +4207,12 @@ vtkImageExport::GetDataExtent()
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
 		PUSHs(sv_2mortal(newSVnv(retval[4])));
 		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageExport::GetDataExtent\n");
+
 
 
 int
@@ -4181,12 +4236,19 @@ vtkImageExport::GetDataOrigin()
 	CASE: items == 1
 		PREINIT:
 		float * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataOrigin();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageExport::GetDataOrigin\n");
+
 
 
 int
@@ -4197,17 +4259,32 @@ vtkImageExport::GetDataScalarType()
 		RETVAL
 
 
+const char *
+vtkImageExport::GetDataScalarTypeAsString()
+		CODE:
+		RETVAL = THIS->GetDataScalarTypeAsString();
+		OUTPUT:
+		RETVAL
+
+
 float *
 vtkImageExport::GetDataSpacing()
 	CASE: items == 1
 		PREINIT:
 		float * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataSpacing();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageExport::GetDataSpacing\n");
+
 
 
 int
@@ -4228,14 +4305,6 @@ vtkImageExport::GetInput()
 			strcpy(CLASS,"Graphics::VTK::");
 			strcat(CLASS,RETVAL->GetClassName()+3);
 		}
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageExport::GetPointerToData()
-		CODE:
-		RETVAL = THIS->GetPointerToData();
 		OUTPUT:
 		RETVAL
 
@@ -4295,12 +4364,15 @@ int  *
 vtkImageExtractComponents::GetComponents()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetComponents();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
@@ -4356,6 +4428,15 @@ vtkImageFFT::GetClassName()
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
+
+
+void
+vtkImageFFT::IterativeExecuteData(in, out)
+		vtkImageData *	in
+		vtkImageData *	out
+		CODE:
+		THIS->IterativeExecuteData(in, out);
+		XSRETURN_EMPTY;
 
 
 static vtkImageFFT*
@@ -4454,10 +4535,32 @@ vtkImageFourierCenter::GetClassName()
 		RETVAL
 
 
+void
+vtkImageFourierCenter::IterativeExecuteData(in, out)
+		vtkImageData *	in
+		vtkImageData *	out
+		CODE:
+		THIS->IterativeExecuteData(in, out);
+		XSRETURN_EMPTY;
+
+
 static vtkImageFourierCenter*
 vtkImageFourierCenter::New()
 		CODE:
 		RETVAL = vtkImageFourierCenter::New();
+		OUTPUT:
+		RETVAL
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageFourierFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageFourierFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
@@ -4487,24 +4590,30 @@ float  *
 vtkImageGaussianSmooth::GetRadiusFactors()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetRadiusFactors();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 float  *
 vtkImageGaussianSmooth::GetStandardDeviations()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetStandardDeviations();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 static vtkImageGaussianSmooth*
@@ -4534,7 +4643,7 @@ vtkImageGaussianSmooth::SetRadiusFactor(f)
 void
 vtkImageGaussianSmooth::SetRadiusFactors(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -4581,7 +4690,7 @@ vtkImageGaussianSmooth::SetStandardDeviation(arg1 = 0, arg2 = 0, arg3 = 0)
 void
 vtkImageGaussianSmooth::SetStandardDeviations(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -4608,12 +4717,15 @@ float  *
 vtkImageGaussianSource::GetCenter()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCenter();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 const char *
@@ -4651,7 +4763,7 @@ vtkImageGaussianSource::New()
 void
 vtkImageGaussianSource::SetCenter(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -4691,259 +4803,6 @@ vtkImageGaussianSource::SetWholeExtent(xMinx, xMax, yMin, yMax, zMin, zMax)
 		THIS->SetWholeExtent(xMinx, xMax, yMin, yMax, zMin, zMax);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageGridSource PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageGridSource::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int  *
-vtkImageGridSource::GetDataExtent()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetDataExtent();
-		EXTEND(SP, 6);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-		PUSHs(sv_2mortal(newSVnv(retval[3])));
-		PUSHs(sv_2mortal(newSVnv(retval[4])));
-		PUSHs(sv_2mortal(newSVnv(retval[5])));
-
-
-float  *
-vtkImageGridSource::GetDataOrigin()
-		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetDataOrigin();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-int
-vtkImageGridSource::GetDataScalarType()
-		CODE:
-		RETVAL = THIS->GetDataScalarType();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkImageGridSource::GetDataScalarTypeAsString()
-		CODE:
-		RETVAL = THIS->GetDataScalarTypeAsString();
-		OUTPUT:
-		RETVAL
-
-
-float  *
-vtkImageGridSource::GetDataSpacing()
-		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetDataSpacing();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-float
-vtkImageGridSource::GetFillValue()
-		CODE:
-		RETVAL = THIS->GetFillValue();
-		OUTPUT:
-		RETVAL
-
-
-int  *
-vtkImageGridSource::GetGridOrigin()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetGridOrigin();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-int  *
-vtkImageGridSource::GetGridSpacing()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetGridSpacing();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-float
-vtkImageGridSource::GetLineValue()
-		CODE:
-		RETVAL = THIS->GetLineValue();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageGridSource*
-vtkImageGridSource::New()
-		CODE:
-		RETVAL = vtkImageGridSource::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageGridSource::SetDataExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
-	CASE: items == 7
-		int  	arg1
-		int 	arg2
-		int 	arg3
-		int 	arg4
-		int 	arg5
-		int 	arg6
-		CODE:
-		THIS->SetDataExtent(arg1, arg2, arg3, arg4, arg5, arg6);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataExtent\n");
-
-
-
-void
-vtkImageGridSource::SetDataOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		float  	arg1
-		float 	arg2
-		float 	arg3
-		CODE:
-		THIS->SetDataOrigin(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataOrigin\n");
-
-
-
-void
-vtkImageGridSource::SetDataScalarType(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetDataScalarType(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataScalarTypeToFloat()
-		CODE:
-		THIS->SetDataScalarTypeToFloat();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataScalarTypeToInt()
-		CODE:
-		THIS->SetDataScalarTypeToInt();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataScalarTypeToShort()
-		CODE:
-		THIS->SetDataScalarTypeToShort();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataScalarTypeToUnsignedChar()
-		CODE:
-		THIS->SetDataScalarTypeToUnsignedChar();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataScalarTypeToUnsignedShort()
-		CODE:
-		THIS->SetDataScalarTypeToUnsignedShort();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetDataSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		float  	arg1
-		float 	arg2
-		float 	arg3
-		CODE:
-		THIS->SetDataSpacing(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataSpacing\n");
-
-
-
-void
-vtkImageGridSource::SetFillValue(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetFillValue(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageGridSource::SetGridOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		int  	arg1
-		int 	arg2
-		int 	arg3
-		CODE:
-		THIS->SetGridOrigin(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetGridOrigin\n");
-
-
-
-void
-vtkImageGridSource::SetGridSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		int  	arg1
-		int 	arg2
-		int 	arg3
-		CODE:
-		THIS->SetGridSpacing(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetGridSpacing\n");
-
-
-
-void
-vtkImageGridSource::SetLineValue(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetLineValue(arg1);
-		XSRETURN_EMPTY;
-
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageGradient PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -4962,6 +4821,22 @@ int
 vtkImageGradient::GetDimensionality()
 		CODE:
 		RETVAL = THIS->GetDimensionality();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageGradient::GetDimensionalityMaxValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageGradient::GetDimensionalityMinValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -5034,6 +4909,22 @@ vtkImageGradientMagnitude::GetDimensionality()
 
 
 int
+vtkImageGradientMagnitude::GetDimensionalityMaxValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageGradientMagnitude::GetDimensionalityMinValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMinValue();
+		OUTPUT:
+		RETVAL
+
+
+int
 vtkImageGradientMagnitude::GetHandleBoundaries()
 		CODE:
 		RETVAL = THIS->GetHandleBoundaries();
@@ -5076,6 +4967,274 @@ vtkImageGradientMagnitude::SetHandleBoundaries(arg1)
 		int 	arg1
 		CODE:
 		THIS->SetHandleBoundaries(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageGridSource PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageGridSource::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageGridSource::GetDataExtent()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetDataExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageGridSource::GetDataOrigin()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetDataOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int
+vtkImageGridSource::GetDataScalarType()
+		CODE:
+		RETVAL = THIS->GetDataScalarType();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkImageGridSource::GetDataScalarTypeAsString()
+		CODE:
+		RETVAL = THIS->GetDataScalarTypeAsString();
+		OUTPUT:
+		RETVAL
+
+
+float  *
+vtkImageGridSource::GetDataSpacing()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetDataSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float
+vtkImageGridSource::GetFillValue()
+		CODE:
+		RETVAL = THIS->GetFillValue();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageGridSource::GetGridOrigin()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetGridOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int  *
+vtkImageGridSource::GetGridSpacing()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetGridSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float
+vtkImageGridSource::GetLineValue()
+		CODE:
+		RETVAL = THIS->GetLineValue();
+		OUTPUT:
+		RETVAL
+
+
+static vtkImageGridSource*
+vtkImageGridSource::New()
+		CODE:
+		RETVAL = vtkImageGridSource::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageGridSource::SetDataExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		int 	arg4
+		int 	arg5
+		int 	arg6
+		CODE:
+		THIS->SetDataExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataExtent\n");
+
+
+
+void
+vtkImageGridSource::SetDataOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetDataOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataOrigin\n");
+
+
+
+void
+vtkImageGridSource::SetDataScalarType(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetDataScalarType(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataScalarTypeToFloat()
+		CODE:
+		THIS->SetDataScalarTypeToFloat();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataScalarTypeToInt()
+		CODE:
+		THIS->SetDataScalarTypeToInt();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataScalarTypeToShort()
+		CODE:
+		THIS->SetDataScalarTypeToShort();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataScalarTypeToUnsignedChar()
+		CODE:
+		THIS->SetDataScalarTypeToUnsignedChar();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataScalarTypeToUnsignedShort()
+		CODE:
+		THIS->SetDataScalarTypeToUnsignedShort();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetDataSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetDataSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetDataSpacing\n");
+
+
+
+void
+vtkImageGridSource::SetFillValue(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetFillValue(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageGridSource::SetGridOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetGridOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetGridOrigin\n");
+
+
+
+void
+vtkImageGridSource::SetGridSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetGridSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageGridSource::SetGridSpacing\n");
+
+
+
+void
+vtkImageGridSource::SetLineValue(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetLineValue(arg1);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageHSVToRGB PREFIX = vtk
@@ -5154,12 +5313,15 @@ float  *
 vtkImageIdealHighPass::GetCutOff()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCutOff();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 float
@@ -5197,7 +5359,7 @@ vtkImageIdealHighPass::New()
 void
 vtkImageIdealHighPass::SetCutOff(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -5255,12 +5417,15 @@ float  *
 vtkImageIdealLowPass::GetCutOff()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetCutOff();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 float
@@ -5298,7 +5463,7 @@ vtkImageIdealLowPass::New()
 void
 vtkImageIdealLowPass::SetCutOff(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -5356,7 +5521,8 @@ int  *
 vtkImageImport::GetDataExtent()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataExtent();
 		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
@@ -5365,18 +5531,23 @@ vtkImageImport::GetDataExtent()
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
 		PUSHs(sv_2mortal(newSVnv(retval[4])));
 		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
 float  *
 vtkImageImport::GetDataOrigin()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataOrigin();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int
@@ -5399,20 +5570,15 @@ float  *
 vtkImageImport::GetDataSpacing()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDataSpacing();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-void *
-vtkImageImport::GetImportVoidPointer()
-		CODE:
-		RETVAL = THIS->GetImportVoidPointer();
-		OUTPUT:
-		RETVAL
+		PUTBACK;
+		return;
 
 
 int
@@ -5421,6 +5587,24 @@ vtkImageImport::GetNumberOfScalarComponents()
 		RETVAL = THIS->GetNumberOfScalarComponents();
 		OUTPUT:
 		RETVAL
+
+
+int  *
+vtkImageImport::GetWholeExtent()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetWholeExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
 static vtkImageImport*
@@ -5432,9 +5616,17 @@ vtkImageImport::New()
 
 
 void
+vtkImageImport::PropagateUpdateExtent(output)
+		vtkDataObject *	output
+		CODE:
+		THIS->PropagateUpdateExtent(output);
+		XSRETURN_EMPTY;
+
+
+void
 vtkImageImport::SetDataExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
 	CASE: items == 7
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		int 	arg4
@@ -5450,9 +5642,16 @@ vtkImageImport::SetDataExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, 
 
 
 void
+vtkImageImport::SetDataExtentToWholeExtent()
+		CODE:
+		THIS->SetDataExtentToWholeExtent();
+		XSRETURN_EMPTY;
+
+
+void
 vtkImageImport::SetDataOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -5517,7 +5716,7 @@ vtkImageImport::SetDataScalarTypeToUnsignedShort()
 void
 vtkImageImport::SetDataSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		float  	arg1
+		float 	arg1
 		float 	arg2
 		float 	arg3
 		CODE:
@@ -5535,6 +5734,24 @@ vtkImageImport::SetNumberOfScalarComponents(arg1)
 		CODE:
 		THIS->SetNumberOfScalarComponents(arg1);
 		XSRETURN_EMPTY;
+
+
+void
+vtkImageImport::SetWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		int 	arg4
+		int 	arg5
+		int 	arg6
+		CODE:
+		THIS->SetWholeExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageImport::SetWholeExtent\n");
+
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageIslandRemoval2D PREFIX = vtk
 
@@ -5635,6 +5852,43 @@ vtkImageIslandRemoval2D::SquareNeighborhoodOn()
 		THIS->SquareNeighborhoodOn();
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageIterateFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkImageIterateFilter::ComputeInputUpdateExtents(output)
+		vtkDataObject *	output
+		CODE:
+		THIS->ComputeInputUpdateExtents(output);
+		XSRETURN_EMPTY;
+
+
+const char *
+vtkImageIterateFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageIterateFilter::GetIteration()
+		CODE:
+		RETVAL = THIS->GetIteration();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageIterateFilter::GetNumberOfIterations()
+		CODE:
+		RETVAL = THIS->GetNumberOfIterations();
+		OUTPUT:
+		RETVAL
+
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageLaplacian PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -5653,6 +5907,22 @@ int
 vtkImageLaplacian::GetDimensionality()
 		CODE:
 		RETVAL = THIS->GetDimensionality();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageLaplacian::GetDimensionalityMaxValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageLaplacian::GetDimensionalityMinValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMinValue();
 		OUTPUT:
 		RETVAL
 
@@ -5851,12 +6121,15 @@ int  *
 vtkImageMagnify::GetMagnificationFactors()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetMagnificationFactors();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 void
@@ -5892,7 +6165,7 @@ vtkImageMagnify::SetInterpolate(arg1)
 void
 vtkImageMagnify::SetMagnificationFactors(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -5954,49 +6227,75 @@ vtkImageMandelbrotSource::GetMaximumNumberOfIterations()
 		RETVAL
 
 
+unsigned
+vtkImageMandelbrotSource::GetMaximumNumberOfIterationsMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumNumberOfIterationsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+unsigned
+vtkImageMandelbrotSource::GetMaximumNumberOfIterationsMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumNumberOfIterationsMinValue();
+		OUTPUT:
+		RETVAL
+
+
 double  *
 vtkImageMandelbrotSource::GetOriginCX()
 		PREINIT:
 		double  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetOriginCX();
 		EXTEND(SP, 4);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
 
 
 int  *
 vtkImageMandelbrotSource::GetProjectionAxes()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetProjectionAxes();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 double  *
 vtkImageMandelbrotSource::GetSampleCX()
 		PREINIT:
 		double  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetSampleCX();
 		EXTEND(SP, 4);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
 
 
 int  *
 vtkImageMandelbrotSource::GetWholeExtent()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetWholeExtent();
 		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
@@ -6005,6 +6304,8 @@ vtkImageMandelbrotSource::GetWholeExtent()
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
 		PUSHs(sv_2mortal(newSVnv(retval[4])));
 		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
 static vtkImageMandelbrotSource*
@@ -6036,7 +6337,7 @@ vtkImageMandelbrotSource::SetMaximumNumberOfIterations(arg1)
 void
 vtkImageMandelbrotSource::SetOriginCX(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
 	CASE: items == 5
-		double  	arg1
+		double 	arg1
 		double 	arg2
 		double 	arg3
 		double 	arg4
@@ -6052,7 +6353,7 @@ vtkImageMandelbrotSource::SetOriginCX(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
 void
 vtkImageMandelbrotSource::SetProjectionAxes(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -6075,7 +6376,7 @@ vtkImageMandelbrotSource::SetSample(v)
 void
 vtkImageMandelbrotSource::SetSampleCX(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
 	CASE: items == 5
-		double  	arg1
+		double 	arg1
 		double 	arg2
 		double 	arg3
 		double 	arg4
@@ -6113,237 +6414,18 @@ vtkImageMandelbrotSource::Zoom(factor)
 		THIS->Zoom(factor);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageMapper::GetColorLevel()
-		CODE:
-		RETVAL = THIS->GetColorLevel();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageMapper::GetColorScale()
-		CODE:
-		RETVAL = THIS->GetColorScale();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageMapper::GetColorShift()
-		CODE:
-		RETVAL = THIS->GetColorShift();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageMapper::GetColorWindow()
-		CODE:
-		RETVAL = THIS->GetColorWindow();
-		OUTPUT:
-		RETVAL
-
-
-int  *
-vtkImageMapper::GetCustomDisplayExtents()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetCustomDisplayExtents();
-		EXTEND(SP, 4);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-		PUSHs(sv_2mortal(newSVnv(retval[3])));
-
-
-vtkImageData *
-vtkImageMapper::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-unsigned long
-vtkImageMapper::GetMTime()
-		CODE:
-		RETVAL = THIS->GetMTime();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageMapper::GetRenderToRectangle()
-		CODE:
-		RETVAL = THIS->GetRenderToRectangle();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageMapper::GetUseCustomExtents()
-		CODE:
-		RETVAL = THIS->GetUseCustomExtents();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageMapper::GetWholeZMax()
-		CODE:
-		RETVAL = THIS->GetWholeZMax();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageMapper::GetWholeZMin()
-		CODE:
-		RETVAL = THIS->GetWholeZMin();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageMapper::GetZSlice()
-		CODE:
-		RETVAL = THIS->GetZSlice();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageMapper*
-vtkImageMapper::New()
-		CODE:
-		RETVAL = vtkImageMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageMapper::RenderData(arg1, arg2, arg3)
-		vtkViewport *	arg1
-		vtkImageData *	arg2
-		vtkActor2D *	arg3
-		CODE:
-		THIS->RenderData(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::RenderStart(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderStart(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::RenderToRectangleOff()
-		CODE:
-		THIS->RenderToRectangleOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::RenderToRectangleOn()
-		CODE:
-		THIS->RenderToRectangleOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetColorLevel(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetColorLevel(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetColorWindow(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetColorWindow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetCustomDisplayExtents(arg1_0, arg1_1, arg1_2, arg1_3)
-		int	arg1_0
-		int	arg1_1
-		int	arg1_2
-		int	arg1_3
-		CODE:
-		int arg1[] = { arg1_0, arg1_1, arg1_2, arg1_3};
-		THIS->SetCustomDisplayExtents(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetInput(arg1)
-		vtkImageData *	arg1
-		CODE:
-		THIS->SetInput(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetUseCustomExtents(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetUseCustomExtents(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::SetZSlice(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetZSlice(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::UseCustomExtentsOff()
-		CODE:
-		THIS->UseCustomExtentsOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapper::UseCustomExtentsOn()
-		CODE:
-		THIS->UseCustomExtentsOn();
-		XSRETURN_EMPTY;
-
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageMapToColors PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
+
+
+int
+vtkImageMapToColors::GetActiveComponent()
+		CODE:
+		RETVAL = THIS->GetActiveComponent();
+		OUTPUT:
+		RETVAL
 
 
 const char *
@@ -6384,12 +6466,42 @@ vtkImageMapToColors::GetOutputFormat()
 		RETVAL
 
 
+int
+vtkImageMapToColors::GetPassAlphaToOutput()
+		CODE:
+		RETVAL = THIS->GetPassAlphaToOutput();
+		OUTPUT:
+		RETVAL
+
+
 static vtkImageMapToColors*
 vtkImageMapToColors::New()
 		CODE:
 		RETVAL = vtkImageMapToColors::New();
 		OUTPUT:
 		RETVAL
+
+
+void
+vtkImageMapToColors::PassAlphaToOutputOff()
+		CODE:
+		THIS->PassAlphaToOutputOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageMapToColors::PassAlphaToOutputOn()
+		CODE:
+		THIS->PassAlphaToOutputOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageMapToColors::SetActiveComponent(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetActiveComponent(arg1);
+		XSRETURN_EMPTY;
 
 
 void
@@ -6437,10 +6549,10 @@ vtkImageMapToColors::SetOutputFormatToRGBA()
 
 
 void
-vtkImageMapToColors::UpdateData(output)
-		vtkDataObject *	output
+vtkImageMapToColors::SetPassAlphaToOutput(arg1)
+		int 	arg1
 		CODE:
-		THIS->UpdateData(output);
+		THIS->SetPassAlphaToOutput(arg1);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageMapToRGBA PREFIX = vtk
@@ -6515,14 +6627,6 @@ vtkImageMapToWindowLevelColors::SetWindow(arg1)
 		float 	arg1
 		CODE:
 		THIS->SetWindow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageMapToWindowLevelColors::UpdateData(output)
-		vtkDataObject *	output
-		CODE:
-		THIS->UpdateData(output);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageMask PREFIX = vtk
@@ -6644,13 +6748,16 @@ unsigned int  *
 vtkImageMaskBits::GetMasks()
 		PREINIT:
 		unsigned int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetMasks();
 		EXTEND(SP, 4);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
 		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
 
 
 int
@@ -6680,7 +6787,7 @@ vtkImageMaskBits::SetMask(mask)
 void
 vtkImageMaskBits::SetMasks(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
 	CASE: items == 5
-		unsigned int  	arg1
+		unsigned int 	arg1
 		unsigned int 	arg2
 		unsigned int 	arg3
 		unsigned int 	arg4
@@ -7113,6 +7220,22 @@ vtkImageNonMaximumSuppression::GetDimensionality()
 
 
 int
+vtkImageNonMaximumSuppression::GetDimensionalityMaxValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageNonMaximumSuppression::GetDimensionalityMinValue()
+		CODE:
+		RETVAL = THIS->GetDimensionalityMinValue();
+		OUTPUT:
+		RETVAL
+
+
+int
 vtkImageNonMaximumSuppression::GetHandleBoundaries()
 		CODE:
 		RETVAL = THIS->GetHandleBoundaries();
@@ -7353,6 +7476,84 @@ vtkImageOpenClose3D::SetOpenValue(value)
 		THIS->SetOpenValue(value);
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImagePadFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImagePadFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImagePadFilter::GetOutputNumberOfScalarComponents()
+		CODE:
+		RETVAL = THIS->GetOutputNumberOfScalarComponents();
+		OUTPUT:
+		RETVAL
+
+
+int *
+vtkImagePadFilter::GetOutputWholeExtent()
+	CASE: items == 1
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputWholeExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImagePadFilter::GetOutputWholeExtent\n");
+
+
+
+static vtkImagePadFilter*
+vtkImagePadFilter::New()
+		CODE:
+		RETVAL = vtkImagePadFilter::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImagePadFilter::SetOutputNumberOfScalarComponents(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetOutputNumberOfScalarComponents(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImagePadFilter::SetOutputWholeExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		int 	arg4
+		int 	arg5
+		int 	arg6
+		CODE:
+		THIS->SetOutputWholeExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImagePadFilter::SetOutputWholeExtent\n");
+
+
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImagePermute PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -7371,12 +7572,15 @@ int  *
 vtkImagePermute::GetFilteredAxes()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetFilteredAxes();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 static vtkImagePermute*
@@ -7390,7 +7594,7 @@ vtkImagePermute::New()
 void
 vtkImagePermute::SetFilteredAxes(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -7461,6 +7665,22 @@ vtkImageQuantizeRGBToIndex::GetNumberOfColors()
 		RETVAL
 
 
+int
+vtkImageQuantizeRGBToIndex::GetNumberOfColorsMaxValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfColorsMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageQuantizeRGBToIndex::GetNumberOfColorsMinValue()
+		CODE:
+		RETVAL = THIS->GetNumberOfColorsMinValue();
+		OUTPUT:
+		RETVAL
+
+
 static vtkImageQuantizeRGBToIndex*
 vtkImageQuantizeRGBToIndex::New()
 		CODE:
@@ -7476,635 +7696,102 @@ vtkImageQuantizeRGBToIndex::SetNumberOfColors(arg1)
 		THIS->SetNumberOfColors(arg1);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Imager PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRFFT PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
-void
-vtkImager::Erase()
-		CODE:
-		THIS->Erase();
-		XSRETURN_EMPTY;
-
-
 const char *
-vtkImager::GetClassName()
+vtkImageRFFT::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
-vtkImageWindow *
-vtkImager::GetImageWindow()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageWindow";
+void
+vtkImageRFFT::IterativeExecuteData(in, out)
+		vtkImageData *	in
+		vtkImageData *	out
 		CODE:
-		RETVAL = THIS->GetImageWindow();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
+		THIS->IterativeExecuteData(in, out);
+		XSRETURN_EMPTY;
+
+
+static vtkImageRFFT*
+vtkImageRFFT::New()
+		CODE:
+		RETVAL = vtkImageRFFT::New();
+		OUTPUT:
+		RETVAL
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRGBToHSV PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageRGBToHSV::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
 float
-vtkImager::GetPickedZ()
+vtkImageRGBToHSV::GetMaximum()
 		CODE:
-		RETVAL = THIS->GetPickedZ();
+		RETVAL = THIS->GetMaximum();
 		OUTPUT:
 		RETVAL
 
 
-vtkWindow *
-vtkImager::GetVTKWindow()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkWindow";
+static vtkImageRGBToHSV*
+vtkImageRGBToHSV::New()
 		CODE:
-		RETVAL = THIS->GetVTKWindow();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
+		RETVAL = vtkImageRGBToHSV::New();
 		OUTPUT:
 		RETVAL
 
 
-static vtkImager*
-vtkImager::New()
+void
+vtkImageRGBToHSV::SetMaximum(arg1)
+		float 	arg1
 		CODE:
-		RETVAL = vtkImager::New();
-		OUTPUT:
-		RETVAL
+		THIS->SetMaximum(arg1);
+		XSRETURN_EMPTY;
 
-
-vtkAssemblyPath *
-vtkImager::PickProp(selectionX, selectionY)
-		float 	selectionX
-		float 	selectionY
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkAssemblyPath";
-		CODE:
-		RETVAL = THIS->PickProp(selectionX, selectionY);
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImager::RenderOpaqueGeometry()
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImager::RenderOverlay()
-		CODE:
-		RETVAL = THIS->RenderOverlay();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImager::RenderTranslucentGeometry()
-		CODE:
-		RETVAL = THIS->RenderTranslucentGeometry();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImagerCollection PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRange3D PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
-void
-vtkImagerCollection::AddItem(arg1 = 0)
-	CASE: items == 2
-		vtkImager *	arg1
-		CODE:
-		THIS->AddItem(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImagerCollection::AddItem\n");
-
-
-
 const char *
-vtkImagerCollection::GetClassName()
+vtkImageRange3D::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
-vtkImager *
-vtkImagerCollection::GetLastItem()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImager";
+static vtkImageRange3D*
+vtkImageRange3D::New()
 		CODE:
-		RETVAL = THIS->GetLastItem();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkImager *
-vtkImagerCollection::GetNextItem()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImager";
-		CODE:
-		RETVAL = THIS->GetNextItem();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-static vtkImagerCollection*
-vtkImagerCollection::New()
-		CODE:
-		RETVAL = vtkImagerCollection::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageReader PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkImageReader::ComputeInternalFileName(slice)
-		int 	slice
-		CODE:
-		THIS->ComputeInternalFileName(slice);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::FileLowerLeftOff()
-		CODE:
-		THIS->FileLowerLeftOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::FileLowerLeftOn()
-		CODE:
-		THIS->FileLowerLeftOn();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkImageReader::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageReader::GetDataByteOrder()
-		CODE:
-		RETVAL = THIS->GetDataByteOrder();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkImageReader::GetDataByteOrderAsString()
-		CODE:
-		RETVAL = THIS->GetDataByteOrderAsString();
-		OUTPUT:
-		RETVAL
-
-
-int  *
-vtkImageReader::GetDataExtent()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetDataExtent();
-		EXTEND(SP, 6);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-		PUSHs(sv_2mortal(newSVnv(retval[3])));
-		PUSHs(sv_2mortal(newSVnv(retval[4])));
-		PUSHs(sv_2mortal(newSVnv(retval[5])));
-
-
-unsigned short
-vtkImageReader::GetDataMask()
-		CODE:
-		RETVAL = THIS->GetDataMask();
-		OUTPUT:
-		RETVAL
-
-
-float  *
-vtkImageReader::GetDataOrigin()
-		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetDataOrigin();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-int
-vtkImageReader::GetDataScalarType()
-		CODE:
-		RETVAL = THIS->GetDataScalarType();
-		OUTPUT:
-		RETVAL
-
-
-float  *
-vtkImageReader::GetDataSpacing()
-		PREINIT:
-		float  * retval;
-		PPCODE:
-		retval = THIS->GetDataSpacing();
-		EXTEND(SP, 3);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-
-
-int  *
-vtkImageReader::GetDataVOI()
-		PREINIT:
-		int  * retval;
-		PPCODE:
-		retval = THIS->GetDataVOI();
-		EXTEND(SP, 6);
-		PUSHs(sv_2mortal(newSVnv(retval[0])));
-		PUSHs(sv_2mortal(newSVnv(retval[1])));
-		PUSHs(sv_2mortal(newSVnv(retval[2])));
-		PUSHs(sv_2mortal(newSVnv(retval[3])));
-		PUSHs(sv_2mortal(newSVnv(retval[4])));
-		PUSHs(sv_2mortal(newSVnv(retval[5])));
-
-
-int
-vtkImageReader::GetFileDimensionality()
-		CODE:
-		RETVAL = THIS->GetFileDimensionality();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageReader::GetFileLowerLeft()
-		CODE:
-		RETVAL = THIS->GetFileLowerLeft();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageReader::GetFileName()
-		CODE:
-		RETVAL = THIS->GetFileName();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageReader::GetFilePattern()
-		CODE:
-		RETVAL = THIS->GetFilePattern();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageReader::GetFilePrefix()
-		CODE:
-		RETVAL = THIS->GetFilePrefix();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageReader::GetHeaderSize(arg1 = 0)
-	CASE: items == 2
-		int 	arg1
-		CODE:
-		RETVAL = THIS->GetHeaderSize(arg1);
-		OUTPUT:
-		RETVAL
-	CASE: items == 1
-		CODE:
-		RETVAL = THIS->GetHeaderSize();
-		OUTPUT:
-		RETVAL
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageReader::GetHeaderSize\n");
-
-
-
-char *
-vtkImageReader::GetInternalFileName()
-		CODE:
-		RETVAL = THIS->GetInternalFileName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageReader::GetNumberOfScalarComponents()
-		CODE:
-		RETVAL = THIS->GetNumberOfScalarComponents();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageReader::GetSwapBytes()
-		CODE:
-		RETVAL = THIS->GetSwapBytes();
-		OUTPUT:
-		RETVAL
-
-
-vtkTransform *
-vtkImageReader::GetTransform()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkTransform";
-		CODE:
-		RETVAL = THIS->GetTransform();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageReader*
-vtkImageReader::New()
-		CODE:
-		RETVAL = vtkImageReader::New();
+		RETVAL = vtkImageRange3D::New();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkImageReader::OpenFile()
+vtkImageRange3D::SetKernelSize(size0, size1, size2)
+		int 	size0
+		int 	size1
+		int 	size2
 		CODE:
-		THIS->OpenFile();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataByteOrder(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetDataByteOrder(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataByteOrderToBigEndian()
-		CODE:
-		THIS->SetDataByteOrderToBigEndian();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataByteOrderToLittleEndian()
-		CODE:
-		THIS->SetDataByteOrderToLittleEndian();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
-	CASE: items == 7
-		int  	arg1
-		int 	arg2
-		int 	arg3
-		int 	arg4
-		int 	arg5
-		int 	arg6
-		CODE:
-		THIS->SetDataExtent(arg1, arg2, arg3, arg4, arg5, arg6);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageReader::SetDataExtent\n");
-
-
-
-void
-vtkImageReader::SetDataMask(val)
-		int 	val
-		CODE:
-		THIS->SetDataMask(val);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		float  	arg1
-		float 	arg2
-		float 	arg3
-		CODE:
-		THIS->SetDataOrigin(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageReader::SetDataOrigin\n");
-
-
-
-void
-vtkImageReader::SetDataScalarType(type)
-		int 	type
-		CODE:
-		THIS->SetDataScalarType(type);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToDouble()
-		CODE:
-		THIS->SetDataScalarTypeToDouble();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToFloat()
-		CODE:
-		THIS->SetDataScalarTypeToFloat();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToInt()
-		CODE:
-		THIS->SetDataScalarTypeToInt();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToShort()
-		CODE:
-		THIS->SetDataScalarTypeToShort();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToUnsignedChar()
-		CODE:
-		THIS->SetDataScalarTypeToUnsignedChar();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataScalarTypeToUnsignedShort()
-		CODE:
-		THIS->SetDataScalarTypeToUnsignedShort();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetDataSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
-	CASE: items == 4
-		float  	arg1
-		float 	arg2
-		float 	arg3
-		CODE:
-		THIS->SetDataSpacing(arg1, arg2, arg3);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageReader::SetDataSpacing\n");
-
-
-
-void
-vtkImageReader::SetDataVOI(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
-	CASE: items == 7
-		int  	arg1
-		int 	arg2
-		int 	arg3
-		int 	arg4
-		int 	arg5
-		int 	arg6
-		CODE:
-		THIS->SetDataVOI(arg1, arg2, arg3, arg4, arg5, arg6);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageReader::SetDataVOI\n");
-
-
-
-void
-vtkImageReader::SetFileDimensionality(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFileDimensionality(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetFileLowerLeft(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFileLowerLeft(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetFileName(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetFileName(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetFilePattern(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetFilePattern(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetFilePrefix(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetFilePrefix(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetHeaderSize(size)
-		int 	size
-		CODE:
-		THIS->SetHeaderSize(size);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetNumberOfScalarComponents(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfScalarComponents(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetSwapBytes(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetSwapBytes(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SetTransform(arg1)
-		vtkTransform *	arg1
-		CODE:
-		THIS->SetTransform(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SwapBytesOff()
-		CODE:
-		THIS->SwapBytesOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageReader::SwapBytesOn()
-		CODE:
-		THIS->SwapBytesOn();
+		THIS->SetKernelSize(size0, size1, size2);
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageResample PREFIX = vtk
@@ -8201,93 +7888,609 @@ vtkImageResample::SetInterpolate(arg1)
 		THIS->SetInterpolate(arg1);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRFFT PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageReslice PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
-const char *
-vtkImageRFFT::GetClassName()
+void
+vtkImageReslice::AutoCropOutputOff()
 		CODE:
-		RETVAL = THIS->GetClassName();
+		THIS->AutoCropOutputOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::AutoCropOutputOn()
+		CODE:
+		THIS->AutoCropOutputOn();
+		XSRETURN_EMPTY;
+
+
+int
+vtkImageReslice::GetAutoCropOutput()
+		CODE:
+		RETVAL = THIS->GetAutoCropOutput();
 		OUTPUT:
 		RETVAL
 
 
-static vtkImageRFFT*
-vtkImageRFFT::New()
+float  *
+vtkImageReslice::GetBackgroundColor()
+		PREINIT:
+		float  * retval;
 		CODE:
-		RETVAL = vtkImageRFFT::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRGBToHSV PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkImageRGBToHSV::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
+		SP -= items;
+		retval = THIS->GetBackgroundColor();
+		EXTEND(SP, 4);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
 
 
 float
-vtkImageRGBToHSV::GetMaximum()
+vtkImageReslice::GetBackgroundLevel()
 		CODE:
-		RETVAL = THIS->GetMaximum();
+		RETVAL = THIS->GetBackgroundLevel();
 		OUTPUT:
 		RETVAL
-
-
-static vtkImageRGBToHSV*
-vtkImageRGBToHSV::New()
-		CODE:
-		RETVAL = vtkImageRGBToHSV::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageRGBToHSV::SetMaximum(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetMaximum(arg1);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageRange3D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
 
 
 const char *
-vtkImageRange3D::GetClassName()
+vtkImageReslice::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
-static vtkImageRange3D*
-vtkImageRange3D::New()
+vtkImageData *
+vtkImageReslice::GetInformationInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
 		CODE:
-		RETVAL = vtkImageRange3D::New();
+		RETVAL = THIS->GetInformationInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetInterpolate()
+		CODE:
+		RETVAL = THIS->GetInterpolate();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetInterpolationMode()
+		CODE:
+		RETVAL = THIS->GetInterpolationMode();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkImageReslice::GetInterpolationModeAsString()
+		CODE:
+		RETVAL = THIS->GetInterpolationModeAsString();
+		OUTPUT:
+		RETVAL
+
+
+unsigned long
+vtkImageReslice::GetMTime()
+		CODE:
+		RETVAL = THIS->GetMTime();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetMirror()
+		CODE:
+		RETVAL = THIS->GetMirror();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetOptimization()
+		CODE:
+		RETVAL = THIS->GetOptimization();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetOutputDimensionality()
+		CODE:
+		RETVAL = THIS->GetOutputDimensionality();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageReslice::GetOutputExtent()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageReslice::GetOutputOrigin()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageReslice::GetOutputSpacing()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOutputSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+vtkMatrix4x4 *
+vtkImageReslice::GetResliceAxes()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkMatrix4x4";
+		CODE:
+		RETVAL = THIS->GetResliceAxes();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+double *
+vtkImageReslice::GetResliceAxesDirectionCosines()
+	CASE: items == 1
+		PREINIT:
+		double * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetResliceAxesDirectionCosines();
+		EXTEND(SP, 9);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUSHs(sv_2mortal(newSVnv(retval[6])));
+		PUSHs(sv_2mortal(newSVnv(retval[7])));
+		PUSHs(sv_2mortal(newSVnv(retval[8])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::GetResliceAxesDirectionCosines\n");
+
+
+
+double *
+vtkImageReslice::GetResliceAxesOrigin()
+	CASE: items == 1
+		PREINIT:
+		double * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetResliceAxesOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::GetResliceAxesOrigin\n");
+
+
+
+vtkAbstractTransform *
+vtkImageReslice::GetResliceTransform()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkAbstractTransform";
+		CODE:
+		RETVAL = THIS->GetResliceTransform();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+vtkImageStencilData *
+vtkImageReslice::GetStencil()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageStencilData";
+		CODE:
+		RETVAL = THIS->GetStencil();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetTransformInputSampling()
+		CODE:
+		RETVAL = THIS->GetTransformInputSampling();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageReslice::GetWrap()
+		CODE:
+		RETVAL = THIS->GetWrap();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkImageRange3D::SetKernelSize(size0, size1, size2)
-		int 	size0
-		int 	size1
-		int 	size2
+vtkImageReslice::InterpolateOff()
 		CODE:
-		THIS->SetKernelSize(size0, size1, size2);
+		THIS->InterpolateOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::InterpolateOn()
+		CODE:
+		THIS->InterpolateOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::MirrorOff()
+		CODE:
+		THIS->MirrorOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::MirrorOn()
+		CODE:
+		THIS->MirrorOn();
+		XSRETURN_EMPTY;
+
+
+static vtkImageReslice*
+vtkImageReslice::New()
+		CODE:
+		RETVAL = vtkImageReslice::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageReslice::OptimizationOff()
+		CODE:
+		THIS->OptimizationOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::OptimizationOn()
+		CODE:
+		THIS->OptimizationOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetAutoCropOutput(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetAutoCropOutput(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetBackgroundColor(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
+	CASE: items == 5
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		float 	arg4
+		CODE:
+		THIS->SetBackgroundColor(arg1, arg2, arg3, arg4);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetBackgroundColor\n");
+
+
+
+void
+vtkImageReslice::SetBackgroundLevel(v)
+		float 	v
+		CODE:
+		THIS->SetBackgroundLevel(v);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInformationInput(arg1)
+		vtkImageData *	arg1
+		CODE:
+		THIS->SetInformationInput(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInterpolate(t)
+		int 	t
+		CODE:
+		THIS->SetInterpolate(t);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInterpolationMode(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetInterpolationMode(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInterpolationModeToCubic()
+		CODE:
+		THIS->SetInterpolationModeToCubic();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInterpolationModeToLinear()
+		CODE:
+		THIS->SetInterpolationModeToLinear();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetInterpolationModeToNearestNeighbor()
+		CODE:
+		THIS->SetInterpolationModeToNearestNeighbor();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetMirror(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetMirror(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetOptimization(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetOptimization(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetOutputDimensionality(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetOutputDimensionality(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetOutputExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		int 	arg4
+		int 	arg5
+		int 	arg6
+		CODE:
+		THIS->SetOutputExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetOutputExtent\n");
+
+
+
+void
+vtkImageReslice::SetOutputExtentToDefault()
+		CODE:
+		THIS->SetOutputExtentToDefault();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetOutputOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOutputOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetOutputOrigin\n");
+
+
+
+void
+vtkImageReslice::SetOutputOriginToDefault()
+		CODE:
+		THIS->SetOutputOriginToDefault();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetOutputSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOutputSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetOutputSpacing\n");
+
+
+
+void
+vtkImageReslice::SetOutputSpacingToDefault()
+		CODE:
+		THIS->SetOutputSpacingToDefault();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetResliceAxes(arg1)
+		vtkMatrix4x4 *	arg1
+		CODE:
+		THIS->SetResliceAxes(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetResliceAxesDirectionCosines(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0, arg8 = 0, arg9 = 0)
+	CASE: items == 10
+		double 	arg1
+		double 	arg2
+		double 	arg3
+		double 	arg4
+		double 	arg5
+		double 	arg6
+		double 	arg7
+		double 	arg8
+		double 	arg9
+		CODE:
+		THIS->SetResliceAxesDirectionCosines(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetResliceAxesDirectionCosines\n");
+
+
+
+void
+vtkImageReslice::SetResliceAxesOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		double 	arg1
+		double 	arg2
+		double 	arg3
+		CODE:
+		THIS->SetResliceAxesOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageReslice::SetResliceAxesOrigin\n");
+
+
+
+void
+vtkImageReslice::SetResliceTransform(arg1)
+		vtkAbstractTransform *	arg1
+		CODE:
+		THIS->SetResliceTransform(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetStencil(stencil)
+		vtkImageStencilData *	stencil
+		CODE:
+		THIS->SetStencil(stencil);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetTransformInputSampling(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetTransformInputSampling(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::SetWrap(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetWrap(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::TransformInputSamplingOff()
+		CODE:
+		THIS->TransformInputSamplingOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::TransformInputSamplingOn()
+		CODE:
+		THIS->TransformInputSamplingOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::WrapOff()
+		CODE:
+		THIS->WrapOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageReslice::WrapOn()
+		CODE:
+		THIS->WrapOn();
 		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageSeedConnectivity PREFIX = vtk
@@ -8658,24 +8861,30 @@ int  *
 vtkImageShrink3D::GetShift()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetShift();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 int  *
 vtkImageShrink3D::GetShrinkFactors()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetShrinkFactors();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 void
@@ -8785,7 +8994,7 @@ vtkImageShrink3D::SetMinimum(arg1)
 void
 vtkImageShrink3D::SetShift(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -8800,7 +9009,7 @@ vtkImageShrink3D::SetShift(arg1 = 0, arg2 = 0, arg3 = 0)
 void
 vtkImageShrink3D::SetShrinkFactors(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -8837,12 +9046,15 @@ float  *
 vtkImageSinusoidSource::GetDirection()
 		PREINIT:
 		float  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetDirection();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 float
@@ -8942,6 +9154,15 @@ vtkImageSkeleton2D::GetPrune()
 		RETVAL
 
 
+void
+vtkImageSkeleton2D::IterativeExecuteData(in, out)
+		vtkImageData *	in
+		vtkImageData *	out
+		CODE:
+		THIS->IterativeExecuteData(in, out);
+		XSRETURN_EMPTY;
+
+
 static vtkImageSkeleton2D*
 vtkImageSkeleton2D::New()
 		CODE:
@@ -9020,6 +9241,524 @@ vtkImageSobel3D::New()
 		RETVAL = vtkImageSobel3D::New();
 		OUTPUT:
 		RETVAL
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageSpatialFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageSpatialFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int *
+vtkImageSpatialFilter::GetKernelMiddle()
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernelMiddle();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+int *
+vtkImageSpatialFilter::GetKernelSize()
+		PREINIT:
+		int * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetKernelSize();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkImageSpatialFilter*
+vtkImageSpatialFilter::New()
+		CODE:
+		RETVAL = vtkImageSpatialFilter::New();
+		OUTPUT:
+		RETVAL
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageStencil PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+float  *
+vtkImageStencil::GetBackgroundColor()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetBackgroundColor();
+		EXTEND(SP, 4);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUTBACK;
+		return;
+
+
+vtkImageData *
+vtkImageStencil::GetBackgroundInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		CODE:
+		RETVAL = THIS->GetBackgroundInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkImageStencil::GetBackgroundValue()
+		CODE:
+		RETVAL = THIS->GetBackgroundValue();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkImageStencil::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageStencil::GetReverseStencil()
+		CODE:
+		RETVAL = THIS->GetReverseStencil();
+		OUTPUT:
+		RETVAL
+
+
+vtkImageStencilData *
+vtkImageStencil::GetStencil()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageStencilData";
+		CODE:
+		RETVAL = THIS->GetStencil();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+static vtkImageStencil*
+vtkImageStencil::New()
+		CODE:
+		RETVAL = vtkImageStencil::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageStencil::ReverseStencilOff()
+		CODE:
+		THIS->ReverseStencilOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencil::ReverseStencilOn()
+		CODE:
+		THIS->ReverseStencilOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencil::SetBackgroundColor(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0)
+	CASE: items == 5
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		float 	arg4
+		CODE:
+		THIS->SetBackgroundColor(arg1, arg2, arg3, arg4);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencil::SetBackgroundColor\n");
+
+
+
+void
+vtkImageStencil::SetBackgroundInput(input)
+		vtkImageData *	input
+		CODE:
+		THIS->SetBackgroundInput(input);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencil::SetBackgroundValue(val)
+		float 	val
+		CODE:
+		THIS->SetBackgroundValue(val);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencil::SetReverseStencil(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetReverseStencil(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencil::SetStencil(stencil)
+		vtkImageStencilData *	stencil
+		CODE:
+		THIS->SetStencil(stencil);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageStencilData PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkImageStencilData::AllocateExtents()
+		CODE:
+		THIS->AllocateExtents();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::DeepCopy(o)
+		vtkDataObject *	o
+		CODE:
+		THIS->DeepCopy(o);
+		XSRETURN_EMPTY;
+
+
+const char *
+vtkImageStencilData::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageStencilData::GetDataObjectType()
+		CODE:
+		RETVAL = THIS->GetDataObjectType();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkImageStencilData::GetExtent()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetExtent();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+int
+vtkImageStencilData::GetExtentType()
+		CODE:
+		RETVAL = THIS->GetExtentType();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkImageStencilData::GetNextExtent(r1, r2, xMin, xMax, yIdx, zIdx, iter)
+		int 	r1
+		int 	r2
+		int 	xMin
+		int 	xMax
+		int 	yIdx
+		int 	zIdx
+		int 	iter
+		CODE:
+		RETVAL = THIS->GetNextExtent(r1, r2, xMin, xMax, yIdx, zIdx, iter);
+		OUTPUT:
+		r1
+		r2
+		iter
+		RETVAL
+
+
+float  *
+vtkImageStencilData::GetOldOrigin()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOldOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageStencilData::GetOldSpacing()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOldSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageStencilData::GetOrigin()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetOrigin();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+float  *
+vtkImageStencilData::GetSpacing()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSpacing();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+void
+vtkImageStencilData::Initialize()
+		CODE:
+		THIS->Initialize();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::InsertNextExtent(r1, r2, yIdx, zIdx)
+		int 	r1
+		int 	r2
+		int 	yIdx
+		int 	zIdx
+		CODE:
+		THIS->InsertNextExtent(r1, r2, yIdx, zIdx);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::InternalImageStencilDataCopy(s)
+		vtkImageStencilData *	s
+		CODE:
+		THIS->InternalImageStencilDataCopy(s);
+		XSRETURN_EMPTY;
+
+
+static vtkImageStencilData*
+vtkImageStencilData::New()
+		CODE:
+		RETVAL = vtkImageStencilData::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageStencilData::PropagateUpdateExtent()
+		CODE:
+		THIS->PropagateUpdateExtent();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::SetExtent(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		int 	arg4
+		int 	arg5
+		int 	arg6
+		CODE:
+		THIS->SetExtent(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencilData::SetExtent\n");
+
+
+
+void
+vtkImageStencilData::SetOldOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOldOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencilData::SetOldOrigin\n");
+
+
+
+void
+vtkImageStencilData::SetOldSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOldSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencilData::SetOldSpacing\n");
+
+
+
+void
+vtkImageStencilData::SetOrigin(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetOrigin(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencilData::SetOrigin\n");
+
+
+
+void
+vtkImageStencilData::SetSpacing(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		CODE:
+		THIS->SetSpacing(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkImageStencilData::SetSpacing\n");
+
+
+
+void
+vtkImageStencilData::ShallowCopy(f)
+		vtkDataObject *	f
+		CODE:
+		THIS->ShallowCopy(f);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::TriggerAsynchronousUpdate()
+		CODE:
+		THIS->TriggerAsynchronousUpdate();
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageStencilData::UpdateData()
+		CODE:
+		THIS->UpdateData();
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageStencilSource PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageStencilSource::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+vtkImageStencilData *
+vtkImageStencilSource::GetOutput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageStencilData";
+		CODE:
+		RETVAL = THIS->GetOutput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+static vtkImageStencilSource*
+vtkImageStencilSource::New()
+		CODE:
+		RETVAL = vtkImageStencilSource::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageStencilSource::SetOutput(output)
+		vtkImageStencilData *	output
+		CODE:
+		THIS->SetOutput(output);
+		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageThreshold PREFIX = vtk
 
@@ -9261,6 +10000,106 @@ vtkImageThreshold::ThresholdByUpper(thresh)
 		THIS->ThresholdByUpper(thresh);
 		XSRETURN_EMPTY;
 
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageToImageStencil PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkImageToImageStencil::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+vtkImageData *
+vtkImageToImageStencil::GetInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		CODE:
+		RETVAL = THIS->GetInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkImageToImageStencil::GetLowerThreshold()
+		CODE:
+		RETVAL = THIS->GetLowerThreshold();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkImageToImageStencil::GetUpperThreshold()
+		CODE:
+		RETVAL = THIS->GetUpperThreshold();
+		OUTPUT:
+		RETVAL
+
+
+static vtkImageToImageStencil*
+vtkImageToImageStencil::New()
+		CODE:
+		RETVAL = vtkImageToImageStencil::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImageToImageStencil::SetInput(input)
+		vtkImageData *	input
+		CODE:
+		THIS->SetInput(input);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageToImageStencil::SetLowerThreshold(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetLowerThreshold(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageToImageStencil::SetUpperThreshold(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetUpperThreshold(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageToImageStencil::ThresholdBetween(lower, upper)
+		float 	lower
+		float 	upper
+		CODE:
+		THIS->ThresholdBetween(lower, upper);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageToImageStencil::ThresholdByLower(thresh)
+		float 	thresh
+		CODE:
+		THIS->ThresholdByLower(thresh);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImageToImageStencil::ThresholdByUpper(thresh)
+		float 	thresh
+		CODE:
+		THIS->ThresholdByUpper(thresh);
+		XSRETURN_EMPTY;
+
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageTranslateExtent PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -9279,12 +10118,15 @@ int  *
 vtkImageTranslateExtent::GetTranslation()
 		PREINIT:
 		int  * retval;
-		PPCODE:
+		CODE:
+		SP -= items;
 		retval = THIS->GetTranslation();
 		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
 		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
 static vtkImageTranslateExtent*
@@ -9298,7 +10140,7 @@ vtkImageTranslateExtent::New()
 void
 vtkImageTranslateExtent::SetTranslation(arg1 = 0, arg2 = 0, arg3 = 0)
 	CASE: items == 4
-		int  	arg1
+		int 	arg1
 		int 	arg2
 		int 	arg3
 		CODE:
@@ -9308,14 +10150,6 @@ vtkImageTranslateExtent::SetTranslation(arg1 = 0, arg2 = 0, arg3 = 0)
 		CODE:
 		croak("Unsupported number of args and/or types supplied to vtkImageTranslateExtent::SetTranslation\n");
 
-
-
-void
-vtkImageTranslateExtent::UpdateData(data)
-		vtkDataObject *	data
-		CODE:
-		THIS->UpdateData(data);
-		XSRETURN_EMPTY;
 
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageVariance3D PREFIX = vtk
 
@@ -9348,479 +10182,6 @@ vtkImageVariance3D::SetKernelSize(size0, size1, size2)
 		THIS->SetKernelSize(size0, size1, size2);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageViewer PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-vtkActor2D *
-vtkImageViewer::GetActor2D()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkActor2D";
-		CODE:
-		RETVAL = THIS->GetActor2D();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkImageViewer::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageViewer::GetColorLevel()
-		CODE:
-		RETVAL = THIS->GetColorLevel();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkImageViewer::GetColorWindow()
-		CODE:
-		RETVAL = THIS->GetColorWindow();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageViewer::GetGrayScaleHint()
-		CODE:
-		RETVAL = THIS->GetGrayScaleHint();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageMapper *
-vtkImageViewer::GetImageMapper()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageMapper";
-		CODE:
-		RETVAL = THIS->GetImageMapper();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkImageWindow *
-vtkImageViewer::GetImageWindow()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageWindow";
-		CODE:
-		RETVAL = THIS->GetImageWindow();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkImager *
-vtkImageViewer::GetImager()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImager";
-		CODE:
-		RETVAL = THIS->GetImager();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageViewer::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageViewer::GetWholeZMax()
-		CODE:
-		RETVAL = THIS->GetWholeZMax();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageViewer::GetWholeZMin()
-		CODE:
-		RETVAL = THIS->GetWholeZMin();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageViewer::GetWindowName()
-		CODE:
-		RETVAL = THIS->GetWindowName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageViewer::GetZSlice()
-		CODE:
-		RETVAL = THIS->GetZSlice();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageViewer::GrayScaleHintOff()
-		CODE:
-		THIS->GrayScaleHintOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::GrayScaleHintOn()
-		CODE:
-		THIS->GrayScaleHintOn();
-		XSRETURN_EMPTY;
-
-
-static vtkImageViewer*
-vtkImageViewer::New()
-		CODE:
-		RETVAL = vtkImageViewer::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageViewer::Render()
-		CODE:
-		THIS->Render();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::SetColorLevel(s)
-		float 	s
-		CODE:
-		THIS->SetColorLevel(s);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::SetColorWindow(s)
-		float 	s
-		CODE:
-		THIS->SetColorWindow(s);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::SetGrayScaleHint(a)
-		int 	a
-		CODE:
-		THIS->SetGrayScaleHint(a);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::SetInput(in)
-		vtkImageData *	in
-		CODE:
-		THIS->SetInput(in);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageViewer::SetPosition(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetPosition(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageViewer::SetPosition\n");
-
-
-
-void
-vtkImageViewer::SetSize(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetSize(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageViewer::SetSize\n");
-
-
-
-void
-vtkImageViewer::SetZSlice(s)
-		int 	s
-		CODE:
-		THIS->SetZSlice(s);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageWindow PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkImageWindow::AddImager(im)
-		vtkImager *	im
-		CODE:
-		THIS->AddImager(im);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::ClosePPMImageFile()
-		CODE:
-		THIS->ClosePPMImageFile();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::EraseWindow()
-		CODE:
-		THIS->EraseWindow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::Frame()
-		CODE:
-		THIS->Frame();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkImageWindow::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageWindow::GetFileName()
-		CODE:
-		RETVAL = THIS->GetFileName();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageWindow::GetGenericContext()
-		CODE:
-		RETVAL = THIS->GetGenericContext();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageWindow::GetGenericDisplayId()
-		CODE:
-		RETVAL = THIS->GetGenericDisplayId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageWindow::GetGenericDrawable()
-		CODE:
-		RETVAL = THIS->GetGenericDrawable();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageWindow::GetGenericParentId()
-		CODE:
-		RETVAL = THIS->GetGenericParentId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkImageWindow::GetGenericWindowId()
-		CODE:
-		RETVAL = THIS->GetGenericWindowId();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageWindow::GetGrayScaleHint()
-		CODE:
-		RETVAL = THIS->GetGrayScaleHint();
-		OUTPUT:
-		RETVAL
-
-
-vtkImagerCollection *
-vtkImageWindow::GetImagers()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImagerCollection";
-		CODE:
-		RETVAL = THIS->GetImagers();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageWindow::GrayScaleHintOff()
-		CODE:
-		THIS->GrayScaleHintOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::GrayScaleHintOn()
-		CODE:
-		THIS->GrayScaleHintOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::MakeCurrent()
-		CODE:
-		THIS->MakeCurrent();
-		XSRETURN_EMPTY;
-
-
-static vtkImageWindow*
-vtkImageWindow::New()
-		CODE:
-		RETVAL = vtkImageWindow::New();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkImageWindow::OpenPPMImageFile()
-		CODE:
-		RETVAL = THIS->OpenPPMImageFile();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageWindow::RemoveImager(im)
-		vtkImager *	im
-		CODE:
-		THIS->RemoveImager(im);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::Render()
-		CODE:
-		THIS->Render();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::SaveImageAsPPM()
-		CODE:
-		THIS->SaveImageAsPPM();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::SetFileName(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetFileName(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::SetGrayScaleHint(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetGrayScaleHint(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::SetPosition(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetPosition(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageWindow::SetPosition\n");
-
-
-
-void
-vtkImageWindow::SetSize(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetSize(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkImageWindow::SetSize\n");
-
-
-
-void
-vtkImageWindow::SetWindowInfo(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetWindowInfo(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::SwapBuffers()
-		CODE:
-		THIS->SwapBuffers();
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWindow::WritePPMImageFile()
-		CODE:
-		THIS->WritePPMImageFile();
-		XSRETURN_EMPTY;
-
 MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageWrapPad PREFIX = vtk
 
 PROTOTYPES: DISABLE
@@ -9842,14 +10203,87 @@ vtkImageWrapPad::New()
 		OUTPUT:
 		RETVAL
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImageWriter PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ImplicitFunctionToImageStencil PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
 const char *
-vtkImageWriter::GetClassName()
+vtkImplicitFunctionToImageStencil::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+vtkImplicitFunction *
+vtkImplicitFunctionToImageStencil::GetInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImplicitFunction";
+		CODE:
+		RETVAL = THIS->GetInput();
+		if(RETVAL != NULL){
+			strcpy(CLASS,"Graphics::VTK::");
+			strcat(CLASS,RETVAL->GetClassName()+3);
+		}
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkImplicitFunctionToImageStencil::GetThreshold()
+		CODE:
+		RETVAL = THIS->GetThreshold();
+		OUTPUT:
+		RETVAL
+
+
+static vtkImplicitFunctionToImageStencil*
+vtkImplicitFunctionToImageStencil::New()
+		CODE:
+		RETVAL = vtkImplicitFunctionToImageStencil::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkImplicitFunctionToImageStencil::SetInput(arg1)
+		vtkImplicitFunction *	arg1
+		CODE:
+		THIS->SetInput(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkImplicitFunctionToImageStencil::SetThreshold(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetThreshold(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::PointLoad PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkPointLoad::ComputeEffectiveStressOff()
+		CODE:
+		THIS->ComputeEffectiveStressOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkPointLoad::ComputeEffectiveStressOn()
+		CODE:
+		THIS->ComputeEffectiveStressOn();
+		XSRETURN_EMPTY;
+
+
+const char *
+vtkPointLoad::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
@@ -9857,43 +10291,198 @@ vtkImageWriter::GetClassName()
 
 
 int
-vtkImageWriter::GetFileDimensionality()
+vtkPointLoad::GetComputeEffectiveStress()
 		CODE:
-		RETVAL = THIS->GetFileDimensionality();
+		RETVAL = THIS->GetComputeEffectiveStress();
 		OUTPUT:
 		RETVAL
 
 
-char *
-vtkImageWriter::GetFileName()
+float
+vtkPointLoad::GetLoadValue()
 		CODE:
-		RETVAL = THIS->GetFileName();
+		RETVAL = THIS->GetLoadValue();
 		OUTPUT:
 		RETVAL
 
 
-char *
-vtkImageWriter::GetFilePattern()
-		CODE:
-		RETVAL = THIS->GetFilePattern();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkImageWriter::GetFilePrefix()
-		CODE:
-		RETVAL = THIS->GetFilePrefix();
-		OUTPUT:
-		RETVAL
-
-
-vtkImageData *
-vtkImageWriter::GetInput()
+float  *
+vtkPointLoad::GetModelBounds()
 		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkImageData";
+		float  * retval;
 		CODE:
-		RETVAL = THIS->GetInput();
+		SP -= items;
+		retval = THIS->GetModelBounds();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+float
+vtkPointLoad::GetPoissonsRatio()
+		CODE:
+		RETVAL = THIS->GetPoissonsRatio();
+		OUTPUT:
+		RETVAL
+
+
+int  *
+vtkPointLoad::GetSampleDimensions()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSampleDimensions();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkPointLoad*
+vtkPointLoad::New()
+		CODE:
+		RETVAL = vtkPointLoad::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkPointLoad::SetComputeEffectiveStress(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetComputeEffectiveStress(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkPointLoad::SetLoadValue(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetLoadValue(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkPointLoad::SetModelBounds(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		float 	arg4
+		float 	arg5
+		float 	arg6
+		CODE:
+		THIS->SetModelBounds(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkPointLoad::SetModelBounds\n");
+
+
+
+void
+vtkPointLoad::SetPoissonsRatio(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetPoissonsRatio(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkPointLoad::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetSampleDimensions(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkPointLoad::SetSampleDimensions\n");
+
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::SampleFunction PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+void
+vtkSampleFunction::CappingOff()
+		CODE:
+		THIS->CappingOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkSampleFunction::CappingOn()
+		CODE:
+		THIS->CappingOn();
+		XSRETURN_EMPTY;
+
+
+void
+vtkSampleFunction::ComputeNormalsOff()
+		CODE:
+		THIS->ComputeNormalsOff();
+		XSRETURN_EMPTY;
+
+
+void
+vtkSampleFunction::ComputeNormalsOn()
+		CODE:
+		THIS->ComputeNormalsOn();
+		XSRETURN_EMPTY;
+
+
+float
+vtkSampleFunction::GetCapValue()
+		CODE:
+		RETVAL = THIS->GetCapValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkSampleFunction::GetCapping()
+		CODE:
+		RETVAL = THIS->GetCapping();
+		OUTPUT:
+		RETVAL
+
+
+const char *
+vtkSampleFunction::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkSampleFunction::GetComputeNormals()
+		CODE:
+		RETVAL = THIS->GetComputeNormals();
+		OUTPUT:
+		RETVAL
+
+
+vtkImplicitFunction *
+vtkSampleFunction::GetImplicitFunction()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkImplicitFunction";
+		CODE:
+		RETVAL = THIS->GetImplicitFunction();
 		if(RETVAL != NULL){
 			strcpy(CLASS,"Graphics::VTK::");
 			strcat(CLASS,RETVAL->GetClassName()+3);
@@ -9903,806 +10492,7 @@ vtkImageWriter::GetInput()
 
 
 unsigned long
-vtkImageWriter::GetMemoryLimit()
-		CODE:
-		RETVAL = THIS->GetMemoryLimit();
-		OUTPUT:
-		RETVAL
-
-
-static vtkImageWriter*
-vtkImageWriter::New()
-		CODE:
-		RETVAL = vtkImageWriter::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkImageWriter::SetFileDimensionality(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFileDimensionality(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::SetFileName(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetFileName(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::SetFilePattern(filePattern)
-		char *	filePattern
-		CODE:
-		THIS->SetFilePattern(filePattern);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::SetFilePrefix(filePrefix)
-		char *	filePrefix
-		CODE:
-		THIS->SetFilePrefix(filePrefix);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::SetInput(input)
-		vtkImageData *	input
-		CODE:
-		THIS->SetInput(input);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::SetMemoryLimit(arg1)
-		unsigned long 	arg1
-		CODE:
-		THIS->SetMemoryLimit(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkImageWriter::Write()
-		CODE:
-		THIS->Write();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::LabeledDataMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkLabeledDataMapper::BoldOff()
-		CODE:
-		THIS->BoldOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::BoldOn()
-		CODE:
-		THIS->BoldOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkLabeledDataMapper::GetBold()
-		CODE:
-		RETVAL = THIS->GetBold();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkLabeledDataMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetFieldDataArray()
-		CODE:
-		RETVAL = THIS->GetFieldDataArray();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetFontFamily()
-		CODE:
-		RETVAL = THIS->GetFontFamily();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetFontSize()
-		CODE:
-		RETVAL = THIS->GetFontSize();
-		OUTPUT:
-		RETVAL
-
-
-vtkDataSet *
-vtkLabeledDataMapper::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkDataSet";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetItalic()
-		CODE:
-		RETVAL = THIS->GetItalic();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkLabeledDataMapper::GetLabelFormat()
-		CODE:
-		RETVAL = THIS->GetLabelFormat();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetLabelMode()
-		CODE:
-		RETVAL = THIS->GetLabelMode();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetLabeledComponent()
-		CODE:
-		RETVAL = THIS->GetLabeledComponent();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkLabeledDataMapper::GetShadow()
-		CODE:
-		RETVAL = THIS->GetShadow();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkLabeledDataMapper::ItalicOff()
-		CODE:
-		THIS->ItalicOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::ItalicOn()
-		CODE:
-		THIS->ItalicOn();
-		XSRETURN_EMPTY;
-
-
-static vtkLabeledDataMapper*
-vtkLabeledDataMapper::New()
-		CODE:
-		RETVAL = vtkLabeledDataMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkLabeledDataMapper::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetBold(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetBold(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFieldDataArray(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFieldDataArray(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFontFamily(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFontFamily(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFontFamilyToArial()
-		CODE:
-		THIS->SetFontFamilyToArial();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFontFamilyToCourier()
-		CODE:
-		THIS->SetFontFamilyToCourier();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFontFamilyToTimes()
-		CODE:
-		THIS->SetFontFamilyToTimes();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetFontSize(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFontSize(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetInput(arg1)
-		vtkDataSet *	arg1
-		CODE:
-		THIS->SetInput(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetItalic(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetItalic(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelFormat(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetLabelFormat(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelMode(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetLabelMode(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelFieldData()
-		CODE:
-		THIS->SetLabelModeToLabelFieldData();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelIds()
-		CODE:
-		THIS->SetLabelModeToLabelIds();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelNormals()
-		CODE:
-		THIS->SetLabelModeToLabelNormals();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelScalars()
-		CODE:
-		THIS->SetLabelModeToLabelScalars();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelTCoords()
-		CODE:
-		THIS->SetLabelModeToLabelTCoords();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelTensors()
-		CODE:
-		THIS->SetLabelModeToLabelTensors();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabelModeToLabelVectors()
-		CODE:
-		THIS->SetLabelModeToLabelVectors();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetLabeledComponent(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetLabeledComponent(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::SetShadow(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetShadow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::ShadowOff()
-		CODE:
-		THIS->ShadowOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkLabeledDataMapper::ShadowOn()
-		CODE:
-		THIS->ShadowOn();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ParallelCoordinatesActor PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkParallelCoordinatesActor::BoldOff()
-		CODE:
-		THIS->BoldOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::BoldOn()
-		CODE:
-		THIS->BoldOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkParallelCoordinatesActor::GetBold()
-		CODE:
-		RETVAL = THIS->GetBold();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkParallelCoordinatesActor::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::GetFontFamily()
-		CODE:
-		RETVAL = THIS->GetFontFamily();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::GetIndependentVariables()
-		CODE:
-		RETVAL = THIS->GetIndependentVariables();
-		OUTPUT:
-		RETVAL
-
-
-vtkDataObject *
-vtkParallelCoordinatesActor::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkDataObject";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::GetItalic()
-		CODE:
-		RETVAL = THIS->GetItalic();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkParallelCoordinatesActor::GetLabelFormat()
-		CODE:
-		RETVAL = THIS->GetLabelFormat();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::GetNumberOfLabels()
-		CODE:
-		RETVAL = THIS->GetNumberOfLabels();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::GetShadow()
-		CODE:
-		RETVAL = THIS->GetShadow();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkParallelCoordinatesActor::GetTitle()
-		CODE:
-		RETVAL = THIS->GetTitle();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkParallelCoordinatesActor::ItalicOff()
-		CODE:
-		THIS->ItalicOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::ItalicOn()
-		CODE:
-		THIS->ItalicOn();
-		XSRETURN_EMPTY;
-
-
-static vtkParallelCoordinatesActor*
-vtkParallelCoordinatesActor::New()
-		CODE:
-		RETVAL = vtkParallelCoordinatesActor::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkParallelCoordinatesActor::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-int
-vtkParallelCoordinatesActor::RenderOpaqueGeometry(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry(arg1);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::RenderOverlay(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->RenderOverlay(arg1);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkParallelCoordinatesActor::RenderTranslucentGeometry(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->RenderTranslucentGeometry(arg1);
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkParallelCoordinatesActor::SetBold(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetBold(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetFontFamily(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFontFamily(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetFontFamilyToArial()
-		CODE:
-		THIS->SetFontFamilyToArial();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetFontFamilyToCourier()
-		CODE:
-		THIS->SetFontFamilyToCourier();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetFontFamilyToTimes()
-		CODE:
-		THIS->SetFontFamilyToTimes();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetIndependentVariables(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetIndependentVariables(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetIndependentVariablesToColumns()
-		CODE:
-		THIS->SetIndependentVariablesToColumns();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetIndependentVariablesToRows()
-		CODE:
-		THIS->SetIndependentVariablesToRows();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetInput(arg1)
-		vtkDataObject *	arg1
-		CODE:
-		THIS->SetInput(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetItalic(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetItalic(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetLabelFormat(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetLabelFormat(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetNumberOfLabels(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfLabels(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetShadow(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetShadow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::SetTitle(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetTitle(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::ShadowOff()
-		CODE:
-		THIS->ShadowOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkParallelCoordinatesActor::ShadowOn()
-		CODE:
-		THIS->ShadowOn();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::PNMReader PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkPNMReader::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkPNMReader*
-vtkPNMReader::New()
-		CODE:
-		RETVAL = vtkPNMReader::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::PNMWriter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkPNMWriter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkPNMWriter*
-vtkPNMWriter::New()
-		CODE:
-		RETVAL = vtkPNMWriter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::PolyDataMapper2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkPolyDataMapper2D::CreateDefaultLookupTable()
-		CODE:
-		THIS->CreateDefaultLookupTable();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkPolyDataMapper2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkPolyDataMapper2D::GetColorMode()
-		CODE:
-		RETVAL = THIS->GetColorMode();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkPolyDataMapper2D::GetColorModeAsString()
-		CODE:
-		RETVAL = THIS->GetColorModeAsString();
-		OUTPUT:
-		RETVAL
-
-
-vtkScalars *
-vtkPolyDataMapper2D::GetColors()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkScalars";
-		CODE:
-		RETVAL = THIS->GetColors();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkPolyData *
-vtkPolyDataMapper2D::GetInput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkPolyData";
-		CODE:
-		RETVAL = THIS->GetInput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-vtkScalarsToColors *
-vtkPolyDataMapper2D::GetLookupTable()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkScalarsToColors";
-		CODE:
-		RETVAL = THIS->GetLookupTable();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-unsigned long
-vtkPolyDataMapper2D::GetMTime()
+vtkSampleFunction::GetMTime()
 		CODE:
 		RETVAL = THIS->GetMTime();
 		OUTPUT:
@@ -10710,478 +10500,126 @@ vtkPolyDataMapper2D::GetMTime()
 
 
 float  *
-vtkPolyDataMapper2D::GetScalarRange()
+vtkSampleFunction::GetModelBounds()
 		PREINIT:
 		float  * retval;
-		PPCODE:
-		retval = THIS->GetScalarRange();
-		EXTEND(SP, 2);
+		CODE:
+		SP -= items;
+		retval = THIS->GetModelBounds();
+		EXTEND(SP, 6);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
 
 
-int
-vtkPolyDataMapper2D::GetScalarVisibility()
-		CODE:
-		RETVAL = THIS->GetScalarVisibility();
-		OUTPUT:
-		RETVAL
-
-
-vtkCoordinate *
-vtkPolyDataMapper2D::GetTransformCoordinate()
+int  *
+vtkSampleFunction::GetSampleDimensions()
 		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkCoordinate";
+		int  * retval;
 		CODE:
-		RETVAL = THIS->GetTransformCoordinate();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
+		SP -= items;
+		retval = THIS->GetSampleDimensions();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkSampleFunction*
+vtkSampleFunction::New()
+		CODE:
+		RETVAL = vtkSampleFunction::New();
 		OUTPUT:
 		RETVAL
 
 
-static vtkPolyDataMapper2D*
-vtkPolyDataMapper2D::New()
-		CODE:
-		RETVAL = vtkPolyDataMapper2D::New();
-		OUTPUT:
-		RETVAL
-
-
 void
-vtkPolyDataMapper2D::ScalarVisibilityOff()
+vtkSampleFunction::SetCapValue(arg1)
+		float 	arg1
 		CODE:
-		THIS->ScalarVisibilityOff();
+		THIS->SetCapValue(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkPolyDataMapper2D::ScalarVisibilityOn()
-		CODE:
-		THIS->ScalarVisibilityOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkPolyDataMapper2D::SetColorMode(arg1)
+vtkSampleFunction::SetCapping(arg1)
 		int 	arg1
 		CODE:
-		THIS->SetColorMode(arg1);
+		THIS->SetCapping(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkPolyDataMapper2D::SetColorModeToDefault()
+vtkSampleFunction::SetComputeNormals(arg1)
+		int 	arg1
 		CODE:
-		THIS->SetColorModeToDefault();
+		THIS->SetComputeNormals(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkPolyDataMapper2D::SetColorModeToLuminance()
+vtkSampleFunction::SetImplicitFunction(arg1)
+		vtkImplicitFunction *	arg1
 		CODE:
-		THIS->SetColorModeToLuminance();
+		THIS->SetImplicitFunction(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkPolyDataMapper2D::SetColorModeToMapScalars()
-		CODE:
-		THIS->SetColorModeToMapScalars();
-		XSRETURN_EMPTY;
-
-
-void
-vtkPolyDataMapper2D::SetInput(arg1)
-		vtkPolyData *	arg1
-		CODE:
-		THIS->SetInput(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkPolyDataMapper2D::SetLookupTable(lut)
-		vtkScalarsToColors *	lut
-		CODE:
-		THIS->SetLookupTable(lut);
-		XSRETURN_EMPTY;
-
-
-void
-vtkPolyDataMapper2D::SetScalarRange(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		float  	arg1
+vtkSampleFunction::SetModelBounds(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		float 	arg1
 		float 	arg2
+		float 	arg3
+		float 	arg4
+		float 	arg5
+		float 	arg6
 		CODE:
-		THIS->SetScalarRange(arg1, arg2);
+		THIS->SetModelBounds(arg1, arg2, arg3, arg4, arg5, arg6);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkPolyDataMapper2D::SetScalarRange\n");
+		croak("Unsupported number of args and/or types supplied to vtkSampleFunction::SetModelBounds\n");
 
 
 
 void
-vtkPolyDataMapper2D::SetScalarVisibility(arg1)
+vtkSampleFunction::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
 		int 	arg1
+		int 	arg2
+		int 	arg3
 		CODE:
-		THIS->SetScalarVisibility(arg1);
+		THIS->SetSampleDimensions(arg1, arg2, arg3);
 		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkSampleFunction::SetSampleDimensions\n");
+
 
 
 void
-vtkPolyDataMapper2D::SetTransformCoordinate(arg1)
-		vtkCoordinate *	arg1
+vtkSampleFunction::SetScalars(arg1)
+		vtkDataArray *	arg1
 		CODE:
-		THIS->SetTransformCoordinate(arg1);
+		THIS->SetScalars(arg1);
 		XSRETURN_EMPTY;
 
-
-void
-vtkPolyDataMapper2D::ShallowCopy(m)
-		vtkPolyDataMapper2D *	m
-		CODE:
-		THIS->ShallowCopy(m);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::PostScriptWriter PREFIX = vtk
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ShepardMethod PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
 const char *
-vtkPostScriptWriter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkPostScriptWriter*
-vtkPostScriptWriter::New()
-		CODE:
-		RETVAL = vtkPostScriptWriter::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ScalarBarActor PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkScalarBarActor::BoldOff()
-		CODE:
-		THIS->BoldOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::BoldOn()
-		CODE:
-		THIS->BoldOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkScalarBarActor::GetBold()
-		CODE:
-		RETVAL = THIS->GetBold();
-		OUTPUT:
-		RETVAL
-
-
-const char *
-vtkScalarBarActor::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetFontFamily()
-		CODE:
-		RETVAL = THIS->GetFontFamily();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetItalic()
-		CODE:
-		RETVAL = THIS->GetItalic();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkScalarBarActor::GetLabelFormat()
-		CODE:
-		RETVAL = THIS->GetLabelFormat();
-		OUTPUT:
-		RETVAL
-
-
-vtkScalarsToColors *
-vtkScalarBarActor::GetLookupTable()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkScalarsToColors";
-		CODE:
-		RETVAL = THIS->GetLookupTable();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetMaximumNumberOfColors()
-		CODE:
-		RETVAL = THIS->GetMaximumNumberOfColors();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetNumberOfLabels()
-		CODE:
-		RETVAL = THIS->GetNumberOfLabels();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetOrientation()
-		CODE:
-		RETVAL = THIS->GetOrientation();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::GetShadow()
-		CODE:
-		RETVAL = THIS->GetShadow();
-		OUTPUT:
-		RETVAL
-
-
-char *
-vtkScalarBarActor::GetTitle()
-		CODE:
-		RETVAL = THIS->GetTitle();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkScalarBarActor::ItalicOff()
-		CODE:
-		THIS->ItalicOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::ItalicOn()
-		CODE:
-		THIS->ItalicOn();
-		XSRETURN_EMPTY;
-
-
-static vtkScalarBarActor*
-vtkScalarBarActor::New()
-		CODE:
-		RETVAL = vtkScalarBarActor::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkScalarBarActor::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-int
-vtkScalarBarActor::RenderOpaqueGeometry(viewport)
-		vtkViewport *	viewport
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry(viewport);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::RenderOverlay(viewport)
-		vtkViewport *	viewport
-		CODE:
-		RETVAL = THIS->RenderOverlay(viewport);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkScalarBarActor::RenderTranslucentGeometry(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->RenderTranslucentGeometry(arg1);
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkScalarBarActor::SetBold(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetBold(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetFontFamily(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetFontFamily(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetFontFamilyToArial()
-		CODE:
-		THIS->SetFontFamilyToArial();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetFontFamilyToCourier()
-		CODE:
-		THIS->SetFontFamilyToCourier();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetFontFamilyToTimes()
-		CODE:
-		THIS->SetFontFamilyToTimes();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetItalic(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetItalic(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetLabelFormat(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetLabelFormat(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetLookupTable(arg1)
-		vtkScalarsToColors *	arg1
-		CODE:
-		THIS->SetLookupTable(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetMaximumNumberOfColors(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetMaximumNumberOfColors(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetNumberOfLabels(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetNumberOfLabels(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetOrientation(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetOrientation(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetOrientationToHorizontal()
-		CODE:
-		THIS->SetOrientationToHorizontal();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetOrientationToVertical()
-		CODE:
-		THIS->SetOrientationToVertical();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetShadow(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetShadow(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::SetTitle(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetTitle(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::ShadowOff()
-		CODE:
-		THIS->ShadowOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::ShadowOn()
-		CODE:
-		THIS->ShadowOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkScalarBarActor::ShallowCopy(prop)
-		vtkProp *	prop
-		CODE:
-		THIS->ShallowCopy(prop);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::ScaledTextActor PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkScaledTextActor::GetClassName()
+vtkShepardMethod::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
@@ -11189,104 +10627,155 @@ vtkScaledTextActor::GetClassName()
 
 
 float
-vtkScaledTextActor::GetMaximumLineHeight()
+vtkShepardMethod::GetMaximumDistance()
 		CODE:
-		RETVAL = THIS->GetMaximumLineHeight();
+		RETVAL = THIS->GetMaximumDistance();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkShepardMethod::GetMaximumDistanceMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumDistanceMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkShepardMethod::GetMaximumDistanceMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumDistanceMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float  *
+vtkShepardMethod::GetModelBounds()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetModelBounds();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+float
+vtkShepardMethod::GetNullValue()
+		CODE:
+		RETVAL = THIS->GetNullValue();
 		OUTPUT:
 		RETVAL
 
 
 int  *
-vtkScaledTextActor::GetMinimumSize()
+vtkShepardMethod::GetSampleDimensions()
 		PREINIT:
 		int  * retval;
-		PPCODE:
-		retval = THIS->GetMinimumSize();
-		EXTEND(SP, 2);
+		CODE:
+		SP -= items;
+		retval = THIS->GetSampleDimensions();
+		EXTEND(SP, 3);
 		PUSHs(sv_2mortal(newSVnv(retval[0])));
 		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
 
 
-static vtkScaledTextActor*
-vtkScaledTextActor::New()
+static vtkShepardMethod*
+vtkShepardMethod::New()
 		CODE:
-		RETVAL = vtkScaledTextActor::New();
+		RETVAL = vtkShepardMethod::New();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkScaledTextActor::SetMapper(arg1 = 0)
-	CASE: items == 2
-		vtkTextMapper *	arg1
-		CODE:
-		THIS->SetMapper(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkScaledTextActor::SetMapper\n");
-
-
-
-void
-vtkScaledTextActor::SetMaximumLineHeight(arg1)
+vtkShepardMethod::SetMaximumDistance(arg1)
 		float 	arg1
 		CODE:
-		THIS->SetMaximumLineHeight(arg1);
+		THIS->SetMaximumDistance(arg1);
 		XSRETURN_EMPTY;
 
 
 void
-vtkScaledTextActor::SetMinimumSize(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int  	arg1
-		int 	arg2
+vtkShepardMethod::SetModelBounds(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		float 	arg4
+		float 	arg5
+		float 	arg6
 		CODE:
-		THIS->SetMinimumSize(arg1, arg2);
+		THIS->SetModelBounds(arg1, arg2, arg3, arg4, arg5, arg6);
 		XSRETURN_EMPTY;
 	CASE:
 		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkScaledTextActor::SetMinimumSize\n");
+		croak("Unsupported number of args and/or types supplied to vtkShepardMethod::SetModelBounds\n");
 
 
 
 void
-vtkScaledTextActor::ShallowCopy(prop)
-		vtkProp *	prop
+vtkShepardMethod::SetNullValue(arg1)
+		float 	arg1
 		CODE:
-		THIS->ShallowCopy(prop);
+		THIS->SetNullValue(arg1);
 		XSRETURN_EMPTY;
 
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::TextMapper PREFIX = vtk
+
+void
+vtkShepardMethod::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetSampleDimensions(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkShepardMethod::SetSampleDimensions\n");
+
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::SimpleImageFilterExample PREFIX = vtk
 
 PROTOTYPES: DISABLE
 
 
 
-void
-vtkTextMapper::BoldOff()
+const char *
+vtkSimpleImageFilterExample::GetClassName()
 		CODE:
-		THIS->BoldOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::BoldOn()
-		CODE:
-		THIS->BoldOn();
-		XSRETURN_EMPTY;
-
-
-int
-vtkTextMapper::GetBold()
-		CODE:
-		RETVAL = THIS->GetBold();
+		RETVAL = THIS->GetClassName();
 		OUTPUT:
 		RETVAL
 
 
+static vtkSimpleImageFilterExample*
+vtkSimpleImageFilterExample::New()
+		CODE:
+		RETVAL = vtkSimpleImageFilterExample::New();
+		OUTPUT:
+		RETVAL
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::SurfaceReconstructionFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
 const char *
-vtkTextMapper::GetClassName()
+vtkSurfaceReconstructionFilter::GetClassName()
 		CODE:
 		RETVAL = THIS->GetClassName();
 		OUTPUT:
@@ -11294,1074 +10783,292 @@ vtkTextMapper::GetClassName()
 
 
 int
-vtkTextMapper::GetFontFamily()
+vtkSurfaceReconstructionFilter::GetNeighborhoodSize()
 		CODE:
-		RETVAL = THIS->GetFontFamily();
+		RETVAL = THIS->GetNeighborhoodSize();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkSurfaceReconstructionFilter::GetSampleSpacing()
+		CODE:
+		RETVAL = THIS->GetSampleSpacing();
+		OUTPUT:
+		RETVAL
+
+
+static vtkSurfaceReconstructionFilter*
+vtkSurfaceReconstructionFilter::New()
+		CODE:
+		RETVAL = vtkSurfaceReconstructionFilter::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkSurfaceReconstructionFilter::SetNeighborhoodSize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetNeighborhoodSize(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkSurfaceReconstructionFilter::SetSampleSpacing(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetSampleSpacing(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::TriangularTexture PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkTriangularTexture::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkTriangularTexture::GetScaleFactor()
+		CODE:
+		RETVAL = THIS->GetScaleFactor();
 		OUTPUT:
 		RETVAL
 
 
 int
-vtkTextMapper::GetFontSize()
+vtkTriangularTexture::GetTexturePattern()
 		CODE:
-		RETVAL = THIS->GetFontSize();
+		RETVAL = THIS->GetTexturePattern();
 		OUTPUT:
 		RETVAL
 
 
 int
-vtkTextMapper::GetHeight(arg1)
-		vtkViewport *	arg1
+vtkTriangularTexture::GetTexturePatternMaxValue()
 		CODE:
-		RETVAL = THIS->GetHeight(arg1);
+		RETVAL = THIS->GetTexturePatternMaxValue();
 		OUTPUT:
 		RETVAL
 
 
-char *
-vtkTextMapper::GetInput()
+int
+vtkTriangularTexture::GetTexturePatternMinValue()
+		CODE:
+		RETVAL = THIS->GetTexturePatternMinValue();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkTriangularTexture::GetXSize()
+		CODE:
+		RETVAL = THIS->GetXSize();
+		OUTPUT:
+		RETVAL
+
+
+int
+vtkTriangularTexture::GetYSize()
+		CODE:
+		RETVAL = THIS->GetYSize();
+		OUTPUT:
+		RETVAL
+
+
+static vtkTriangularTexture*
+vtkTriangularTexture::New()
+		CODE:
+		RETVAL = vtkTriangularTexture::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkTriangularTexture::SetScaleFactor(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetScaleFactor(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkTriangularTexture::SetTexturePattern(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetTexturePattern(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkTriangularTexture::SetXSize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetXSize(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkTriangularTexture::SetYSize(arg1)
+		int 	arg1
+		CODE:
+		THIS->SetYSize(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::VoxelModeller PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkVoxelModeller::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkVoxelModeller::GetMaximumDistance()
+		CODE:
+		RETVAL = THIS->GetMaximumDistance();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkVoxelModeller::GetMaximumDistanceMaxValue()
+		CODE:
+		RETVAL = THIS->GetMaximumDistanceMaxValue();
+		OUTPUT:
+		RETVAL
+
+
+float
+vtkVoxelModeller::GetMaximumDistanceMinValue()
+		CODE:
+		RETVAL = THIS->GetMaximumDistanceMinValue();
+		OUTPUT:
+		RETVAL
+
+
+float  *
+vtkVoxelModeller::GetModelBounds()
+		PREINIT:
+		float  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetModelBounds();
+		EXTEND(SP, 6);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUSHs(sv_2mortal(newSVnv(retval[3])));
+		PUSHs(sv_2mortal(newSVnv(retval[4])));
+		PUSHs(sv_2mortal(newSVnv(retval[5])));
+		PUTBACK;
+		return;
+
+
+int  *
+vtkVoxelModeller::GetSampleDimensions()
+		PREINIT:
+		int  * retval;
+		CODE:
+		SP -= items;
+		retval = THIS->GetSampleDimensions();
+		EXTEND(SP, 3);
+		PUSHs(sv_2mortal(newSVnv(retval[0])));
+		PUSHs(sv_2mortal(newSVnv(retval[1])));
+		PUSHs(sv_2mortal(newSVnv(retval[2])));
+		PUTBACK;
+		return;
+
+
+static vtkVoxelModeller*
+vtkVoxelModeller::New()
+		CODE:
+		RETVAL = vtkVoxelModeller::New();
+		OUTPUT:
+		RETVAL
+
+
+void
+vtkVoxelModeller::SetMaximumDistance(arg1)
+		float 	arg1
+		CODE:
+		THIS->SetMaximumDistance(arg1);
+		XSRETURN_EMPTY;
+
+
+void
+vtkVoxelModeller::SetModelBounds(arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0)
+	CASE: items == 7
+		float 	arg1
+		float 	arg2
+		float 	arg3
+		float 	arg4
+		float 	arg5
+		float 	arg6
+		CODE:
+		THIS->SetModelBounds(arg1, arg2, arg3, arg4, arg5, arg6);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkVoxelModeller::SetModelBounds\n");
+
+
+
+void
+vtkVoxelModeller::SetSampleDimensions(arg1 = 0, arg2 = 0, arg3 = 0)
+	CASE: items == 4
+		int 	arg1
+		int 	arg2
+		int 	arg3
+		CODE:
+		THIS->SetSampleDimensions(arg1, arg2, arg3);
+		XSRETURN_EMPTY;
+	CASE:
+		CODE:
+		croak("Unsupported number of args and/or types supplied to vtkVoxelModeller::SetSampleDimensions\n");
+
+
+
+void
+vtkVoxelModeller::Write(arg1)
+		char *	arg1
+		CODE:
+		THIS->Write(arg1);
+		XSRETURN_EMPTY;
+
+MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::WindowToImageFilter PREFIX = vtk
+
+PROTOTYPES: DISABLE
+
+
+
+const char *
+vtkWindowToImageFilter::GetClassName()
+		CODE:
+		RETVAL = THIS->GetClassName();
+		OUTPUT:
+		RETVAL
+
+
+vtkWindow *
+vtkWindowToImageFilter::GetInput()
+		PREINIT:
+		char  CLASS[80] = "Graphics::VTK::vtkWindow";
 		CODE:
 		RETVAL = THIS->GetInput();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkTextMapper::GetItalic()
-		CODE:
-		RETVAL = THIS->GetItalic();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkTextMapper::GetJustification()
-		CODE:
-		RETVAL = THIS->GetJustification();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkTextMapper::GetLineOffset()
-		CODE:
-		RETVAL = THIS->GetLineOffset();
-		OUTPUT:
-		RETVAL
-
-
-float
-vtkTextMapper::GetLineSpacing()
-		CODE:
-		RETVAL = THIS->GetLineSpacing();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkTextMapper::GetNumberOfLines(arg1 = 0)
-	CASE: items == 2
-		char *	arg1
-		CODE:
-		RETVAL = THIS->GetNumberOfLines(arg1);
-		OUTPUT:
-		RETVAL
-	CASE: items == 1
-		CODE:
-		RETVAL = THIS->GetNumberOfLines();
-		OUTPUT:
-		RETVAL
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkTextMapper::GetNumberOfLines\n");
-
-
-
-int
-vtkTextMapper::GetShadow()
-		CODE:
-		RETVAL = THIS->GetShadow();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkTextMapper::GetVerticalJustification()
-		CODE:
-		RETVAL = THIS->GetVerticalJustification();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkTextMapper::GetWidth(arg1)
-		vtkViewport *	arg1
-		CODE:
-		RETVAL = THIS->GetWidth(arg1);
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkTextMapper::ItalicOff()
-		CODE:
-		THIS->ItalicOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::ItalicOn()
-		CODE:
-		THIS->ItalicOn();
-		XSRETURN_EMPTY;
-
-
-static vtkTextMapper*
-vtkTextMapper::New()
-		CODE:
-		RETVAL = vtkTextMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkTextMapper::SetBold(val)
-		int 	val
-		CODE:
-		THIS->SetBold(val);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetFontFamily(val)
-		int 	val
-		CODE:
-		THIS->SetFontFamily(val);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetFontFamilyToArial()
-		CODE:
-		THIS->SetFontFamilyToArial();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetFontFamilyToCourier()
-		CODE:
-		THIS->SetFontFamilyToCourier();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetFontFamilyToTimes()
-		CODE:
-		THIS->SetFontFamilyToTimes();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetFontSize(size)
-		int 	size
-		CODE:
-		THIS->SetFontSize(size);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetInput(inputString)
-		char *	inputString
-		CODE:
-		THIS->SetInput(inputString);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetItalic(val)
-		int 	val
-		CODE:
-		THIS->SetItalic(val);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetJustification(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetJustification(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetJustificationToCentered()
-		CODE:
-		THIS->SetJustificationToCentered();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetJustificationToLeft()
-		CODE:
-		THIS->SetJustificationToLeft();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetJustificationToRight()
-		CODE:
-		THIS->SetJustificationToRight();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetLineOffset(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetLineOffset(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetLineSpacing(arg1)
-		float 	arg1
-		CODE:
-		THIS->SetLineSpacing(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetShadow(val)
-		int 	val
-		CODE:
-		THIS->SetShadow(val);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetVerticalJustification(arg1)
-		int 	arg1
-		CODE:
-		THIS->SetVerticalJustification(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetVerticalJustificationToBottom()
-		CODE:
-		THIS->SetVerticalJustificationToBottom();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetVerticalJustificationToCentered()
-		CODE:
-		THIS->SetVerticalJustificationToCentered();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::SetVerticalJustificationToTop()
-		CODE:
-		THIS->SetVerticalJustificationToTop();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::ShadowOff()
-		CODE:
-		THIS->ShadowOff();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::ShadowOn()
-		CODE:
-		THIS->ShadowOn();
-		XSRETURN_EMPTY;
-
-
-void
-vtkTextMapper::ShallowCopy(tm)
-		vtkTextMapper *	tm
-		CODE:
-		THIS->ShallowCopy(tm);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::TIFFReader PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkTIFFReader::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkTIFFReader*
-vtkTIFFReader::New()
-		CODE:
-		RETVAL = vtkTIFFReader::New();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::TIFFWriter PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkTIFFWriter::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkTIFFWriter*
-vtkTIFFWriter::New()
-		CODE:
-		RETVAL = vtkTIFFWriter::New();
-		OUTPUT:
-		RETVAL
-
-#ifdef USE_MESA
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::MesaImager PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkMesaImager::Erase()
-		CODE:
-		THIS->Erase();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkMesaImager::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkMesaImager*
-vtkMesaImager::New()
-		CODE:
-		RETVAL = vtkMesaImager::New();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkMesaImager::RenderOpaqueGeometry()
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::MesaImageMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkMesaImageMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkMesaImageMapper*
-vtkMesaImageMapper::New()
-		CODE:
-		RETVAL = vtkMesaImageMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkMesaImageMapper::RenderData(viewport, data, actor)
-		vtkViewport *	viewport
-		vtkImageData *	data
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderData(viewport, data, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkMesaImageMapper::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::MesaImageWindow PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkMesaImageWindow::EraseWindow()
-		CODE:
-		THIS->EraseWindow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkMesaImageWindow::Frame()
-		CODE:
-		THIS->Frame();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkMesaImageWindow::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkMesaImageWindow::GetDesiredDepth()
-		CODE:
-		RETVAL = THIS->GetDesiredDepth();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkMesaImageWindow::GetGenericContext()
-		CODE:
-		RETVAL = THIS->GetGenericContext();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkMesaImageWindow::GetGenericDisplayId()
-		CODE:
-		RETVAL = THIS->GetGenericDisplayId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkMesaImageWindow::GetGenericDrawable()
-		CODE:
-		RETVAL = THIS->GetGenericDrawable();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkMesaImageWindow::GetGenericParentId()
-		CODE:
-		RETVAL = THIS->GetGenericParentId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkMesaImageWindow::GetGenericWindowId()
-		CODE:
-		RETVAL = THIS->GetGenericWindowId();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkMesaImageWindow::MakeCurrent()
-		CODE:
-		THIS->MakeCurrent();
-		XSRETURN_EMPTY;
-
-
-void
-vtkMesaImageWindow::MakeDefaultWindow()
-		CODE:
-		THIS->MakeDefaultWindow();
-		XSRETURN_EMPTY;
-
-
-static vtkMesaImageWindow*
-vtkMesaImageWindow::New()
-		CODE:
-		RETVAL = vtkMesaImageWindow::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkMesaImageWindow::Render()
-		CODE:
-		THIS->Render();
-		XSRETURN_EMPTY;
-
-
-void
-vtkMesaImageWindow::SetOffScreenRendering(i)
-		int 	i
-		CODE:
-		THIS->SetOffScreenRendering(i);
-		XSRETURN_EMPTY;
-
-
-void
-vtkMesaImageWindow::SwapBuffers()
-		CODE:
-		THIS->SwapBuffers();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::XMesaTextMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkXMesaTextMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkXMesaTextMapper*
-vtkXMesaTextMapper::New()
-		CODE:
-		RETVAL = vtkXMesaTextMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkXMesaTextMapper::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXMesaTextMapper::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXMesaTextMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::MesaPolyDataMapper2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkMesaPolyDataMapper2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkMesaPolyDataMapper2D*
-vtkMesaPolyDataMapper2D::New()
-		CODE:
-		RETVAL = vtkMesaPolyDataMapper2D::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkMesaPolyDataMapper2D::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-#endif
-
-#ifndef USE_MESA
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::OpenGLImager PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkOpenGLImager::Erase()
-		CODE:
-		THIS->Erase();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkOpenGLImager::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkOpenGLImager*
-vtkOpenGLImager::New()
-		CODE:
-		RETVAL = vtkOpenGLImager::New();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkOpenGLImager::RenderOpaqueGeometry()
-		CODE:
-		RETVAL = THIS->RenderOpaqueGeometry();
-		OUTPUT:
-		RETVAL
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::OpenGLImageMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkOpenGLImageMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkOpenGLImageMapper*
-vtkOpenGLImageMapper::New()
-		CODE:
-		RETVAL = vtkOpenGLImageMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkOpenGLImageMapper::RenderData(viewport, data, actor)
-		vtkViewport *	viewport
-		vtkImageData *	data
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderData(viewport, data, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkOpenGLImageMapper::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::OpenGLPolyDataMapper2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkOpenGLPolyDataMapper2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkOpenGLPolyDataMapper2D*
-vtkOpenGLPolyDataMapper2D::New()
-		CODE:
-		RETVAL = vtkOpenGLPolyDataMapper2D::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkOpenGLPolyDataMapper2D::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-#endif
-
-#ifndef WIN32
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::XImageMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkXImageMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageMapper::GetNumberOfColors()
-		CODE:
-		RETVAL = THIS->GetNumberOfColors();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageMapper::GetXWindowDepth(window)
-		vtkWindow *	window
-		CODE:
-		RETVAL = THIS->GetXWindowDepth(window);
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageMapper::GetXWindowVisualClass(window)
-		vtkWindow *	window
-		CODE:
-		RETVAL = THIS->GetXWindowVisualClass(window);
-		OUTPUT:
-		RETVAL
-
-
-static vtkXImageMapper*
-vtkXImageMapper::New()
-		CODE:
-		RETVAL = vtkXImageMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkXImageMapper::RenderData(viewport, data, actor)
-		vtkViewport *	viewport
-		vtkImageData *	data
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderData(viewport, data, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXImageMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::XImageWindow PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkXImageWindow::EraseWindow()
-		CODE:
-		THIS->EraseWindow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkXImageWindow::Frame()
-		CODE:
-		THIS->Frame();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkXImageWindow::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageWindow::GetDesiredDepth()
-		CODE:
-		RETVAL = THIS->GetDesiredDepth();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkXImageWindow::GetGenericContext()
-		CODE:
-		RETVAL = THIS->GetGenericContext();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkXImageWindow::GetGenericDisplayId()
-		CODE:
-		RETVAL = THIS->GetGenericDisplayId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkXImageWindow::GetGenericDrawable()
-		CODE:
-		RETVAL = THIS->GetGenericDrawable();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkXImageWindow::GetGenericParentId()
-		CODE:
-		RETVAL = THIS->GetGenericParentId();
-		OUTPUT:
-		RETVAL
-
-
-void *
-vtkXImageWindow::GetGenericWindowId()
-		CODE:
-		RETVAL = THIS->GetGenericWindowId();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageWindow::GetNumberOfColors()
-		CODE:
-		RETVAL = THIS->GetNumberOfColors();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageWindow::GetVisualClass()
-		CODE:
-		RETVAL = THIS->GetVisualClass();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkXImageWindow::GetVisualDepth()
-		CODE:
-		RETVAL = THIS->GetVisualDepth();
-		OUTPUT:
-		RETVAL
-
-
-static vtkXImageWindow*
-vtkXImageWindow::New()
-		CODE:
-		RETVAL = vtkXImageWindow::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkXImageWindow::SetBackgroundColor(r, g, b)
-		float 	r
-		float 	g
-		float 	b
-		CODE:
-		THIS->SetBackgroundColor(r, g, b);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXImageWindow::SetParentId(arg1 = 0)
-	CASE: items == 2
-		Window 	arg1
-		CODE:
-		THIS->SetParentId(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkXImageWindow::SetParentId\n");
-
-
-
-void
-vtkXImageWindow::SetPosition(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetPosition(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkXImageWindow::SetPosition\n");
-
-
-
-void
-vtkXImageWindow::SetSize(arg1 = 0, arg2 = 0)
-	CASE: items == 3
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetSize(arg1, arg2);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkXImageWindow::SetSize\n");
-
-
-
-void
-vtkXImageWindow::SetWindowId(arg1 = 0)
-	CASE: items == 2
-		Window 	arg1
-		CODE:
-		THIS->SetWindowId(arg1);
-		XSRETURN_EMPTY;
-	CASE:
-		CODE:
-		croak("Unsupported number of args and/or types supplied to vtkXImageWindow::SetWindowId\n");
-
-
-
-void
-vtkXImageWindow::SetWindowName(name)
-		char *	name
-		CODE:
-		THIS->SetWindowName(name);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXImageWindow::SwapBuffers()
-		CODE:
-		THIS->SwapBuffers();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::XPolyDataMapper2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkXPolyDataMapper2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkXPolyDataMapper2D*
-vtkXPolyDataMapper2D::New()
-		CODE:
-		RETVAL = vtkXPolyDataMapper2D::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkXPolyDataMapper2D::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::XTextMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkXTextMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkXTextMapper*
-vtkXTextMapper::New()
-		CODE:
-		RETVAL = vtkXTextMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkXTextMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkXTextMapper::SetFontSize(size)
-		int 	size
-		CODE:
-		THIS->SetFontSize(size);
-		XSRETURN_EMPTY;
-
-#endif
-
-#ifdef WIN32
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32ImageMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkWin32ImageMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkLookupTable *
-vtkWin32ImageMapper::GetLookupTable()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkLookupTable";
-		CODE:
-		RETVAL = THIS->GetLookupTable();
 		if(RETVAL != NULL){
 			strcpy(CLASS,"Graphics::VTK::");
 			strcat(CLASS,RETVAL->GetClassName()+3);
@@ -12370,438 +11077,19 @@ vtkWin32ImageMapper::GetLookupTable()
 		RETVAL
 
 
-unsigned long
-vtkWin32ImageMapper::GetMTime()
+static vtkWindowToImageFilter*
+vtkWindowToImageFilter::New()
 		CODE:
-		RETVAL = THIS->GetMTime();
-		OUTPUT:
-		RETVAL
-
-
-static vtkWin32ImageMapper*
-vtkWin32ImageMapper::New()
-		CODE:
-		RETVAL = vtkWin32ImageMapper::New();
+		RETVAL = vtkWindowToImageFilter::New();
 		OUTPUT:
 		RETVAL
 
 
 void
-vtkWin32ImageMapper::RenderData(viewport, data, actor)
-		vtkViewport *	viewport
-		vtkImageData *	data
-		vtkActor2D *	actor
+vtkWindowToImageFilter::SetInput(input)
+		vtkWindow *	input
 		CODE:
-		THIS->RenderData(viewport, data, actor);
+		THIS->SetInput(input);
 		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageMapper::SetLookupTable(arg1)
-		vtkLookupTable *	arg1
-		CODE:
-		THIS->SetLookupTable(arg1);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32OpenGLTextMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkWin32OpenGLTextMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-int
-vtkWin32OpenGLTextMapper::GetListBaseForFont(tm, vp)
-		vtkTextMapper *	tm
-		vtkViewport *	vp
-		CODE:
-		RETVAL = THIS->GetListBaseForFont(tm, vp);
-		OUTPUT:
-		RETVAL
-
-
-static vtkWin32OpenGLTextMapper*
-vtkWin32OpenGLTextMapper::New()
-		CODE:
-		RETVAL = vtkWin32OpenGLTextMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32OpenGLTextMapper::ReleaseGraphicsResources(arg1)
-		vtkWindow *	arg1
-		CODE:
-		THIS->ReleaseGraphicsResources(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLTextMapper::RenderGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLTextMapper::RenderOpaqueGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOpaqueGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLTextMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLTextMapper::RenderTranslucentGeometry(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderTranslucentGeometry(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32OpenGLImageWindow PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkWin32OpenGLImageWindow::Clean()
-		CODE:
-		THIS->Clean();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::Frame()
-		CODE:
-		THIS->Frame();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkWin32OpenGLImageWindow::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkWin32OpenGLImageWindow *
-vtkWin32OpenGLImageWindow::GetOutput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkWin32OpenGLImageWindow";
-		CODE:
-		RETVAL = THIS->GetOutput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32OpenGLImageWindow::MakeCurrent()
-		CODE:
-		THIS->MakeCurrent();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::MakeDefaultWindow()
-		CODE:
-		THIS->MakeDefaultWindow();
-		XSRETURN_EMPTY;
-
-
-static vtkWin32OpenGLImageWindow*
-vtkWin32OpenGLImageWindow::New()
-		CODE:
-		RETVAL = vtkWin32OpenGLImageWindow::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32OpenGLImageWindow::OpenGLInit()
-		CODE:
-		THIS->OpenGLInit();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::Render()
-		CODE:
-		THIS->Render();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::ResumeScreenRendering()
-		CODE:
-		THIS->ResumeScreenRendering();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetPosition(arg1, arg2)
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetPosition(arg1, arg2);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetSize(arg1, arg2)
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetSize(arg1, arg2);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetWindowName(arg1)
-		char *	arg1
-		CODE:
-		THIS->SetWindowName(arg1);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetupMemoryRendering(x, y, prn)
-		int 	x
-		int 	y
-		HDC 	prn
-		CODE:
-		THIS->SetupMemoryRendering(x, y, prn);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetupPalette(hDC)
-		HDC 	hDC
-		CODE:
-		THIS->SetupPalette(hDC);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SetupPixelFormat(hDC, dwFlags, debug, bpp, zbpp)
-		HDC 	hDC
-		DWORD 	dwFlags
-		int 	debug
-		int 	bpp
-		int 	zbpp
-		CODE:
-		THIS->SetupPixelFormat(hDC, dwFlags, debug, bpp, zbpp);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32OpenGLImageWindow::SwapBuffers()
-		CODE:
-		THIS->SwapBuffers();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32ImageWindow PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-void
-vtkWin32ImageWindow::EraseWindow()
-		CODE:
-		THIS->EraseWindow();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::Frame()
-		CODE:
-		THIS->Frame();
-		XSRETURN_EMPTY;
-
-
-const char *
-vtkWin32ImageWindow::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-vtkWin32ImageWindow *
-vtkWin32ImageWindow::GetOutput()
-		PREINIT:
-		char  CLASS[80] = "Graphics::VTK::vtkWin32ImageWindow";
-		CODE:
-		RETVAL = THIS->GetOutput();
-		if(RETVAL != NULL){
-			strcpy(CLASS,"Graphics::VTK::");
-			strcat(CLASS,RETVAL->GetClassName()+3);
-		}
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32ImageWindow::MakeDefaultWindow()
-		CODE:
-		THIS->MakeDefaultWindow();
-		XSRETURN_EMPTY;
-
-
-static vtkWin32ImageWindow*
-vtkWin32ImageWindow::New()
-		CODE:
-		RETVAL = vtkWin32ImageWindow::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32ImageWindow::ResumeScreenRendering()
-		CODE:
-		THIS->ResumeScreenRendering();
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::SetBackgroundColor(r, g, b)
-		float 	r
-		float 	g
-		float 	b
-		CODE:
-		THIS->SetBackgroundColor(r, g, b);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::SetPosition(arg1, arg2)
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetPosition(arg1, arg2);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::SetSize(arg1, arg2)
-		int 	arg1
-		int 	arg2
-		CODE:
-		THIS->SetSize(arg1, arg2);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::SetupMemoryRendering(x, y, prn)
-		int 	x
-		int 	y
-		HDC 	prn
-		CODE:
-		THIS->SetupMemoryRendering(x, y, prn);
-		XSRETURN_EMPTY;
-
-
-void
-vtkWin32ImageWindow::SwapBuffers()
-		CODE:
-		THIS->SwapBuffers();
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32TextMapper PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkWin32TextMapper::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkWin32TextMapper*
-vtkWin32TextMapper::New()
-		CODE:
-		RETVAL = vtkWin32TextMapper::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32TextMapper::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-MODULE = Graphics::VTK::Imaging	PACKAGE = Graphics::VTK::Win32PolyDataMapper2D PREFIX = vtk
-
-PROTOTYPES: DISABLE
-
-
-
-const char *
-vtkWin32PolyDataMapper2D::GetClassName()
-		CODE:
-		RETVAL = THIS->GetClassName();
-		OUTPUT:
-		RETVAL
-
-
-static vtkWin32PolyDataMapper2D*
-vtkWin32PolyDataMapper2D::New()
-		CODE:
-		RETVAL = vtkWin32PolyDataMapper2D::New();
-		OUTPUT:
-		RETVAL
-
-
-void
-vtkWin32PolyDataMapper2D::RenderOverlay(viewport, actor)
-		vtkViewport *	viewport
-		vtkActor2D *	actor
-		CODE:
-		THIS->RenderOverlay(viewport, actor);
-		XSRETURN_EMPTY;
-
-#endif
 
 

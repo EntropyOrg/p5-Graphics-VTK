@@ -1,10 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# This is a tcl -> perl converted modified from  Nick Ing-Simmons Tk Package
+# This is a tcl -> perl converted heavily modified from  Nick Ing-Simmons Tk Package
 #   The original was found in the Tk800.022 distribuion. Thanks Nick!
 
-# Highly experimental tcl -> perl converter, aimed at eventually
-# completeing Tix merge
 
 use Tk::Pretty;
 use Carp;
@@ -88,6 +86,7 @@ my $parse = Parse::RecDescent->new(<<'EndGrammar');
 	    | tcl_append
 	    | tcl_vtkConstructor
 	    | tcl_vtkCallback
+	    | tcl_vtkAddObserver
 	    | tcl_tkadd
 	    | tcl_tkentryconfig
 	    | tcl_return
@@ -121,7 +120,7 @@ my $parse = Parse::RecDescent->new(<<'EndGrammar');
 				$args->[0] eq 'command'){
 				if( $args->[1] =~ /^vtk/){
 				 		# info command vtkObject, treat as vtkObject->can('new');
-					$retVal = ['->',"VTK::".$args->[1],'can','new'];
+					$retVal = ['->',"Graphics::VTK::".$args->[1],'can','new'];
 				}
 				else{ # non VTK object treat as 'defined'
 					my $var = $args->[1];
@@ -299,7 +298,7 @@ my $parse = Parse::RecDescent->new(<<'EndGrammar');
 	#   tcl statement 'NewWidgetObject $widget vtkTextMapper Mapper1' gets translated
 	#     to $widget->{Mapper1} = vtkTextMapper->new;
         tcl_NewWidgetObj: 'NewWidgetObject' tcl_arg tcl_arg tcl_arg
-		{ [ '=', ['->{}', $item[2], $item[4]], [ '->', "VTK::".$item[3], 'new'] ] }
+		{ [ '=', ['->{}', $item[2], $item[4]], [ '->', "Graphics::VTK::".$item[3], 'new'] ] }
 
 
 	# tcl tk winfo command. Mapped to $widget->command
@@ -351,8 +350,9 @@ my $parse = Parse::RecDescent->new(<<'EndGrammar');
 			{ my ($rule, $class, $varName, $args) = @item;
 			  my $varLookup = $varName; # get rid of '$' for lookup
 			  $varLookup =~ s/^\$//g;
+			  $class =~ s/^vtk//;
 			  $Parse::RecDescent::vtkObjects{$varLookup} = 1;
-			  ['=', $varName,[ '->', "VTK::".$class, 'new', @$args]];
+			  ['=', $varName,[ '->', "Graphics::VTK::".$class, 'new', @$args]];
 			} 
 
 	# tk add command
@@ -417,6 +417,14 @@ my $parse = Parse::RecDescent->new(<<'EndGrammar');
 				my ($rule, $name, $method, $callback) = @item;
 				
 				my $retVal =  ['->',$name,$method, $callback];
+			}
+
+	# vtk AddObserver method
+	tcl_vtkAddObserver: object /AddObserver/ tcl_arg callback
+			{
+				my ($rule, $name, $method, $event, $callback) = @item;
+				
+				my $retVal =  ['->',$name,$method, $event, $callback];
 			}
 
 	tcl_method: object tcl_arg tcl_arg(s?)
@@ -1280,7 +1288,7 @@ sub expression
       {
        print "\"$item\"";
       }
-     elsif( $item =~ /^VTK\:\:\w+/ ){ # VTK Object Barewords are OK
+     elsif( $item =~ /^Graphics\:\:VTK\:\:\w+/ ){ # VTK Object Barewords are OK
      	print $item;
      }
      elsif( $item =~ /^0x[0-9a-f]+\b/i ){ # Hex Barewords ( Like 0x3dd) are ok
@@ -1450,28 +1458,29 @@ foreach $file (@ARGV)
 		#      parse this correctly, but unquoted names like: $VTK_DATA/42400-IDGH.stl gets
 		#      interpereted incorrectly.
 		s/\s+(\$VTK_DATA\S+)\s*$/ \"$1\"\n/g;
+		s/\s+(\$VTK_DATA_ROOT\S+)\s*$/ \"$1\"\n/g;
 		
 		# Replace load vtktcl with use VTK
-		if( /^\s*catch\s*\{\s*load\s+vtktcl\}/ ){
-			$_ = "";
+		if( /^\s*catch\s*\{\s*load\s+vtktcl\}/ || /^\s*package\s+require\s+vtk\s*$/ ){
+			$_ = "# SET ENV VARS\n"; # allways set environment vars
 		}
 		# Get rid of std environment variable set
 		if( /^\s*if\s*\{\s*\[catch\s*\{\s*set\s+VTK/ ){
-			$_ = "# SET ENV VARS";
+			$_ = "";
 		}
 
 		# Change source vtkInt to #use vtkInit. Comment char will be removed during post processing 
-		if( /^\s*source\s+\$VTK_TCL\/vtkInt\.tcl/ ){
-			$_ = "#use VTK::Tk::vtkInt;\n";
+		if( /^\s*source\s+\$VTK_TCL\/vtkInt\.tcl/ || /^\s*package\s+require\s+vtkinteraction/ ){
+			$_ = "#use Graphics::VTK::Tk::vtkInt;\n";
 		}
 
 		# Change source TkImageViewerInteractor to #use VTK::Tk::vtkImageViewer. Comment char will be removed during post processing 
 		if( /^\s*source\s+TkImageViewerInteractor\.tcl/ ){
-			$_ = "#use VTK::Tk::vtkImageViewer;\n";
+			$_ = "#use Graphics::VTK::Tk::vtkImageViewer;\n";
 		}
 		# Change source TkInteractor to #use VTK::Tk::vtkInteractor. Comment char will be removed during post processing 
 		if( /^\s*source\s+TkInteractor\.tcl/ ){
-			$_ = "#use VTK::Tk::vtkInteractor;\n";
+			$_ = "#use Graphics::VTK::Tk::vtkInteractor;\n";
 		}
 
 
@@ -1480,6 +1489,10 @@ foreach $file (@ARGV)
 			$_ = "#do 'WindowLevelInterface.pl';\n";
 		}
 
+		# Change vtktesting to use VTK::Colors. Comment char will be removed during post processing 
+		if( /^\s*package\s+require\s+vtktesting/ ){
+			$_ = "#use Graphics::VTK::Colors;\n";
+		}
 
 		# Get rid of std start vtkInit.tcl source 
 		if( /^\s*source\s+\$VTK_TCL/ ){
@@ -1498,6 +1511,15 @@ foreach $file (@ARGV)
 
 		# Get rid of bindTksomething. Not needed for perltk 
 		if( /^\s*BindTk\w+/ ){
+			$_ = "#$_";
+		}
+		# Get rid of tkwait. Not needed for perltk 
+		if( /^\s*tkwait\s+/ ){
+			$_ = "#$_";
+		}
+
+		# Get rid of DeleteAllObjects. Not needed for perltk 
+		if( /^\s*vtkCommand\s+DeleteAllObjects/ ){
 			$_ = "#$_";
 		}
 		
@@ -1575,7 +1597,8 @@ foreach $file (@ARGV)
 	local( $/ );
 	$/ = "\n";
 
-	my $vtkInt = 0; # flag =1 if 'use VTKint' is present
+	my $vtkInt = 0;   # flag =1 if 'use VTKint' is present
+	my $vtkInteractor = 0; # flag =1 if 'vtkInteractor' widget is present
 
 	open( INFILE, $inputFile) or die("Can't open Input File '$inputFile'\n");
 	
@@ -1586,8 +1609,11 @@ foreach $file (@ARGV)
 
 	my $vtkTkImageWindowWidgetFlag = 0; # Flag = 1 if this widget is used
 	while( <INFILE>){
-		if ( /\$MW\b/ || /use\s+VTK::Tk::vtkInt/ ){
+		if ( /\$MW\b/ || /use\s+Graphics::VTK::Tk::vtkInt/ ){
 			$tkFlag = 1; # found some tk elements
+		}
+		if ( /vtkInteractor/ ){
+			$vtkInteractor = 1; # found some vtkInteractor widgets
 		}
 		if ( /vtkImageWindow/ ){
 			$vtkTkImageWindowWidgetFlag = 1; # found some tk elements
@@ -1602,10 +1628,11 @@ foreach $file (@ARGV)
 	
 	open(OUTFILE, ">$outputFile") or die("Can't open Output File '$outputFile'\n");
 
-    	print OUTFILE "#!/usr/local/bin/perl -w\n#\nuse VTK;\n\n";
+    	print OUTFILE "#!/usr/local/bin/perl -w\n#\nuse Graphics::VTK;\n\n";
 	
-	print OUTFILE "\n\nuse Tk;\nuse VTK::Tk;\n\$MW = Tk::MainWindow->new;\n\n" if($tkFlag);
-	print OUTFILE "\n\nuse VTK::Tk::vtkImageWindow;\n\n" if($vtkTkImageWindowWidgetFlag);
+	print OUTFILE "\n\nuse Tk;\nuse Graphics::VTK::Tk;\n\$MW = Tk::MainWindow->new;\n\n" if($tkFlag);
+	print OUTFILE "\n\nuse Graphics::VTK::Tk::vtkImageWindow;\n\n" if($vtkTkImageWindowWidgetFlag);
+	print OUTFILE "\n\nuse Graphics::VTK::Tk::vtkInteractor;\n\n" if($vtkInteractor);
 	
 	while(<INFILE>){
 		
@@ -1617,12 +1644,12 @@ foreach $file (@ARGV)
 		
 		# Set Env Variables for VTK Data
 		if( /^\# SET ENV VARS/ ){
-			$_ = "\$VTK_DATA = 0;\n\$VTK_DATA = \$ENV{VTK_DATA};\n";
+			$_ = "\$VTK_DATA_ROOT = 0;\n\$VTK_DATA_ROOT = \$ENV{VTK_DATA_ROOT};\n";
 		}
 
 		# change source Colors to use Colors 
 		if( /^\#\s*source\s+\$VTK_TCL\/colors/ ){
-			$_ = "use VTK::Colors;\n";
+			$_ = "use Graphics::VTK::Colors;\n";
 		}
 		
 		# Get rid of commented-out use-lines added during pre-processing
@@ -1635,12 +1662,13 @@ foreach $file (@ARGV)
 
 		
 		# Change Colors References to use VTK::Colors
-		s/(\-\>\w*?Color\()\$(?!MW)/$1\@VTK\:\:Colors\:\:/;
+		s/(\-\>\w*?Color\()\$(?!MW)/$1\@Graphics::VTK\:\:Colors\:\:/;
+		s/(\-\>\w*?Background\()\$(?!MW)/$1\@Graphics::VTK\:\:Colors\:\:/;
 
 
 		# Change VTK_FLOAT constants to VTK::FLOAT
 		s/\$VTK_FLOAT/\$VTK\:\:FLOAT/g;
-		s/\$VTK_UNSIGNED_CHAR/\$VTK\:\:UNSIGNED_CHAR/g;
+		s/\$VTK_UNSIGNED_CHAR/\$Graphics\:\:VTK\:\:UNSIGNED_CHAR/g;
 		
 		# Change any foreach $var ("dude dude dude") to
 		#            foreach $var (qw/ dude dude dude/)
@@ -1680,7 +1708,7 @@ foreach $file (@ARGV)
 			){ # Fix vtk constructors that tcl2perl couldn't get right
 			
 			my $from = quotemeta '$locator->$locator{$i}';
-			my $to = '$locator{$i} = "VTK::$locator"->new';
+			my $to = '$locator{$i} = "Graphics::VTK::$locator"->new';
 			s/$from/$to/;
 		}
 
@@ -1692,14 +1720,14 @@ foreach $file (@ARGV)
 			# Fix vtk constructors that tcl2perl couldn't get right
 			
 			my $from = quotemeta '$array{$dim}->$da{$dim}';
-			my $to = '$da{$dim} = "VTK::$array{$dim}"->new';
+			my $to = '$da{$dim} = "Graphics::VTK::$array{$dim}"->new';
 			s/$from/$to/;
 			s/\(\$dims\)/\(\@\$dims\)/;
 			
 		}
 
 		if( $basename eq 'streamV.tcl' || $basename eq 'InputStr.tcl'){
-			s/VTK_VARY_RADIUS_OFF/VTK::VARY_RADIUS_OFF/; # fix constants setup
+			s/VTK_VARY_RADIUS_OFF/Graphics::VTK::VARY_RADIUS_OFF/; # fix constants setup
 			s/^(\s*\$renWin->Render)/#$1/;
 		}
 		
@@ -1709,11 +1737,11 @@ foreach $file (@ARGV)
 			s/^\s*\$(types)\s+\=\s+\"([^"]+)\"/\@$1 = (qw\/$2\/)/;
 			
 			# undo the VTK::Colors Addition
-			s/\@VTK\:\:Colors\:\:/\$/g;
+			s/\@Graphics\:\:VTK\:\:Colors\:\:/\$/g;
 
 			if (/^\s*\$colors\s+\=\s+\"([^"]+)\"/){ # turn into big array
 				my $text = $1;  # exit
-				$text =~ s/\$/\@VTK::Colors::/g;
+				$text =~ s/\$/\@Graphics::VTK::Colors::/g;
 				my @elements = split('\s+',$text);
 				$text = join(", ",@elements);
 				$_ = "\@colors = ( $text );\n";
@@ -1727,19 +1755,40 @@ foreach $file (@ARGV)
 			
 		}
 
+		if( $basename eq 'SimpleRayCast.tcl' || $basename eq 'SimpleTextureMap2D.tcl' ){ # 
+			
+			# undo the VTK::Colors Addition
+			s/\@Graphics\:\:VTK\:\:Colors\:\:/\$/g;
+		}
+
 		if( $basename eq 'TestGridSynchronizedTemplates3D.tcl' 	){ 
 			# Fix variable returning array in this script
 			s/^\s*\$range\s*\=/\@range =/;
 		}
+		if( $basename eq 'expCos.tcl' 	){ 
+			# Fix variable returning array in this script
+			s/^\s*\$x\s*\=/\@x =/;
+		}
+
+		if( $basename eq 'annotatePick.tcl' 	){ 
+			# Make scalar in to an array
+			s/\$pickPos\s*\=/\@pickPos =/;
+			s/\$selPt\s*\=/\@selPt =/;
+		}
 	
 
-		if( /^\s*use\s+VTK::Tk::vtkInt\s*\;\s*$/){ # check for vtkInt usage
+		if( /^\s*use\s+Graphics::VTK::Tk::vtkInt\s*\;\s*$/){ # check for vtkInt usage
 			$vtkInt = 1;
 		}
 		
-		
+		if( $basename eq 'rainbow.tcl' ){   # Fix the color arrays
+			if( /\-\>SetTableValue/){
+				s/\$(\w+)\s*\,\s*1/\@Graphics::VTK::Colors::$1\, 1/;
+			}
+		}
+				
 		# Change any blank comments to just a blank line:
-		s/^\s*\#\s*$//;
+		s/^\s*\#\s*$/\n/;
 
 	}
 	continue{
@@ -1747,7 +1796,7 @@ foreach $file (@ARGV)
 	}
 	
 	if( $vtkInt){
-		print OUTFILE "VTK::Tk::vtkInt::vtkInteract(\$MW);\n";
+		print OUTFILE "Graphics::VTK::Tk::vtkInt::vtkInteract(\$MW);\n";
 	}
 	if( $tkFlag){
 		print OUTFILE "\nTk->MainLoop;\n";

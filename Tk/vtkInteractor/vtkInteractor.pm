@@ -190,7 +190,7 @@ sub InitObject {
  # Objects used to display rubberband
  $widget->{RubberBandPoints} = Graphics::VTK::Points->new;
  $widget->{RubberBandLines} = Graphics::VTK::CellArray->new;
- $widget->{RubberBandScalars} = Graphics::VTK::Scalars->new;
+ $widget->{RubberBandScalars} = Graphics::VTK::FloatArray->new;
  $widget->{RubberBandPolyData} = Graphics::VTK::PolyData->new;
  $widget->{RubberBandMapper} = Graphics::VTK::PolyDataMapper2D->new;
  $widget->{RubberBandActor} = Graphics::VTK::Actor2D->new;
@@ -223,10 +223,10 @@ sub InitObject {
  $widget->{RubberBandLines}->InsertCellPoint(3);
  $widget->{RubberBandLines}->InsertCellPoint(0);
  #
- $widget->{RubberBandScalars}->InsertNextScalar(0);
- $widget->{RubberBandScalars}->InsertNextScalar(1);
- $widget->{RubberBandScalars}->InsertNextScalar(0);
- $widget->{RubberBandScalars}->InsertNextScalar(1);
+ $widget->{RubberBandScalars}->InsertNextValue(0);
+ $widget->{RubberBandScalars}->InsertNextValue(1);
+ $widget->{RubberBandScalars}->InsertNextValue(0);
+ $widget->{RubberBandScalars}->InsertNextValue(1);
  #
  $widget->{RubberBandMapper}->ScalarVisibilityOn;
  

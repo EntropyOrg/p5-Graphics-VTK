@@ -3,8 +3,8 @@
   Program:   Visualization Toolkit
   Module:    $RCSfile: vtkXRenderWindowTclInteractor.h,v $
   Language:  C++
-  Date:      $Date: 2002/02/24 15:17:39 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2002/11/05 19:35:21 $
+  Version:   $Revision: 1.4 $
 
 
 Copyright (c) 1993-2000 Ken Martin, Will Schroeder, Bill Lorensen 
@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <X11/StringDefs.h>
 #include <X11/Intrinsic.h>
 
-class VTK_EXPORT vtkXRenderWindowTclInteractor : public vtkRenderWindowInteractor
+class VTK_RENDERING_EXPORT vtkXRenderWindowTclInteractor : public vtkRenderWindowInteractor
 {
 public:
   static vtkXRenderWindowTclInteractor *New();
@@ -158,6 +158,11 @@ public:
   void TerminateApp(void);
 
   // Description:
+  // Set this flag to break the event loop.
+  vtkGetMacro(BreakLoopFlag, int);
+  vtkSetMacro(BreakLoopFlag, int);
+
+  // Description:
   // Functions that are used internally.
   friend void vtkXRenderWindowTclInteractorCallback(Widget,XtPointer,
                                                  XEvent *,Boolean *);
@@ -166,8 +171,6 @@ public:
 protected:
   vtkXRenderWindowTclInteractor();
   ~vtkXRenderWindowTclInteractor();
-  vtkXRenderWindowTclInteractor(const vtkXRenderWindowTclInteractor&) {};
-  void operator=(const vtkXRenderWindowTclInteractor&) {};
 
   Widget TopLevelShell;
 
@@ -177,6 +180,11 @@ protected:
   Widget oldTop;
   XtAppContext App;
   int PositionBeforeStereo[2];
+
+  int BreakLoopFlag;
+private:
+  vtkXRenderWindowTclInteractor(const vtkXRenderWindowTclInteractor&);  // Not implemented.
+  void operator=(const vtkXRenderWindowTclInteractor&);  // Not implemented.
 };
 
 #endif

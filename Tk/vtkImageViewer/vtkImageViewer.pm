@@ -165,7 +165,7 @@ sub InitObject {
  # to avoid queing up multple expose events.
  $widget->{'Rendering'} = 0;
  #
- $imager = $widget->GetImageViewer->GetImager;
+ $imager = $widget->GetImageViewer->GetRenderer;
  #
  # stuff for window level text.
  $mapper = $widget->{'Mapper1'} = Graphics::VTK::TextMapper->new;

@@ -15,7 +15,7 @@ if( $Config{'osname'} eq 'solaris' &&
 	$vtkConfigMacro{LIBS}[0] .= ' -lCrun -lCstd ';
 }
 	
-$VERSION = '3.2.001';
+$VERSION = '4.0.001';
 
 WriteMakefile(
     'NAME' => 'Graphics::VTK',

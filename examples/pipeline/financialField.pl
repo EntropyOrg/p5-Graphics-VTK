@@ -12,8 +12,8 @@ use Graphics::VTK::Pipeline;
 
 $MW = Tk::MainWindow->new;
 
-$VTK_DATA = 0;
-$VTK_DATA = $ENV{VTK_DATA};
+$VTK_DATA_ROOT = 0;
+$VTK_DATA_ROOT = $ENV{VTK_DATA_ROOT};
 # demonstrate the use and manipulation of fields
 # get the interactor ui
 use Graphics::VTK::Tk::vtkInt;
@@ -26,7 +26,7 @@ $zAxis = 'MONTHLY_INCOME';
 $scalar = 'TIME_LATE';
 # extract data from field as a polydata (just points), then extract scalars
 $fdr = Graphics::VTK::DataObjectReader->new;
-$fdr->SetFileName("$VTK_DATA/financial.vtk");
+$fdr->SetFileName("$VTK_DATA_ROOT/Data/financial.vtk");
 $do2ds = Graphics::VTK::DataObjectToDataSetFilter->new;
 $do2ds->SetInput($fdr->GetOutput);
 $do2ds->SetDataSetTypeToPolyData;
@@ -151,8 +151,6 @@ $iren->SetUserMethod(
 );
 $iren->Initialize;
 $renWin->Render;
-$renWin->SetFileName("financialField.tcl.ppm");
-#renWin SaveImageAsPPM
 # prevent the tk window from showing up then start the event loop
 $MW->withdraw;
 Graphics::VTK::Tk::vtkInt::vtkInteract($MW);

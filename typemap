@@ -11,7 +11,7 @@ GLint			T_IV
 long unsigned		T_UV
 float			T_FLOAT
 const float		T_FLOAT
-onst double		T_DOUBLE
+const double		T_DOUBLE
 double			T_DOUBLE
 const char *    	T_PV
 const char 	   	T_CHAR

@@ -13,17 +13,17 @@
 #include "vtkTkImageWindowWidget.h"
 
 #ifdef _WIN32
-#include "vtkWin32ImageWindow.h"
+#pragma warning ( disable : 4273 )
 #else
 #include "vtkXImageWindow.h"
 #endif
 
 #define VTK_ALL_EVENTS_MASK \
-    KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|	\
-    EnterWindowMask|LeaveWindowMask|PointerMotionMask|ExposureMask|	\
+    KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|      \
+    EnterWindowMask|LeaveWindowMask|PointerMotionMask|ExposureMask|     \
     VisibilityChangeMask|FocusChangeMask|PropertyChangeMask|ColormapChangeMask
 
-#define VTK_MAX(a,b)	(((a)>(b))?(a):(b))
+#define VTK_MAX(a,b)    (((a)>(b))?(a):(b))
     
 // These are the options that can be set when the widget is created
 // or with the command configure.  The only new one is "-rw" which allows
@@ -45,7 +45,7 @@ static Tk_ConfigSpec vtkTkImageWindowWidgetConfigSpecs[] = {
 
 // Foward prototypes
 static void vtkTkImageWindowWidget_EventProc(ClientData clientData, 
-					     XEvent *eventPtr);
+                                             XEvent *eventPtr);
 static int vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget *self);
 int vtkImageWindowCommand(ClientData cd, Tcl_Interp *interp,
 				 int argc, Arg *args)
@@ -119,8 +119,8 @@ int vtkTkImageWindowWidget_Widget(ClientData clientData, Tcl_Interp *interp,
       {
       /* Return list of all configuration parameters */
       result = Tk_ConfigureInfo(interp, self->TkWin, 
-				vtkTkImageWindowWidgetConfigSpecs,
-				(char *)self, (char *)NULL, 0);
+                                vtkTkImageWindowWidgetConfigSpecs,
+                                (char *)self, (char *)NULL, 0);
       }
     else if (argc == 3) 
       {
@@ -200,8 +200,8 @@ EXTERN int vtkTkImageWindowWidget_Cmd(ClientData clientData,
     {
     Tcl_ResetResult(interp);
     Tcl_AppendResult(interp, 
-		     "wrong # args: should be \"pathName read filename\"", 
-		     NULL);
+                     "wrong # args: should be \"pathName read filename\"", 
+                     NULL);
     return(TCL_ERROR);
     }
   
@@ -232,7 +232,7 @@ EXTERN int vtkTkImageWindowWidget_Cmd(ClientData clientData,
   self->widgetCmd = Lang_CreateWidget(interp, tkwin, vtkTkImageWindowWidget_Widget, 
 		    (ClientData)self, (void (*)(ClientData)) NULL);
   Tk_CreateEventHandler(tkwin, ExposureMask | StructureNotifyMask,
-			vtkTkImageWindowWidget_EventProc, (ClientData)self);
+                        vtkTkImageWindowWidget_EventProc, (ClientData)self);
   
   // Configure vtkTkImageWindowWidget widget
   if (vtkTkImageWindowWidget_Configure(interp, self, argc-2, args+2, 0) 
@@ -301,7 +301,7 @@ static void vtkTkImageWindowWidget_Destroy(char *memPtr)
 // This gets called to handle vtkTkImageWindowWidget wind configuration events
 // Possibly X dependent
 static void vtkTkImageWindowWidget_EventProc(ClientData clientData, 
-					     XEvent *eventPtr) 
+                                             XEvent *eventPtr) 
 {
   struct vtkTkImageWindowWidget *self = 
     (struct vtkTkImageWindowWidget *)clientData;
@@ -310,25 +310,25 @@ static void vtkTkImageWindowWidget_EventProc(ClientData clientData,
     {
     case Expose:
       if ((eventPtr->xexpose.count == 0)
-	  /* && !self->UpdatePending*/) 
-	{
-	// bind this explicitely in tcl now
-	//self->ImageWindow->Render();
-	}
+          /* && !self->UpdatePending*/) 
+        {
+        // bind this explicitely in tcl now
+        //self->ImageWindow->Render();
+        }
       break;
     case ConfigureNotify:
       if ( 1 /*Tk_IsMapped(self->TkWin)*/ ) 
         {
-	self->Width = Tk_Width(self->TkWin);
-	self->Height = Tk_Height(self->TkWin);
+        self->Width = Tk_Width(self->TkWin);
+        self->Height = Tk_Height(self->TkWin);
         //Tk_GeometryRequest(self->TkWin,self->Width,self->Height);
-	if (self->ImageWindow)
-	  {
+        if (self->ImageWindow)
+          {
           self->ImageWindow->SetPosition(Tk_X(self->TkWin),Tk_Y(self->TkWin));
-	  self->ImageWindow->SetSize(self->Width, self->Height);
-	  }
-	//vtkTkImageWindowWidget_PostRedisplay(self);
-	}
+          self->ImageWindow->SetSize(self->Width, self->Height);
+          }
+        //vtkTkImageWindowWidget_PostRedisplay(self);
+        }
       break;
     case MapNotify:
       break;
@@ -346,7 +346,7 @@ static void vtkTkImageWindowWidget_EventProc(ClientData clientData,
 //----------------------------------------------------------------------------
 // vtkTkImageWindowWidget_Init
 // Called upon system startup to create vtkTkImageWindowWidget command.
-extern "C" {VTK_EXPORT int Vtktkimagewindowwidget_Init(Tcl_Interp *interp);}
+extern "C" {VTK_TK_EXPORT int Vtktkimagewindowwidget_Init(Tcl_Interp *interp);}
 int Vtktkimagewindowwidget_Init(Tcl_Interp *interp)
 {
   if (Tcl_PkgProvide(interp, "Vtktkimagewindowwidget", "1.2") != TCL_OK) 
@@ -367,7 +367,7 @@ int Vtktkimagewindowwidget_Init(Tcl_Interp *interp)
 #ifdef _WIN32
 
 LRESULT APIENTRY vtkTkImageWindowWidgetProc(HWND hWnd, UINT message, 
-					    WPARAM wParam, LPARAM lParam)
+                                            WPARAM wParam, LPARAM lParam)
 {
   LRESULT rval;
   struct vtkTkImageWindowWidget *self = 
@@ -393,24 +393,24 @@ LRESULT APIENTRY vtkTkImageWindowWidgetProc(HWND hWnd, UINT message,
     if (message == WM_WINDOWPOSCHANGED) 
       {
       XEvent event;
-	    WINDOWPOS *pos = (WINDOWPOS *) lParam;
-	    TkWindow *winPtr = (TkWindow *) Tk_HWNDToWindow(pos->hwnd);
+            WINDOWPOS *pos = (WINDOWPOS *) lParam;
+            TkWindow *winPtr = (TkWindow *) Tk_HWNDToWindow(pos->hwnd);
     
-	    if (winPtr == NULL) {
-	      return 0;
-	      }
+            if (winPtr == NULL) {
+              return 0;
+              }
 
-	    /*
-	     * Update the shape of the contained window.
-	     */
-	    if (!(pos->flags & SWP_NOSIZE)) {
-	      winPtr->changes.width = pos->cx;
-	      winPtr->changes.height = pos->cy;
-	      }
-	    if (!(pos->flags & SWP_NOMOVE)) {
-	      winPtr->changes.x = pos->x;
-	      winPtr->changes.y = pos->y;
-	      }
+            /*
+             * Update the shape of the contained window.
+             */
+            if (!(pos->flags & SWP_NOSIZE)) {
+              winPtr->changes.width = pos->cx;
+              winPtr->changes.height = pos->cy;
+              }
+            if (!(pos->flags & SWP_NOMOVE)) {
+              winPtr->changes.x = pos->x;
+              winPtr->changes.y = pos->y;
+              }
 
 
       /*
@@ -431,8 +431,8 @@ LRESULT APIENTRY vtkTkImageWindowWidgetProc(HWND hWnd, UINT message,
       event.xconfigure.above = None;
       Tk_QueueWindowEvent(&event, TCL_QUEUE_TAIL);
 
-	    Tcl_ServiceAll();
-	    return 0;
+            Tcl_ServiceAll();
+            return 0;
       }
     SetWindowLong(hWnd,GWL_WNDPROC,(LONG)TkWinChildProc);
     rval = TkWinChildProc(hWnd,message,wParam,lParam);
@@ -505,21 +505,21 @@ static int vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget 
 #ifndef VTK_PYTHON_BUILD
       int new_flag;
       ImageWindow = (vtkImageWindow *)
-	vtkTclGetPointerFromObject(self->IW, "vtkImageWindow", self->Interp,
-				   new_flag);
+        vtkTclGetPointerFromObject(self->IW, "vtkImageWindow", self->Interp,
+                                   new_flag);
 #endif
 
     if (ImageWindow != self->ImageWindow)
       {
       if (self->ImageWindow != NULL)
-	{
-	self->ImageWindow->UnRegister(NULL);
-	}
+        {
+        self->ImageWindow->UnRegister(NULL);
+        }
       self->ImageWindow = (vtkImageWindow *)(ImageWindow);
       if (self->ImageWindow != NULL)
-	{
-	self->ImageWindow->Register(NULL);
-	}
+        {
+        self->ImageWindow->Register(NULL);
+        }
       }
     }
   
@@ -567,7 +567,7 @@ static int vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget 
   winPtr->window = (Window)twdPtr;
   
   hPtr = Tcl_CreateHashEntry(&winPtr->dispPtr->winTable,
-			     (char *) winPtr->window, &new_flag);
+                             (char *) winPtr->window, &new_flag);
   Tcl_SetHashValue(hPtr, winPtr);
   
   winPtr->dirtyAtts = 0;
@@ -583,7 +583,7 @@ static int vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget 
      * the window to the WM_COLORMAP_WINDOWS property for its top-level.
      */
     if ((winPtr->parentPtr != NULL) &&
-	      (winPtr->atts.colormap != winPtr->parentPtr->atts.colormap)) 
+              (winPtr->atts.colormap != winPtr->parentPtr->atts.colormap)) 
       {
       TkWmAddToColormapWindows(winPtr);
       }
@@ -677,23 +677,23 @@ vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget *self)
     {
       
 #ifndef VTK_PYTHON_BUILD
-			int new_flag;
+                        int new_flag;
       ImageWindow = (vtkXImageWindow *)
-	vtkTclGetPointerFromObject(self->IW, "vtkImageWindow", self->Interp,
-				   new_flag);
+        vtkTclGetPointerFromObject(self->IW, "vtkImageWindow", self->Interp,
+                                   new_flag);
 #endif
       
     if (ImageWindow != self->ImageWindow)
       {
       if (self->ImageWindow != NULL)
-	{
-	self->ImageWindow->UnRegister(NULL);
-	}
+        {
+        self->ImageWindow->UnRegister(NULL);
+        }
       self->ImageWindow = (vtkImageWindow *)(ImageWindow);
       if (self->ImageWindow != NULL)
-	{
-	self->ImageWindow->Register(NULL);
-	}
+        {
+        self->ImageWindow->Register(NULL);
+        }
       }
     }
   
@@ -702,13 +702,13 @@ vtkTkImageWindowWidget_MakeImageWindow(struct vtkTkImageWindowWidget *self)
     {
     return TCL_ERROR;
     }
-	
+        
   // Use the same display
   ImageWindow->SetDisplayId(dpy);
   // The visual MUST BE SET BEFORE the window is created.
   Tk_SetWindowVisual(self->TkWin, ImageWindow->GetDesiredVisual(), 
-		     ImageWindow->GetDesiredDepth(), 
-		     ImageWindow->GetDesiredColormap());
+                     ImageWindow->GetDesiredDepth(), 
+                     ImageWindow->GetDesiredColormap());
 
   // Make this window exist, then use that information to make the vtkImageWindow in sync
   Tk_MakeWindowExist ( self->TkWin );

@@ -78,7 +78,7 @@ if( defined($objectTypes{-win32} && $objectTypes{-oglr})){
 my $xsoutput = "./$dirName/$dirName.xs"; # XS output file
 
 my $pmoutputDir = "./temp";  # Temporary place to put the pm files generated
-my $pmversion = "3.2.001"; # version number to put in the .pm file
+my $pmversion = "4.0.001"; # version number to put in the .pm file
 my $module = "Graphics::VTK::$dirName";
 
 # Clear the temp directory
@@ -99,22 +99,35 @@ foreach my $objectType(sort keys %objectTypes){
 
 	my $rawXSoutput = ''; # xs output Text. Code only , no 
 
-	@objects = @{$objectTypes{$objectType}}; # get the objects for the current type
+	@objects = sort @{$objectTypes{$objectType}}; # get the objects for the current type
 	next unless (@objects);
 	# Get all headers in the dir
 	my @headers = map $_.".h", @objects; # headerFiles for all objects
 
+	# Filter headers to include only ones that are present
+	my @headersPresent;
+	foreach my $headerFile( @headers){
+
+		unless( -f "$vtkBaseDir/$VTKdirName/$headerFile"){
+			warn("   Warning: Header file '$headerFile' not found, skipping\n");
+			next;
+		}
+		push @headersPresent, $headerFile;
+	}
+	@headers = @headersPresent;
+	
 	# Go thru Each Header and create the XS code and the pm file
 
-	my $vtkPrint = "$vtkBaseDir/wrap/vtkPrint2"; # full path to vtkPrint
+	my $vtkPrint = "$vtkBaseDir/Wrapping/vtkPrint2"; # full path to vtkPrint
 
 	foreach my $headerFile( @headers){
 
 		print STDERR "Processing '$headerFile'\n";
+
 		my $pmFile = $headerFile; # create pm file name
 		$pmFile =~ s/h$/pm/g;
 
-		my $command = "$vtkPrint $vtkBaseDir/$VTKdirName/$headerFile $vtkBaseDir/wrap/hints is_concrete  2> /dev/null | perl -w parseWrap $module $pmoutputDir/$pmFile"; 
+		my $command = "$vtkPrint $vtkBaseDir/$VTKdirName/$headerFile $vtkBaseDir/Wrapping/hints is_concrete  2> /dev/null | perl -w parseWrap $module $pmoutputDir/$pmFile"; 
 
 		$tempOutput = `$command`;
 
@@ -153,16 +166,17 @@ the 'THIS' that appears in XS code. */
 #include "vtkPerl.h"
 !;
 
-# Print the main vtk header
-print XSFILE "#include \"$mainHeader\"\n" unless( $mainHeader =~ /patented/i);
 
 foreach my $objectType(sort keys %objectTypes){ # go thru the different object types
 
-	@objects = @{$objectTypes{$objectType}}; # get the objects for the current type
+	@objects = sort @{$objectTypes{$objectType}}; # get the objects for the current type
 	next unless (@objects);
 
 	my @headerFiles = map "$_.h", @objects;
 	
+	# Filter headers to include only ones that are present
+	@headerFiles = grep -f "$vtkBaseDir/$VTKdirName/$_", @headerFiles;
+
 	# Put in ifefs for win32 and unix cases
 	if( $objectType eq '-win32'){
 		print XSFILE "#ifdef WIN32\n";
@@ -195,7 +209,7 @@ foreach my $objectType(sort keys %objectTypes){ # go thru the different object t
 if($VTKdirName =~ /graphics/i){
 	print XSFILE '#include "vtkPropAssembly.h"'."\n";
 }
-elsif( $VTKdirName =~ /contrib/i ){
+elsif( $VTKdirName =~ /Hybrid/i ){
 	print XSFILE '#include "vtkRectilinearGrid.h"
 #include "vtkStructuredGrid.h"
 #include "vtkDataObjectCollection.h"
@@ -203,7 +217,73 @@ elsif( $VTKdirName =~ /contrib/i ){
 #include "vtkGlyphSource2D.h"
 ';
 }
+elsif( $VTKdirName =~ /imaging/i ){
+	print XSFILE '#include "vtkWindow.h"
+';
+}	
+elsif( $VTKdirName =~ /rendering/i ){
+	print XSFILE '#include "vtkPropAssembly.h"
+';
+}	
+
+# Put in vtkPerCommand Subclass for the Common.xs file
+if($VTKdirName =~ /common/i){
+	print XSFILE '#include "vtkCommand.h"'."\n";
+	print XSFILE q!
+/*=========================================================================
+
+   Subclass of vtkCommand for the perl interface
+   
+ =========================================================================*/
+
+ class vtkPerlCommand : public vtkCommand
+{
+public:
+  static vtkPerlCommand *New() { return new vtkPerlCommand; };
+
+  void SetCallback(SV* codeRef);
+  
+  void Execute(vtkObject *, unsigned long, void *);
+
+  SV* code;
+  
+protected:
+  vtkPerlCommand();
+  ~vtkPerlCommand(); 
+};
+
+vtkPerlCommand::vtkPerlCommand()
+{ 
+  this->code = NULL; 
+}
+
+vtkPerlCommand::~vtkPerlCommand() 
+{ 
+  if(this->code) { SvREFCNT_dec(this->code); } // We are done with this SV
+}
+
+void vtkPerlCommand::SetCallback(SV* codeRef)
+{
+	this->code = codeRef;
+	SvREFCNT_inc(this->code); // Increment its reference count while we are using it
 	
+
+}
+  
+  
+// Execute the perl callback
+void vtkPerlCommand::Execute(vtkObject *, unsigned long, void *)
+{
+
+  int count;
+  dSP;
+  PUSHMARK(SP) ;
+  /*printf("callperlsub called'%s'\n",SvPV_nolen(code)); */
+  count = perl_call_sv(this->code, G_DISCARD|G_NOARGS ) ;
+}	
+!;	
+}
+
 
 print XSFILE <<EOF;
 /* Routine to call a perl code ref, used by all the Set...Method methods
@@ -270,7 +350,7 @@ open(TYPEMAP, ">$dirName/$typemap") or die( "Can't open File '$dirName/$typemap'
 print TYPEMAP "TYPEMAP\n";
 @objects = map @{$objectTypes{$_}}, keys %objectTypes;
 
-foreach my $object(@objects){
+foreach my $object(sort @objects){
 	print TYPEMAP $object."*\t\t\tO_OBJECT\n";
 }
 

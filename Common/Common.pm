@@ -8,7 +8,7 @@ use vars qw/ $VERSION @ISA/;
 
 require DynaLoader;
 
-$VERSION = '3.2.001';
+$VERSION = '4.0.001';
 
 @ISA = qw/ DynaLoader /;
 
@@ -54,9 +54,18 @@ Inherits from ProcessObject
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   void AddClippingPlane (vtkPlane *plane);
+   const char *GetClassName ();
+   vtkPlaneCollection *GetClippingPlanes ();
+   virtual unsigned long GetMTime ();
+   static vtkDataArray *GetScalars (vtkDataSet *input, int scalarMode, int arrayAccessMode, int arrayId, const char *arrayName, int &component);
    float GetTimeToDraw ();
    virtual void ReleaseGraphicsResources (vtkWindow *);
+   void RemoveAllClippingPlanes ();
+   void RemoveClippingPlane (vtkPlane *plane);
+   void SetClippingPlanes (vtkPlanes *planes);
+   void SetClippingPlanes (vtkPlaneCollection *);
+   void ShallowCopy (vtkAbstractMapper *m);
 
 
 B<vtkAbstractMapper Unsupported Funcs:>
@@ -89,7 +98,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    virtual int CircuitCheck (vtkAbstractTransform *transform);
    void DeepCopy (vtkAbstractTransform *);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkAbstractTransform *GetInverse ();
    unsigned long GetMTime ();
    void Identity ();
@@ -103,7 +112,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    double *TransformPoint (double x, double y, double z);
       (Returns a 3-element Perl list)
    virtual void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
-   virtual void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkNormals *inNms, vtkNormals *outNms, vtkVectors *inVrs, vtkVectors *outVrs);
+   virtual void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkDataArray *inNms, vtkDataArray *outNms, vtkDataArray *inVrs, vtkDataArray *outVrs);
    void UnRegister (vtkObject *O);
    void Update ();
 
@@ -112,1213 +121,66 @@ B<vtkAbstractTransform Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   virtual void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]) = 0;
+   virtual void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]) = 0;
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   virtual void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]) = 0;
+   virtual void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]) = 0;
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   virtual void InternalTransformPoint (float in[3], float out[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InternalTransformPoint (double in[3], double out[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   double *TransformDoubleNormalAtPoint (double point[3], double normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformDoublePoint (double point[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformDoubleVectorAtPoint (double point[3], double vector[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *TransformFloatNormalAtPoint (float point[3], float normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *TransformFloatPoint (float point[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *TransformFloatVectorAtPoint (float point[3], float vector[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformNormalAtPoint (float point[3], float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformNormalAtPoint (double point[3], double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformNormalAtPoint (double point[3], double normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformPoint (double point[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformVectorAtPoint (float point[3], float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformVectorAtPoint (double point[3], double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformVectorAtPoint (double point[3], double vector[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::AttributeData;
-
-
-@Graphics::VTK::AttributeData::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::AttributeData
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual int Allocate (int sz, int ext);
-   virtual void DeepCopy (vtkAttributeData *ad);
-   unsigned long GetActualMemorySize ();
-   const char *GetClassName();
-   vtkDataArray *GetData ();
-   virtual int GetDataType ();
-   void *GetVoidPointer (int id);
-   virtual void Initialize ();
-   virtual void Reset ();
-   virtual void SetData (vtkDataArray *);
-   virtual void SetDataType (int dataType);
-   void SetDataTypeToBit ();
-   void SetDataTypeToChar ();
-   void SetDataTypeToDouble ();
-   void SetDataTypeToFloat ();
-   void SetDataTypeToInt ();
-   void SetDataTypeToLong ();
-   void SetDataTypeToShort ();
-   void SetDataTypeToUnsignedChar ();
-   void SetDataTypeToUnsignedInt ();
-   void SetDataTypeToUnsignedLong ();
-   void SetDataTypeToUnsignedShort ();
-   virtual void ShallowCopy (vtkAttributeData *ad);
-   void ShallowCopy (vtkAttributeData &ad);
-   virtual void Squeeze ();
-
-
-B<vtkAttributeData Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void DeepCopy (vtkAttributeData &ad);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Cell;
-
-
-@Graphics::VTK::Cell::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::Cell
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut) = 0;
-   virtual void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd) = 0;
-   virtual void DeepCopy (vtkCell *c);
-   float *GetBounds ();
-      (Returns a 6-element Perl list)
-   virtual int GetCellDimension () = 0;
-   virtual int GetCellType () = 0;
-   const char *GetClassName();
-   virtual vtkCell *GetEdge (int edgeId) = 0;
-   virtual vtkCell *GetFace (int faceId) = 0;
-   virtual int GetInterpolationOrder ();
-   float GetLength2 ();
-   virtual int GetNumberOfEdges () = 0;
-   virtual int GetNumberOfFaces () = 0;
-   int GetNumberOfPoints ();
-   int GetPointId (int ptId);
-   vtkIdList *GetPointIds ();
-   vtkPoints *GetPoints ();
-   virtual void ShallowCopy (vtkCell *c);
-   void ShallowCopy (vtkCell &c);
-   virtual int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts) = 0;
-
-
-B<vtkCell Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual int CellBoundary (int subId, float pcoords[3], vtkIdList *pts) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   vtkPoints *PointsvtkIdList *PointIdsvoid DeepCopy (vtkCell &c);
-      Method is marked 'Do Not Use' in its descriptions
-
-   virtual void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetBounds (float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   char HitBBox (float bounds[6], float origin[3], float dir[3], float coord[3], float &t);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Initialize (int npts, int *pts, vtkPoints *p);
-      Don't know the size of pointer arg number 2
-
-   virtual int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Command;
-
-
-=head1 Graphics::VTK::Command
-
-=over 1
-
-=item *
-
-Inherits from 
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void Delete ();
-   unsigned long GetEventIdFromString (char *event);
-   char *GetStringFromEventId (unsigned long event);
-   vtkCommand *New ();
-
-
-B<vtkCommand Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void Execute (vtkObject *caller, unsigned long , void *callData) = 0;
-      Don't know the size of pointer arg number 3
-
-
-=cut
-
-package Graphics::VTK::DataArray;
-
-
-@Graphics::VTK::DataArray::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::DataArray
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual int Allocate (int sz, int ext) = 0;
-   virtual void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   unsigned long GetActualMemorySize ();
-   const char *GetClassName();
-   virtual float GetComponent (int i, int j);
-   virtual void GetData (int tupleMin, int tupleMax, int compMin, int compMax, vtkFloatArray &data);
-   virtual int GetDataType () = 0;
-   int GetExtend ();
-   int GetMaxId ();
-   int GetNumberOfComponents ();
-   int GetNumberOfTuples ();
-   int GetSize ();
-   virtual void *GetVoidPointer (int id) = 0;
-   virtual void Initialize () = 0;
-   virtual void InsertComponent (int i, int j, float c);
-   void Reset ();
-   virtual void SetComponent (int i, int j, float c);
-   void SetNumberOfComponents (int );
-   virtual void SetNumberOfTuples (int number) = 0;
-   virtual void Squeeze () = 0;
-
-
-B<vtkDataArray Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual float *GetTuple (int i) = 0;
-      Can't Handle 'float *' return type without a hint
-
-   virtual void GetTuple (int i, float *tuple) = 0;
-      Don't know the size of pointer arg number 2
-
-   virtual void GetTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   virtual int InsertNextTuple (float *tuple) = 0;
+   virtual void InternalTransformPoint (const float in[3], float out[3]) = 0;
       Don't know the size of pointer arg number 1
 
-   virtual int InsertNextTuple (double *tuple);
-      Don't know the size of pointer arg number 1
-
-   virtual void InsertTuple (int i, float *tuple) = 0;
-      Don't know the size of pointer arg number 2
-
-   virtual void InsertTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual void SetTuple (int i, float *tuple) = 0;
-      Don't know the size of pointer arg number 2
-
-   virtual void SetTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   virtual void SetVoidArray (void *, int , int );
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::DataSet;
-
-
-@Graphics::VTK::DataSet::ISA = qw( Graphics::VTK::DataObject );
-
-=head1 Graphics::VTK::DataSet
-
-=over 1
-
-=item *
-
-Inherits from DataObject
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void ComputeBounds ();
-   virtual void CopyStructure (vtkDataSet *ds) = 0;
-   void DeepCopy (vtkDataObject *src);
-   int FindPoint (float x, float y, float z);
-   unsigned long GetActualMemorySize ();
-   float *GetBounds ();
-      (Returns a 6-element Perl list)
-   virtual void GetCell (int cellId, vtkGenericCell *cell) = 0;
-   virtual vtkCell *GetCell (int cellId) = 0;
-   vtkCellData *GetCellData ();
-   virtual void GetCellNeighbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds);
-   virtual void GetCellPoints (int cellId, vtkIdList *ptIds) = 0;
-   virtual int GetCellType (int cellId) = 0;
-   virtual void GetCellTypes (vtkCellTypes *types);
-   float *GetCenter ();
-      (Returns a 3-element Perl list)
-   const char *GetClassName();
-   int GetDataObjectType ();
-   virtual int GetDataSetType ();
-   float GetLength ();
-   unsigned long GetMTime ();
-   virtual int GetMaxCellSize () = 0;
-   virtual int GetNumberOfCells () = 0;
-   virtual int GetNumberOfPoints () = 0;
-   virtual float *GetPoint (int ptId) = 0;
-      (Returns a 3-element Perl list)
-   virtual void GetPointCells (int ptId, vtkIdList *cellIds) = 0;
-   vtkPointData *GetPointData ();
-   float *GetScalarRange ();
-      (Returns a 2-element Perl list)
-   void Initialize ();
-   void ShallowCopy (vtkDataObject *src);
-   virtual void Squeeze ();
-
-
-B<vtkDataSet Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual vtkCell *FindAndGetCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual int FindCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual int FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, int cellId, float tol2, int &subId, float pcoords[3], float *weights) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual int FindPoint (float x[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetBounds (float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetCellNeighbors (int cellId, vtkIdList &ptIds, vtkIdList &cellIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetCenter (float center[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   virtual void GetPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetScalarRange (float range[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   vtkCellData *CellDatavtkPointData *PointDatavtkTimeStamp ComputeTimefloat Bounds[6]float ScalarRange[2]float Center[3]void InternalDataSetCopy (vtkDataSet *src);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::HomogeneousTransform;
-
-
-@Graphics::VTK::HomogeneousTransform::ISA = qw( Graphics::VTK::AbstractTransform );
-
-=head1 Graphics::VTK::HomogeneousTransform
-
-=over 1
-
-=item *
-
-Inherits from AbstractTransform
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkHomogeneousTransform *GetHomogeneousInverse ();
-   void GetMatrix (vtkMatrix4x4 *m);
-   vtkMatrix4x4 *GetMatrix ();
-   vtkMatrix4x4 *GetMatrixPointer ();
-   void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
-   void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkNormals *inNms, vtkNormals *outNms, vtkVectors *inVrs, vtkVectors *outVrs);
-
-
-B<vtkHomogeneousTransform Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::LinearTransform;
-
-
-@Graphics::VTK::LinearTransform::ISA = qw( Graphics::VTK::HomogeneousTransform );
-
-=head1 Graphics::VTK::LinearTransform
-
-=over 1
-
-=item *
-
-Inherits from HomogeneousTransform
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkLinearTransform *GetLinearInverse ();
-   double *TransformDoubleNormal (double x, double y, double z);
-      (Returns a 3-element Perl list)
-   double *TransformDoubleVector (double x, double y, double z);
-      (Returns a 3-element Perl list)
-   float *TransformFloatNormal (float x, float y, float z);
-      (Returns a 3-element Perl list)
-   float *TransformFloatVector (float x, float y, float z);
-      (Returns a 3-element Perl list)
-   double *TransformNormal (double x, double y, double z);
-      (Returns a 3-element Perl list)
-   virtual void TransformNormals (vtkNormals *inNms, vtkNormals *outNms);
-   void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
-   void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkNormals *inNms, vtkNormals *outNms, vtkVectors *inVrs, vtkVectors *outVrs);
-   double *TransformVector (double x, double y, double z);
-      (Returns a 3-element Perl list)
-   virtual void TransformVectors (vtkVectors *inVrs, vtkVectors *outVrs);
-
-
-B<vtkLinearTransform Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InternalTransformNormal (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InternalTransformNormal (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InternalTransformVector (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InternalTransformVector (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   double *TransformDoubleNormal (double normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformDoubleVector (double vec[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *TransformFloatNormal (float normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *TransformFloatVector (float vec[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformNormal (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformNormal (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformNormal (double normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double *TransformVector (double normal[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformVector (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void TransformVector (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::ImplicitFunction;
-
-
-@Graphics::VTK::ImplicitFunction::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::ImplicitFunction
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   float EvaluateFunction (float x, float y, float z);
-   float *FunctionGradient (float x, float y, float z);
-      (Returns a 3-element Perl list)
-   float FunctionValue (float x, float y, float z);
-   const char *GetClassName();
-   unsigned long GetMTime ();
-   vtkAbstractTransform *GetTransform ();
-   void SetTransform (vtkAbstractTransform *);
-
-
-B<vtkImplicitFunction Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual float EvaluateFunction (float x[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void EvaluateGradient (float x[3], float g[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void FunctionGradient (float x[3], float g[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *FunctionGradient (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float FunctionValue (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Locator;
-
-
-@Graphics::VTK::Locator::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::Locator
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AutomaticOff ();
-   void AutomaticOn ();
-   virtual void BuildLocator () = 0;
-   virtual void FreeSearchStructure () = 0;
-   virtual void GenerateRepresentation (int level, vtkPolyData *pd) = 0;
-   int GetAutomatic ();
-   long unsigned GetBuildTime ();
-   const char *GetClassName();
-   vtkDataSet *GetDataSet ();
-   int GetLevel ();
-   int GetMaxLevel ();
-   int GetRetainCellLists ();
-   float GetTolerance ();
-   virtual void Initialize ();
-   void RetainCellListsOff ();
-   void RetainCellListsOn ();
-   void SetAutomatic (int );
-   void SetDataSet (vtkDataSet *);
-   void SetMaxLevel (int );
-   void SetRetainCellLists (int );
-   void SetTolerance (float );
-   virtual void Update ();
-
-
-B<vtkLocator Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::ObjectFactory;
-
-
-@Graphics::VTK::ObjectFactory::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::ObjectFactory
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkObject *CreateInstance (char *vtkclassname);
-   virtual void Disable (char *className);
-   const char *GetClassName();
-   virtual char *GetClassOverrideName (int index);
-   virtual char *GetClassOverrideWithName (int index);
-   virtual char *GetDescription (int index);
-   virtual char *GetDescription () = 0;
-   virtual int GetEnableFlag (char *className, char *subclassName);
-   virtual int GetEnableFlag (int index);
-   char *GetLibraryPath ();
-   virtual int GetNumberOfOverrides ();
-   vtkObjectFactoryCollection *GetRegisteredFactories ();
-   virtual char *GetVTKSourceVersion () = 0;
-   void ReHash ();
-   void RegisterFactory (vtkObjectFactory *);
-   virtual void SetEnableFlag (int flag, char *className, char *subclassName);
-   void UnRegisterAllFactories ();
-   void UnRegisterFactory (vtkObjectFactory *);
-
-
-B<vtkObjectFactory Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::PointSet;
-
-
-@Graphics::VTK::PointSet::ISA = qw( Graphics::VTK::DataSet );
-
-=head1 Graphics::VTK::PointSet
-
-=over 1
-
-=item *
-
-Inherits from DataSet
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void ComputeBounds ();
-   void CopyStructure (vtkDataSet *pd);
-   void DeepCopy (vtkDataObject *src);
-   int FindPoint (float x, float y, float z);
-   unsigned long GetActualMemorySize ();
-   const char *GetClassName();
-   unsigned long GetMTime ();
-   virtual int GetNetReferenceCount ();
-   int GetNumberOfPoints ();
-   float *GetPoint (int ptId);
-      (Returns a 3-element Perl list)
-   vtkPoints *GetPoints ();
-   void Initialize ();
-   void SetPoints (vtkPoints *);
-   void ShallowCopy (vtkDataObject *src);
-   void Squeeze ();
-   void UnRegister (vtkObject *o);
-
-
-B<vtkPointSet Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int FindCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int FindPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetPoint (int ptId, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::ScalarsToColors;
-
-
-@Graphics::VTK::ScalarsToColors::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::ScalarsToColors
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   virtual void Build ();
-   const char *GetClassName();
-   float *GetColor (float v);
-      (Returns a 3-element Perl list)
-   float GetLuminance (float x);
-   virtual float GetOpacity (float );
-   virtual void SetRange (float min, float max) = 0;
-
-
-B<vtkScalarsToColors Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void GetColor (float v, float rgb[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual float *GetRange () = 0;
-      Can't Handle 'float *' return type without a hint
-
-   void MapScalarsThroughTable (vtkScalars *scalars, unsigned char *output, int outputFormat);
-      Don't know the size of pointer arg number 2
-
-   virtual void MapScalarsThroughTable2 (void *input, unsigned char *output, int inputDataType, int numberOfValues, int inputIncrement, int outputFormat) = 0;
-      Don't know the size of pointer arg number 1
-
-   void MapScalarsThroughTable (vtkScalars *scalars, unsigned char *output);
-      Don't know the size of pointer arg number 2
-
-   virtual unsigned char *MapValue (float v) = 0;
-      Can't Handle 'unsigned char *' return type without a hint
-
-   void SetRange (float rng[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::Viewport;
-
-
-@Graphics::VTK::Viewport::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::Viewport
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AddActor2D (vtkProp *p);
-   void AddProp (vtkProp *);
-   void ComputeAspect ();
-   virtual void DisplayToLocalDisplay (float &x, float &y);
-   virtual void DisplayToNormalizedDisplay (float &u, float &v);
-   virtual void DisplayToView ();
-   void DisplayToWorld ();
-   vtkActor2DCollection *GetActors2D ();
-   float  *GetAspect ();
-      (Returns a 2-element Perl list)
-   float  *GetBackground ();
-      (Returns a 3-element Perl list)
-   virtual float *GetCenter ();
-      (Returns a 3-element Perl list)
-   const char *GetClassName();
-   float  *GetDisplayPoint ();
-      (Returns a 3-element Perl list)
-   int GetIsPicking ();
-   int *GetOrigin ();
-      (Returns a 2-element Perl list)
-   float GetPickX ();
-   float GetPickY ();
-   virtual float GetPickedZ () = 0;
-   vtkPropCollection *GetProps ();
-   int *GetSize ();
-      (Returns a 2-element Perl list)
-   virtual vtkWindow *GetVTKWindow () = 0;
-   float  *GetViewPoint ();
-      (Returns a 3-element Perl list)
-   float  *GetViewport ();
-      (Returns a 4-element Perl list)
-   float  *GetWorldPoint ();
-      (Returns a 4-element Perl list)
-   virtual int IsInViewport (int x, int y);
-   virtual void LocalDisplayToDisplay (float &x, float &y);
-   virtual void NormalizedDisplayToDisplay (float &u, float &v);
-   virtual void NormalizedDisplayToViewport (float &x, float &y);
-   virtual void NormalizedViewportToView (float &x, float &y, float &z);
-   virtual void NormalizedViewportToViewport (float &u, float &v);
-   virtual vtkAssemblyPath *PickProp (float selectionX, float selectionY) = 0;
-   vtkAssemblyPath *PickPropFrom (float selectionX, float selectionY, vtkPropCollection *);
-   void RemoveActor2D (vtkProp *p);
-   void RemoveProp (vtkProp *);
-   void SetAspect (float  , float );
-   void SetBackground (float  , float , float );
-   void SetDisplayPoint (float  , float , float );
-   void SetEndRenderMethod (void (*func)(void *) , void *arg);
-   void SetStartRenderMethod (void (*func)(void *) , void *arg);
-   void SetViewPoint (float  , float , float );
-   void SetViewport (float  , float , float , float );
-   void SetWorldPoint (float  , float , float , float );
-   virtual void ViewToDisplay ();
-   virtual void ViewToNormalizedViewport (float &x, float &y, float &z);
-   virtual void ViewToWorld (float &, float &, float &);
-   virtual void ViewToWorld ();
-   virtual void ViewportToNormalizedDisplay (float &x, float &y);
-   virtual void ViewportToNormalizedViewport (float &u, float &v);
-   void WorldToDisplay ();
-   virtual void WorldToView (float &, float &, float &);
-   virtual void WorldToView ();
-
-
-B<vtkViewport Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetDisplayPoint (double *a);
-      Don't know the size of pointer arg number 1
-
-   void GetWorldPoint (double *a);
+   virtual void InternalTransformPoint (const double in[3], double out[3]) = 0;
       Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetAspect (float  a[2]);
-      Method is redundant. Same as SetAspect( float, float)
-
-   void SetBackground (float  a[3]);
-      Method is redundant. Same as SetBackground( float, float, float)
-
-   void SetDisplayPoint (float  a[3]);
-      Method is redundant. Same as SetDisplayPoint( float, float, float)
-
-   void SetEndRenderMethodArgDelete (void (*func)(void *) );
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetStartRenderMethodArgDelete (void (*func)(void *) );
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetViewPoint (float  a[3]);
-      Method is redundant. Same as SetViewPoint( float, float, float)
-
-   void SetViewport (float  a[4]);
-      Method is redundant. Same as SetViewport( float, float, float, float)
-
-   void SetWorldPoint (float  a[4]);
-      Method is redundant. Same as SetWorldPoint( float, float, float, float)
-
-
-=cut
-
-package Graphics::VTK::WarpTransform;
-
-
-@Graphics::VTK::WarpTransform::ISA = qw( Graphics::VTK::AbstractTransform );
-
-=head1 Graphics::VTK::WarpTransform
-
-=over 1
-
-=item *
-
-Inherits from AbstractTransform
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetInverseIterations ();
-   double GetInverseTolerance ();
-   void Inverse ();
-   void SetInverseIterations (int );
-   void SetInverseTolerance (double );
-
-
-B<vtkWarpTransform Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual void ForwardTransformDerivative (float in[3], float out[3], float derivative[3][3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void ForwardTransformDerivative (double in[3], double out[3], double derivative[3][3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void ForwardTransformPoint (float in[3], float out[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void ForwardTransformPoint (double in[3], double out[3]) = 0;
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InverseTransformDerivative (float in[3], float out[3], float derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InverseTransformDerivative (double in[3], double out[3], double derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InverseTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void InverseTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Window;
-
-
-@Graphics::VTK::Window::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::Window
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void DoubleBufferOff ();
-   void DoubleBufferOn ();
-   void EraseOff ();
-   void EraseOn ();
-   const char *GetClassName();
-   int GetDPI ();
-   int GetDoubleBuffer ();
-   int GetErase ();
-   virtual void *GetGenericContext () = 0;
-   virtual void *GetGenericDisplayId () = 0;
-   virtual void *GetGenericDrawable () = 0;
-   virtual void *GetGenericParentId () = 0;
-   virtual void *GetGenericWindowId () = 0;
-   int GetMapped ();
-   int GetOffScreenRendering ();
-   virtual int *GetPosition ();
-      (Returns a 2-element Perl list)
-   virtual int *GetSize ();
-      (Returns a 2-element Perl list)
-   char *GetWindowName ();
-   virtual void MakeCurrent ();
-   void MappedOff ();
-   void MappedOn ();
-   void OffScreenRenderingOff ();
-   void OffScreenRenderingOn ();
-   virtual void Render () = 0;
-   void SetDPI (int );
-   void SetDoubleBuffer (int );
-   void SetErase (int );
-   void SetMapped (int );
-   void SetOffScreenRendering (int );
-   virtual void SetPosition (int , int );
-   virtual void SetSize (int , int );
-   virtual void SetWindowInfo (char *) = 0;
-   virtual void SetWindowName (char *);
-
-
-B<vtkWindow Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual unsigned char *GetPixelData (int , int , int , int , int );
-      Can't Handle 'unsigned char *' return type without a hint
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   virtual void SetDisplayId (void *) = 0;
+   double *TransformDoubleNormalAtPoint (const double point[3], const double normal[3]);
       Don't know the size of pointer arg number 1
 
-   virtual void SetParentId (void *) = 0;
+   double *TransformDoublePoint (const double point[3]);
+      Method is redundant. Same as TransformDoublePoint( double, double, double)
+
+   double *TransformDoubleVectorAtPoint (const double point[3], const double vector[3]);
       Don't know the size of pointer arg number 1
 
-   virtual void SetPosition (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void SetSize (int a[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   virtual void SetWindowId (void *) = 0;
+   float *TransformFloatNormalAtPoint (const float point[3], const float normal[3]);
       Don't know the size of pointer arg number 1
 
+   float *TransformFloatPoint (const float point[3]);
+      Method is redundant. Same as TransformFloatPoint( float, float, float)
 
-=cut
-
-package Graphics::VTK::FunctionSet;
-
-
-@Graphics::VTK::FunctionSet::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::FunctionSet
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   virtual int GetNumberOfFunctions ();
-   virtual int GetNumberOfIndependentVariables ();
-
-
-B<vtkFunctionSet Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual int FunctionValues (float *x, float *f) = 0;
+   float *TransformFloatVectorAtPoint (const float point[3], const float vector[3]);
       Don't know the size of pointer arg number 1
 
-   virtual void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::InitialValueProblemSolver;
-
-
-@Graphics::VTK::InitialValueProblemSolver::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::InitialValueProblemSolver
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkFunctionSet *GetFunctionSet ();
-   virtual void SetFunctionSet (vtkFunctionSet *functionset);
-
-
-B<vtkInitialValueProblemSolver Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
+   void TransformNormalAtPoint (const float point[3], const float in[3], float out[3]);
       Don't know the size of pointer arg number 1
 
-   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT) = 0;
+   void TransformNormalAtPoint (const double point[3], const double in[3], double out[3]);
       Don't know the size of pointer arg number 1
 
-   virtual void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
+   double *TransformNormalAtPoint (const double point[3], const double normal[3]);
+      Don't know the size of pointer arg number 1
 
+   void TransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
 
-=cut
+   void TransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
 
-package Graphics::VTK::ObjectFactoryCollection;
+   double *TransformPoint (const double point[3]);
+      Method is redundant. Same as TransformPoint__( double, double, double)
 
+   void TransformVectorAtPoint (const float point[3], const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
 
-@Graphics::VTK::ObjectFactoryCollection::ISA = qw( Graphics::VTK::Collection );
+   void TransformVectorAtPoint (const double point[3], const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
 
-=head1 Graphics::VTK::ObjectFactoryCollection
+   double *TransformVectorAtPoint (const double point[3], const double vector[3]);
+      Don't know the size of pointer arg number 1
 
-=over 1
-
-=item *
-
-Inherits from Collection
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void AddItem (vtkObjectFactory *t);
-   const char *GetClassName();
-   vtkObjectFactory *GetNextItem ();
-   vtkObjectFactoryCollection *New ();
 
 =cut
 
@@ -1341,7 +203,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    virtual void GetActors2D (vtkPropCollection *pc);
-   const char *GetClassName();
+   const char *GetClassName ();
    float GetHeight ();
    int GetLayerNumber ();
    unsigned long GetMTime ();
@@ -1363,8 +225,8 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetHeight (float h);
    void SetLayerNumber (int );
    void SetMapper (vtkMapper2D *mapper);
-   void SetPosition (float , float);
-   void SetPosition2 (float , float);
+   void SetPosition (float, float);
+   void SetPosition2 (float, float);
    void SetProperty (vtkProperty2D *);
    void SetWidth (float w);
    void ShallowCopy (vtkProp *prop);
@@ -1405,7 +267,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkActor2D *a);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkActor2D *GetLastActor2D ();
    vtkActor2D *GetLastItem ();
    vtkActor2D *GetNextActor2D ();
@@ -1435,7 +297,7 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    virtual unsigned long GetMTime ();
    vtkMatrix4x4 *GetMatrix ();
    vtkProp *GetProp ();
@@ -1474,7 +336,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void AddNode (vtkProp *p, vtkMatrix4x4 *m);
    void DeleteLastNode ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkAssemblyNode *GetFirstNode ();
    vtkAssemblyNode *GetLastNode ();
    virtual unsigned long GetMTime ();
@@ -1512,7 +374,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkAssemblyPath *p);
-   char *GetClassName ();
+   const char *GetClassName ();
    virtual unsigned long GetMTime ();
    vtkAssemblyPath *GetNextItem ();
    int IsItemPresent (vtkAssemblyPath *p);
@@ -1539,20 +401,21 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkBitArray &da);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   int GetValue (int id);
-   void *GetVoidPointer (int id);
+   int GetValue (const long id);
    void Initialize ();
-   int InsertNextValue (int i);
-   void InsertValue (int id, int i);
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const int i);
+   void InsertValue (const long id, const int i);
    vtkBitArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, int value);
+   virtual void Resize (long numTuples);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const int value);
    void Squeeze ();
 
 
@@ -1560,46 +423,52 @@ B<vtkBitArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned char *GetPointer (int id);
+   unsigned char *GetPointer (const long id);
       Can't Handle 'unsigned char *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (unsigned char *array, int size, int save);
+   unsigned char *ResizeAndExtend (const long sz);
+      Can't Handle 'unsigned char *' return type without a hint
+
+   void SetArray (unsigned char *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   unsigned char *WritePointer (int id, int number);
+   unsigned char *WritePointer (const long id, const long number);
       Can't Handle 'unsigned char *' return type without a hint
 
 
@@ -1623,111 +492,270 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkByteSwap *New ();
-   void Swap2BERange (char *c, int num);
-   void Swap2LERange (char *c, int num);
-   void Swap4BE (char *c);
-   void Swap4BERange (char *c, int num);
-   void Swap4LE (char *c);
-   void Swap4LERange (char *c, int num);
+   static void Swap2BERange (char *c, int num);
+   static void Swap2LERange (char *c, int num);
+   static void Swap4BE (char *c);
+   static void Swap4BERange (char *c, int num);
+   static void Swap4LE (char *c);
+   static void Swap4LERange (char *c, int num);
+   static void Swap8BE (char *c);
+   static void Swap8BERange (char *c, int num);
+   static void Swap8LE (char *c);
+   static void Swap8LERange (char *c, int num);
 
 
 B<vtkByteSwap Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void Swap2BE (short *s);
+   static void Swap2BE (short *s);
       Don't know the size of pointer arg number 1
 
-   void Swap2BERange (short *i, int num);
+   static void Swap2BERange (short *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap2LE (short *s);
+   static void Swap2BE (unsigned short *s);
       Don't know the size of pointer arg number 1
 
-   void Swap2LERange (short *i, int num);
+   static void Swap2LE (short *s);
       Don't know the size of pointer arg number 1
 
-   void Swap4BERange (float *p, int num);
+   static void Swap2LERange (short *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4BERange (int *i, int num);
+   static void Swap2LE (unsigned short *s);
       Don't know the size of pointer arg number 1
 
-   void Swap4BERange (unsigned long *i, int num);
+   static void Swap4BERange (float *p, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4BE (float *p);
+   static void Swap4BERange (int *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4BE (int *i);
+   static void Swap4BERange (unsigned long *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4BE (unsigned long *i);
+   static void Swap4BERange (long *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4LERange (unsigned char *c, int num);
+   static void Swap4BE (float *p);
       Don't know the size of pointer arg number 1
 
-   void Swap4LERange (float *p, int num);
+   static void Swap4BE (int *i);
       Don't know the size of pointer arg number 1
 
-   void Swap4LERange (int *i, int num);
+   static void Swap4BE (unsigned long *i);
       Don't know the size of pointer arg number 1
 
-   void Swap4LERange (unsigned long *i, int num);
+   static void Swap4LERange (unsigned char *c, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4LE (float *p);
+   static void Swap4LERange (float *p, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4LE (int *i);
+   static void Swap4LERange (int *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4LE (unsigned long *i);
+   static void Swap4LERange (unsigned long *i, int num);
       Don't know the size of pointer arg number 1
 
-   void Swap4LE (long *i);
+   static void Swap4LE (float *p);
       Don't know the size of pointer arg number 1
 
-   void SwapVoidRange (void *buffer, int numWords, int wordSize);
+   static void Swap4LE (int *i);
       Don't know the size of pointer arg number 1
 
-   void SwapWrite2BERange (char *c, int num, FILE *fp);
+   static void Swap4LE (unsigned long *i);
+      Don't know the size of pointer arg number 1
+
+   static void Swap4LE (long *i);
+      Don't know the size of pointer arg number 1
+
+   static void Swap8BERange (double *d, int num);
+      Don't know the size of pointer arg number 1
+
+   static void Swap8BE (double *d);
+      Don't know the size of pointer arg number 1
+
+   static void Swap8LERange (double *d, int num);
+      Don't know the size of pointer arg number 1
+
+   static void Swap8LE (double *d);
+      Don't know the size of pointer arg number 1
+
+   static void SwapVoidRange (void *buffer, int numWords, int wordSize);
+      Don't know the size of pointer arg number 1
+
+   static void SwapWrite2BERange (char *c, int num, FILE *fp);
       Don't know the size of pointer arg number 3
 
-   void SwapWrite2BERange (short *i, int num, FILE *fp);
+   static void SwapWrite2BERange (short *i, int num, FILE *fp);
       Don't know the size of pointer arg number 1
 
-   void SwapWrite2BERange (char *c, int num, ostream *fp);
+   static void SwapWrite2BERange (char *c, int num, ostream *fp);
       I/O Streams not Supported yet
 
-   void SwapWrite2BERange (short *i, int num, ostream *fp);
+   static void SwapWrite2BERange (short *i, int num, ostream *fp);
       I/O Streams not Supported yet
 
-   void SwapWrite4BERange (char *c, int num, FILE *fp);
+   static void SwapWrite4BERange (char *c, int num, FILE *fp);
       Don't know the size of pointer arg number 3
 
-   void SwapWrite4BERange (float *p, int num, FILE *fp);
+   static void SwapWrite4BERange (float *p, int num, FILE *fp);
       Don't know the size of pointer arg number 1
 
-   void SwapWrite4BERange (int *i, int num, FILE *fp);
+   static void SwapWrite4BERange (int *i, int num, FILE *fp);
       Don't know the size of pointer arg number 1
 
-   void SwapWrite4BERange (unsigned long *i, int num, FILE *fp);
+   static void SwapWrite4BERange (unsigned long *i, int num, FILE *fp);
       Don't know the size of pointer arg number 1
 
-   void SwapWrite4BERange (char *c, int num, ostream *fp);
+   static void SwapWrite4BERange (long *i, int num, FILE *fp);
+      Don't know the size of pointer arg number 1
+
+   static void SwapWrite4BERange (char *c, int num, ostream *fp);
       I/O Streams not Supported yet
 
-   void SwapWrite4BERange (float *p, int num, ostream *fp);
+   static void SwapWrite4BERange (float *p, int num, ostream *fp);
       I/O Streams not Supported yet
 
-   void SwapWrite4BERange (int *i, int num, ostream *fp);
+   static void SwapWrite4BERange (int *i, int num, ostream *fp);
       I/O Streams not Supported yet
 
-   void SwapWrite4BERange (unsigned long *i, int num, ostream *fp);
+   static void SwapWrite4BERange (unsigned long *i, int num, ostream *fp);
+      I/O Streams not Supported yet
+
+   static void SwapWrite4BERange (long *i, int num, ostream *fp);
+      I/O Streams not Supported yet
+
+   static void SwapWrite8BERange (char *c, int num, FILE *fp);
+      Don't know the size of pointer arg number 3
+
+   static void SwapWrite8BERange (double *d, int num, FILE *fp);
+      Don't know the size of pointer arg number 1
+
+   static void SwapWrite8BERange (char *c, int num, ostream *fp);
+      I/O Streams not Supported yet
+
+   static void SwapWrite8BERange (double *d, int num, ostream *fp);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::Cell;
+
+
+@Graphics::VTK::Cell::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::Cell
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   virtual void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut) = 0;
+   virtual void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd) = 0;
+   virtual void DeepCopy (vtkCell *c);
+   float *GetBounds ();
+      (Returns a 6-element Perl list)
+   virtual int GetCellDimension () = 0;
+   virtual int GetCellType () = 0;
+   const char *GetClassName ();
+   virtual vtkCell *GetEdge (int edgeId) = 0;
+   virtual vtkCell *GetFace (int faceId) = 0;
+   virtual int GetInterpolationOrder ();
+   float GetLength2 ();
+   virtual int GetNumberOfEdges () = 0;
+   virtual int GetNumberOfFaces () = 0;
+   int GetNumberOfPoints ();
+   long GetPointId (int ptId);
+   vtkIdList *GetPointIds ();
+   vtkPoints *GetPoints ();
+   virtual void ShallowCopy (vtkCell *c);
+   virtual int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts) = 0;
+
+
+B<vtkCell Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual int CellBoundary (int subId, float pcoords[3], vtkIdList *pts) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights) = 0;
+      Don't know the size of pointer arg number 1
+
+   void GetBounds (float bounds[6]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   virtual int GetParametricCenter (float pcoords[3]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   static char HitBBox (float bounds[6], float origin[3], float dir[3], float coord[3], float &t);
+      Don't know the size of pointer arg number 1
+
+   void Initialize (int npts, long *pts, vtkPoints *p);
+      Don't know the size of pointer arg number 2
+
+   virtual int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId) = 0;
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::Cell3D;
+
+
+@Graphics::VTK::Cell3D::ISA = qw( Graphics::VTK::Cell );
+
+=head1 Graphics::VTK::Cell3D
+
+=over 1
+
+=item *
+
+Inherits from Cell
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   virtual void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   virtual int GetCellDimension ();
+   const char *GetClassName ();
+
+
+B<vtkCell3D Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void GetEdgePoints (int edgeId, int &pts) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void GetFacePoints (int faceId, int &pts) = 0;
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
 
@@ -1751,30 +779,30 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const int ext);
    void DeepCopy (vtkCellArray *ca);
-   int EstimateSize (int numCells, int maxPtsPerCell);
+   long EstimateSize (long numCells, int maxPtsPerCell);
    unsigned long GetActualMemorySize ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkDataArray *GetData ();
-   int GetInsertLocation (int npts);
+   long GetInsertLocation (int npts);
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
-   int GetNumberOfConnectivityEntries ();
-   int GetSize ();
-   int GetTraversalLocation (int npts);
-   int GetTraversalLocation ();
+   long GetNumberOfCells ();
+   long GetNumberOfConnectivityEntries ();
+   long GetSize ();
+   long GetTraversalLocation (long npts);
+   long GetTraversalLocation ();
    void InitTraversal ();
    void Initialize ();
-   void InsertCellPoint (int id);
-   int InsertNextCell (vtkIdList *pts);
-   int InsertNextCell (vtkCell *cell);
-   int InsertNextCell (int npts);
+   void InsertCellPoint (long id);
+   long InsertNextCell (vtkIdList *pts);
+   long InsertNextCell (vtkCell *cell);
+   long InsertNextCell (int npts);
    vtkCellArray *New ();
    void Reset ();
-   void ReverseCell (int loc);
-   void SetCells (int ncells, vtkIntArray *cells);
-   void SetTraversalLocation (int loc);
+   void ReverseCell (long loc);
+   void SetCells (long ncells, vtkIdTypeArray *cells);
+   void SetTraversalLocation (long loc);
    void Squeeze ();
    void UpdateCellCount (int npts);
 
@@ -1783,26 +811,23 @@ B<vtkCellArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void GetCell (int loc, int &npts, int &pts);
-      Don't know the size of pointer arg number 3
-
-   int GetNextCell (int &npts, int &pts);
+   void GetCell (long loc, long &npts, long &pts);
       Don't know the size of pointer arg number 2
 
-   int *GetPointer ();
-      Can't Handle 'int *' return type without a hint
+   int GetNextCell (long &npts, long &pts);
+      Don't know the size of pointer arg number 1
 
-   int InsertNextCell (int npts, int *pts);
+   long *GetPointer ();
+      Can't Handle 'long *' return type without a hint
+
+   long InsertNextCell (long npts, long *pts);
       Don't know the size of pointer arg number 2
 
-   int InsertNextCell (vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void ReplaceCell (int loc, int npts, int *pts);
+   void ReplaceCell (long loc, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
-   int *WritePointer (int ncells, int size);
-      Can't Handle 'int *' return type without a hint
+   long *WritePointer (const long ncells, const long size);
+      Can't Handle 'long *' return type without a hint
 
 
 =cut
@@ -1825,9 +850,8 @@ Inherits from DataSetAttributes
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCellData *New ();
-   void NullCell (int cellId);
 
 
 B<vtkCellData Unsupported Funcs:>
@@ -1858,21 +882,21 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void AddCellReference (int cellId, int ptId);
-   void Allocate (int numLinks, int ext);
+   void AddCellReference (long cellId, long ptId);
+   void Allocate (long numLinks, long ext);
    void BuildLinks (vtkDataSet *data, vtkCellArray *Connectivity);
    void BuildLinks (vtkDataSet *data);
    void DeepCopy (vtkCellLinks *src);
-   void DeletePoint (int ptId);
+   void DeletePoint (long ptId);
    unsigned long GetActualMemorySize ();
-   const char *GetClassName();
-   unsigned short GetNcells (int ptId);
-   void InsertNextCellReference (int ptId, int cellId);
-   int InsertNextPoint (int numLinks);
-   vtkLink_s unsigned short ncells int cells vtkCellLinks *New ();
-   void RemoveCellReference (int cellId, int ptId);
+   const char *GetClassName ();
+   unsigned short GetNcells (long ptId);
+   void InsertNextCellReference (long ptId, long cellId);
+   long InsertNextPoint (int numLinks);
+   vtkLink_s unsigned short ncells long cells static vtkCellLinks *New ();
+   void RemoveCellReference (long cellId, long ptId);
    void Reset ();
-   void ResizeCellList (int ptId, int size);
+   void ResizeCellList (long ptId, int size);
    void Squeeze ();
 
 
@@ -1880,13 +904,13 @@ B<vtkCellLinks Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int *GetCells (int ptId);
-      Can't Handle 'int *' return type without a hint
+   long *GetCells (long ptId);
+      Can't Handle 'long *' return type without a hint
 
-   _vtkLink_s &GetLink (int ptId);
+   _vtkLink_s &GetLink (long ptId);
       Can't Handle _vtkLink_s return type yet
 
-   _vtkLink_s *Arrayint Sizeint MaxIdint Extend_vtkLink_s *Resize (int sz);
+   _vtkLink_s *Resize (long sz);
       Can't Handle _vtkLink_s return type yet
 
 
@@ -1916,27 +940,16 @@ B<Functions Supported for this class by the PerlVTK module:>
    unsigned long GetActualMemorySize ();
    int GetCellLocation (int cellId);
    unsigned char GetCellType (int cellId);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetNumberOfTypes ();
    void InsertCell (int id, unsigned char type, int loc);
    int InsertNextCell (unsigned char type, int loc);
    int InsertNextType (unsigned char type);
    int IsType (unsigned char type);
-   vtkCell_s unsigned char type int loc vtkCellTypes *New ();
+   vtkCellTypes *New ();
    void Reset ();
+   void SetCellTypes (int ncells, vtkUnsignedCharArray *cellTypes, vtkIntArray *cellLocations);
    void Squeeze ();
-
-
-B<vtkCellTypes Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   _vtkCell_s &GetCell (int id);
-      Can't Handle _vtkCell_s return type yet
-
-   _vtkCell_s *Arrayint Sizeint MaxIdint Extend_vtkCell_s *Resize (int sz);
-      Can't Handle _vtkCell_s return type yet
-
 
 =cut
 
@@ -1958,64 +971,66 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *ia);
-   void DeepCopy (vtkDataArray &ia);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    int GetDataType ();
-   char *GetPointer (int id);
-   char GetValue (int id);
-   void *GetVoidPointer (int id);
+   char *GetPointer (const long id);
+   char GetValue (const long id);
    void Initialize ();
-   void InsertComponent (int i, int j, float c);
-   int InsertNextValue (char c);
-   void InsertValue (int id, char c);
+   void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const char c);
+   void InsertValue (const long id, const char c);
    vtkCharArray *New ();
-   void SetArray (char *array, int size, int save);
-   void SetComponent (int i, int j, float c);
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, char value);
+   virtual void Resize (long numTuples);
+   void SetArray (char *array, long size, int save);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const char value);
    void Squeeze ();
-   char *WritePointer (int id, int number);
+   char *WritePointer (const long id, const long number);
 
 
 B<vtkCharArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
 
@@ -2040,7 +1055,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkObject *);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkObject *GetItemAsObject (int i);
    vtkObject *GetNextItemAsObject ();
    int GetNumberOfItems ();
@@ -2082,11 +1097,11 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void GenerateValues (int numContours, float rangeStart, float rangeEnd);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetNumberOfContours ();
    float GetValue (int i);
    vtkContourValues *New ();
-   void SetNumberOfContours (int number);
+   void SetNumberOfContours (const int number);
    void SetValue (int i, float value);
 
 
@@ -2095,7 +1110,7 @@ B<vtkContourValues Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void GenerateValues (int numContours, float range[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    float *GetValues ();
       Can't Handle 'float *' return type without a hint
@@ -2127,8 +1142,12 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int *GetComputedDisplayValue (vtkViewport *);
+      (Returns a 2-element Perl list)
+   float *GetComputedFloatDisplayValue (vtkViewport *);
+      (Returns a 2-element Perl list)
+   float *GetComputedFloatViewportValue (vtkViewport *);
       (Returns a 2-element Perl list)
    int *GetComputedLocalDisplayValue (vtkViewport *);
       (Returns a 2-element Perl list)
@@ -2137,7 +1156,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    float *GetComputedWorldValue (vtkViewport *);
       (Returns a 3-element Perl list)
    int GetCoordinateSystem ();
-   char *GetCoordinateSystemAsString ();
+   const char *GetCoordinateSystemAsString ();
    vtkCoordinate *GetReferenceCoordinate ();
    float  *GetValue ();
       (Returns a 3-element Perl list)
@@ -2151,7 +1170,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetCoordinateSystemToViewport ();
    void SetCoordinateSystemToWorld ();
    void SetReferenceCoordinate (vtkCoordinate *);
-   void SetValue (float  , float , float );
+   void SetValue (float , float , float );
    void SetValue (float a, float b);
    void SetViewport (vtkViewport *viewport);
 
@@ -2159,12 +1178,6 @@ B<Functions Supported for this class by the PerlVTK module:>
 B<vtkCoordinate Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
-
-   float *GetComputedFloatDisplayValue (vtkViewport *);
-      Can't Handle 'float *' return type without a hint
-
-   float *GetComputedFloatViewportValue (vtkViewport *);
-      Can't Handle 'float *' return type without a hint
 
    virtual float *GetComputedUserDefinedValue (vtkViewport *);
       Can't Handle 'float *' return type without a hint
@@ -2199,7 +1212,7 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    void Lock (void );
    vtkCriticalSection *New ();
    void Unlock (void );
@@ -2211,6 +1224,144 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::DataArray;
+
+
+@Graphics::VTK::DataArray::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::DataArray
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   virtual int Allocate (const long sz, const long ext) = 0;
+   virtual void ComputeRange (int comp);
+   virtual void CopyComponent (const int j, vtkDataArray *from, const int fromComponent);
+   static vtkDataArray *CreateDataArray (int dataType);
+   void CreateDefaultLookupTable ();
+   virtual void DeepCopy (vtkDataArray *da);
+   virtual void FillComponent (const int j, const float c);
+   unsigned long GetActualMemorySize ();
+   const char *GetClassName ();
+   virtual float GetComponent (const long i, const int j);
+   virtual void GetData (long tupleMin, long tupleMax, int compMin, int compMax, vtkFloatArray *data);
+   virtual int GetDataType () = 0;
+   double GetDataTypeMax ();
+   double GetDataTypeMin ();
+   vtkLookupTable *GetLookupTable ();
+   long GetMaxId ();
+   virtual float GetMaxNorm ();
+   const char *GetName ();
+   int GetNumberOfComponents ();
+   int GetNumberOfComponentsMaxValue ();
+   int GetNumberOfComponentsMinValue ();
+   long GetNumberOfTuples ();
+   float *GetRange (int comp);
+      (Returns a 2-element Perl list)
+   float *GetRange ();
+      (Returns a 2-element Perl list)
+   long GetSize ();
+   float GetTuple1 (const long i);
+   float *GetTuple2 (const long i);
+      (Returns a 2-element Perl list)
+   float *GetTuple3 (const long i);
+      (Returns a 3-element Perl list)
+   float *GetTuple4 (const long i);
+      (Returns a 4-element Perl list)
+   float *GetTuple9 (const long i);
+      (Returns a 9-element Perl list)
+   void GetTuples (long p1, long p2, vtkDataArray *output);
+   void GetTuples (vtkIdList *ptIds, vtkDataArray *output);
+   virtual void Initialize () = 0;
+   virtual void InsertComponent (const long i, const int j, const float c);
+   void InsertNextTuple1 (float value);
+   void InsertNextTuple2 (float val0, float val1);
+   void InsertNextTuple3 (float val0, float val1, float val2);
+   void InsertNextTuple4 (float val0, float val1, float val2, float val3);
+   void InsertNextTuple9 (float val0, float val1, float val2, float val3, float val4, float val5, float val6, float val7, float val8);
+   void InsertTuple1 (const long i, float value);
+   void InsertTuple2 (const long i, float val0, float val1);
+   void InsertTuple3 (const long i, float val0, float val1, float val2);
+   void InsertTuple4 (const long i, float val0, float val1, float val2, float val3);
+   void InsertTuple9 (const long i, float val0, float val1, float val2, float val3, float val4, float val5, float val6, float val7, float val8);
+   void Reset ();
+   virtual void Resize (long numTuples) = 0;
+   virtual void SetComponent (const long i, const int j, const float c);
+   void SetLookupTable (vtkLookupTable *lut);
+   void SetName (const char *name);
+   void SetNumberOfComponents (int );
+   virtual void SetNumberOfTuples (const long number) = 0;
+   void SetTuple1 (const long i, float value);
+   void SetTuple2 (const long i, float val0, float val1);
+   void SetTuple3 (const long i, float val0, float val1, float val2);
+   void SetTuple4 (const long i, float val0, float val1, float val2, float val3);
+   void SetTuple9 (const long i, float val0, float val1, float val2, float val3, float val4, float val5, float val6, float val7, float val8);
+   virtual void Squeeze () = 0;
+
+
+B<vtkDataArray Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void GetDataTypeRange (double range[2]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   void GetRange (float range[2], int comp);
+      Don't know the size of pointer arg number 1
+
+   void GetRange (float range[2]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   virtual float *GetTuple (const long i) = 0;
+      Can't Handle 'float *' return type without a hint
+
+   float *GetTupleN (const long i, int n);
+      Can't Handle 'float *' return type without a hint
+
+   virtual void GetTuple (const long i, float *tuple) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void GetTuple (const long i, double *tuple);
+      Don't know the size of pointer arg number 2
+
+   virtual void *GetVoidPointer (const long id) = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual long InsertNextTuple (const float *tuple) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual long InsertNextTuple (const double *tuple);
+      Don't know the size of pointer arg number 1
+
+   virtual void InsertTuple (const long i, const float *tuple) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void InsertTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   virtual void SetTuple (const long i, const float *tuple) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual void SetTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   virtual void SetVoidArray (void *, long , int );
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -2233,24 +1384,28 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
+   void AddConsumer (vtkProcessObject *c);
    void CopyInformation (vtkDataObject *data);
    virtual void CopyTypeSpecificInformation (vtkDataObject *data);
    void DataHasBeenGenerated ();
    virtual void DeepCopy (vtkDataObject *src);
    virtual unsigned long GetActualMemorySize ();
-   const char *GetClassName();
+   const char *GetClassName ();
+   vtkProcessObject *GetConsumer (int i);
    virtual int GetDataObjectType ();
    int GetDataReleased ();
    virtual unsigned long GetEstimatedMemorySize ();
-   unsigned long GetEstimatedPipelineMemorySize ();
    vtkExtentTranslator *GetExtentTranslator ();
    vtkFieldData *GetFieldData ();
-   int GetGlobalReleaseDataFlag ();
+   static int GetGlobalReleaseDataFlag ();
    float GetLocality ();
    unsigned long GetMTime ();
+   int GetMaximumNumberOfPieces ();
    virtual int GetNetReferenceCount ();
+   int GetNumberOfConsumers ();
    long unsigned GetPipelineMTime ();
    int GetReleaseDataFlag ();
+   int GetRequestExactExtent ();
    vtkSource *GetSource ();
    int  *GetUpdateExtent ();
       (Returns a 6-element Perl list)
@@ -2263,18 +1418,24 @@ B<Functions Supported for this class by the PerlVTK module:>
    void GlobalReleaseDataFlagOff ();
    void GlobalReleaseDataFlagOn ();
    virtual void Initialize ();
+   int IsConsumer (vtkProcessObject *c);
    vtkDataObject *New ();
    virtual void PrepareForNewData ();
    virtual void PropagateUpdateExtent ();
    void ReleaseData ();
    void ReleaseDataFlagOff ();
    void ReleaseDataFlagOn ();
+   void RemoveConsumer (vtkProcessObject *c);
+   void RequestExactExtentOff ();
+   void RequestExactExtentOn ();
    void SetExtentTranslator (vtkExtentTranslator *translator);
    void SetFieldData (vtkFieldData *);
-   void SetGlobalReleaseDataFlag (int val);
+   static void SetGlobalReleaseDataFlag (int val);
    void SetLocality (float );
+   void SetMaximumNumberOfPieces (int );
    void SetPipelineMTime (unsigned long time);
    void SetReleaseDataFlag (int );
+   void SetRequestExactExtent (int v);
    void SetSource (vtkSource *s);
    virtual void SetUpdateExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    virtual void SetUpdateExtent (int , int , int );
@@ -2283,7 +1444,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetUpdateGhostLevel (int level);
    void SetUpdateNumberOfPieces (int num);
    void SetUpdatePiece (int piece);
-   void SetWholeExtent (int  , int , int , int , int , int );
+   void SetWholeExtent (int , int , int , int , int , int );
    virtual void ShallowCopy (vtkDataObject *src);
    int ShouldIReleaseData ();
    virtual void TriggerAsynchronousUpdate ();
@@ -2297,17 +1458,11 @@ B<vtkDataObject Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void ComputeEstimatedPipelineMemorySize (unsigned long sizes[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int WholeExtent[6]int Extent[6]int UpdateExtent[6]unsigned char UpdateExtentInitializedvtkExtentTranslator *ExtentTranslatorint NumberOfPiecesint Pieceint UpdateNumberOfPiecesint UpdatePieceint GhostLevelint UpdateGhostLevelint ReleaseDataFlagvtkTimeStamp UpdateTimeunsigned long EstimatedWholeMemorySizeunsigned long PipelineMTimeint LastUpdateExtentWasOutsideOfTheExtentfloat Localityvoid InternalDataObjectCopy (vtkDataObject *src);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    virtual void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
    void SetWholeExtent (int  a[6]);
       Method is redundant. Same as SetWholeExtent( int, int, int, int, int, int)
@@ -2334,17 +1489,106 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkDataObject *ds);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkDataObject *GetItem (int i);
    vtkDataObject *GetNextItem ();
    vtkDataObjectCollection *New ();
 
 =cut
 
+package Graphics::VTK::DataSet;
+
+
+@Graphics::VTK::DataSet::ISA = qw( Graphics::VTK::DataObject );
+
+=head1 Graphics::VTK::DataSet
+
+=over 1
+
+=item *
+
+Inherits from DataObject
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   virtual void ComputeBounds ();
+   virtual void CopyStructure (vtkDataSet *ds) = 0;
+   void DeepCopy (vtkDataObject *src);
+   long FindPoint (float x, float y, float z);
+   unsigned long GetActualMemorySize ();
+   float *GetBounds ();
+      (Returns a 6-element Perl list)
+   virtual void GetCell (long cellId, vtkGenericCell *cell) = 0;
+   virtual vtkCell *GetCell (long cellId) = 0;
+   vtkCellData *GetCellData ();
+   virtual void GetCellNeighbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds);
+   virtual void GetCellPoints (long cellId, vtkIdList *ptIds) = 0;
+   virtual int GetCellType (long cellId) = 0;
+   virtual void GetCellTypes (vtkCellTypes *types);
+   float *GetCenter ();
+      (Returns a 3-element Perl list)
+   const char *GetClassName ();
+   int GetDataObjectType ();
+   float GetLength ();
+   unsigned long GetMTime ();
+   virtual int GetMaxCellSize () = 0;
+   virtual long GetNumberOfCells () = 0;
+   virtual long GetNumberOfPoints () = 0;
+   virtual float *GetPoint (long ptId) = 0;
+      (Returns a 3-element Perl list)
+   virtual void GetPointCells (long ptId, vtkIdList *cellIds) = 0;
+   vtkPointData *GetPointData ();
+   float *GetScalarRange ();
+      (Returns a 2-element Perl list)
+   void Initialize ();
+   void ShallowCopy (vtkDataObject *src);
+   virtual void Squeeze ();
+
+
+B<vtkDataSet Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual vtkCell *FindAndGetCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
+
+   virtual long FindCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual long FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, long cellId, float tol2, int &subId, float pcoords[3], float *weights) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual long FindPoint (float x[3]) = 0;
+      Method is redundant. Same as FindPoint( float, float, float)
+
+   void GetBounds (float bounds[6]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   virtual void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
+
+   void GetCenter (float center[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   virtual void GetPoint (long id, float x[3]);
+      Don't know the size of pointer arg number 2
+
+   virtual void GetScalarRange (float range[2]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
 package Graphics::VTK::DataSetAttributes;
 
 
-@Graphics::VTK::DataSetAttributes::ISA = qw( Graphics::VTK::Object );
+@Graphics::VTK::DataSetAttributes::ISA = qw( Graphics::VTK::FieldData );
 
 =head1 Graphics::VTK::DataSetAttributes
 
@@ -2352,21 +1596,17 @@ package Graphics::VTK::DataSetAttributes;
 
 =item *
 
-Inherits from Object
+Inherits from FieldData
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void CopyAllOff ();
-   void CopyAllOn ();
-   void CopyAllocate (vtkDataSetAttributes *pd, int sze, int ext);
-   void CopyData (vtkDataSetAttributes *fromPd, int fromId, int toId);
-   void CopyFieldDataOff ();
-   void CopyFieldDataOn ();
-   void CopyGhostLevelsOff ();
-   void CopyGhostLevelsOn ();
+   virtual void CopyAllOff ();
+   virtual void CopyAllOn ();
+   void CopyAllocate (vtkDataSetAttributes *pd, long sze, long ext);
+   void CopyData (vtkDataSetAttributes *fromPd, long fromId, long toId);
    void CopyNormalsOff ();
    void CopyNormalsOn ();
    void CopyScalarsOff ();
@@ -2375,52 +1615,49 @@ B<Functions Supported for this class by the PerlVTK module:>
    void CopyTCoordsOn ();
    void CopyTensorsOff ();
    void CopyTensorsOn ();
-   void CopyTuple (vtkDataArray *fromData, vtkDataArray *toData, int fromId, int toId);
+   void CopyTuple (vtkDataArray *fromData, vtkDataArray *toData, long fromId, long toId);
    void CopyVectorsOff ();
    void CopyVectorsOn ();
-   void DeepCopy (vtkDataSetAttributes *pd);
-   unsigned long GetActualMemorySize ();
-   int GetAnyEnabled ();
-   const char *GetClassName();
-   int GetCopyFieldData ();
-   int GetCopyGhostLevels ();
+   virtual void DeepCopy (vtkFieldData *pd);
+   vtkDataArray *GetAttribute (int attributeType);
+   const char *GetClassName ();
    int GetCopyNormals ();
    int GetCopyScalars ();
    int GetCopyTCoords ();
    int GetCopyTensors ();
    int GetCopyVectors ();
-   vtkFieldData *GetFieldData ();
-   vtkGhostLevels *GetGhostLevels ();
-   unsigned long GetMTime ();
-   vtkNormals *GetNormals ();
-   vtkScalars *GetScalars ();
-   vtkTCoords *GetTCoords ();
-   vtkTensors *GetTensors ();
-   vtkVectors *GetVectors ();
-   void Initialize ();
-   void InterpolateAllocate (vtkDataSetAttributes *pd, int sze, int ext);
-   void InterpolateEdge (vtkDataSetAttributes *fromPd, int toId, int p1, int p2, float t);
-   void InterpolateTime (vtkDataSetAttributes *from1, vtkDataSetAttributes *from2, int id, float t);
+   vtkDataArray *GetNormals ();
+   vtkDataArray *GetScalars ();
+   vtkDataArray *GetTCoords ();
+   vtkDataArray *GetTensors ();
+   vtkDataArray *GetVectors ();
+   virtual void Initialize ();
+   void InterpolateAllocate (vtkDataSetAttributes *pd, long sze, long ext);
+   void InterpolateEdge (vtkDataSetAttributes *fromPd, long toId, long p1, long p2, float t);
+   void InterpolateTime (vtkDataSetAttributes *from1, vtkDataSetAttributes *from2, long id, float t);
+   int IsArrayAnAttribute (int idx);
    vtkDataSetAttributes *New ();
-   void PassData (vtkDataSetAttributes *pd);
-   void PassNoReplaceData (vtkDataSetAttributes *pd);
-   void SetCopyFieldData (int );
-   void SetCopyGhostLevels (int );
-   void SetCopyNormals (int );
-   void SetCopyScalars (int );
-   void SetCopyTCoords (int );
-   void SetCopyTensors (int );
-   void SetCopyVectors (int );
-   void SetFieldData (vtkFieldData *);
-   void SetGhostLevels (vtkGhostLevels *);
-   void SetNormals (vtkNormals *);
-   void SetScalars (vtkScalars *);
-   void SetTCoords (vtkTCoords *);
-   void SetTensors (vtkTensors *);
-   void SetVectors (vtkVectors *);
-   void ShallowCopy (vtkDataSetAttributes *pd);
-   void ShallowCopy (vtkDataSetAttributes &pd);
-   void Squeeze ();
+   virtual void PassData (vtkFieldData *fd);
+   virtual void RemoveArray (const char *name);
+   int SetActiveAttribute (const char *name, int attributeType);
+   int SetActiveAttribute (int index, int attributeType);
+   int SetActiveNormals (const char *name);
+   int SetActiveScalars (const char *name);
+   int SetActiveTCoords (const char *name);
+   int SetActiveTensors (const char *name);
+   int SetActiveVectors (const char *name);
+   void SetCopyAttribute (int index, int value);
+   void SetCopyNormals (int i);
+   void SetCopyScalars (int i);
+   void SetCopyTCoords (int i);
+   void SetCopyTensors (int i);
+   void SetCopyVectors (int i);
+   int SetNormals (vtkDataArray *da);
+   int SetScalars (vtkDataArray *da);
+   int SetTCoords (vtkDataArray *da);
+   int SetTensors (vtkDataArray *da);
+   int SetVectors (vtkDataArray *da);
+   virtual void ShallowCopy (vtkFieldData *pd);
    virtual void Update ();
 
 
@@ -2428,13 +1665,13 @@ B<vtkDataSetAttributes Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void DeepCopy (vtkDataSetAttributes &pd);
-      Method is marked 'Do Not Use' in its descriptions
+   void GetAttributeIndices (int *indexArray);
+      Don't know the size of pointer arg number 1
 
-   void InterpolatePoint (vtkDataSetAttributes *fromPd, int toId, vtkIdList *ids, float *weights);
+   void InterpolatePoint (vtkDataSetAttributes *fromPd, long toId, vtkIdList *ids, float *weights);
       Don't know the size of pointer arg number 4
 
-   void InterpolateTuple (vtkDataArray *fromData, vtkDataArray *toData, int toId, vtkIdList *ptIds, float *weights);
+   void InterpolateTuple (vtkDataArray *fromData, vtkDataArray *toData, long toId, vtkIdList *ptIds, float *weights);
       Don't know the size of pointer arg number 5
 
    void PrintSelf (ostream &os, vtkIndent indent);
@@ -2462,7 +1699,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkDataSet *ds);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkDataSet *GetItem (int i);
    vtkDataSet *GetNextItem ();
    vtkDataSetCollection *New ();
@@ -2487,12 +1724,14 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void ConstructClass (char *classname);
-   void DeleteTable ();
-   void DestructClass (char *classname);
-   const char *GetClassName();
+   static void ConstructClass (const char *classname);
+   static void DeleteTable ();
+   static void DestructClass (const char *classname);
+   const char *GetClassName ();
    vtkDebugLeaks *New ();
-   void PrintCurrentLeaks ();
+   static void PrintCurrentLeaks ();
+   static void PromptUserOff ();
+   static void PromptUserOn ();
 
 =cut
 
@@ -2514,11 +1753,11 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   char *GetFile (int index);
+   const char *GetClassName ();
+   const char *GetFile (int index);
    int GetNumberOfFiles ();
    vtkDirectory *New ();
-   int Open (char *dir);
+   int Open (const char *dir);
 
 
 B<vtkDirectory Unsupported Funcs:>
@@ -2527,6 +1766,96 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    virtual void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::DoubleArray;
+
+
+@Graphics::VTK::DoubleArray::ISA = qw( Graphics::VTK::DataArray );
+
+=head1 Graphics::VTK::DoubleArray
+
+=over 1
+
+=item *
+
+Inherits from DataArray
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   int Allocate (const long sz, const long ext);
+   void DeepCopy (vtkDataArray *da);
+   const char *GetClassName ();
+   int GetDataType ();
+   double GetValue (const long id);
+   void Initialize ();
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const double f);
+   void InsertValue (const long id, const double f);
+   vtkDoubleArray *New ();
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const double value);
+   void Squeeze ();
+
+
+B<vtkDoubleArray Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   double *GetPointer (const long id);
+      Can't Handle 'double *' return type without a hint
+
+   float *GetTuple (const long i);
+      Can't Handle 'float *' return type without a hint
+
+   void GetTuple (const long i, float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void GetTuple (const long i, double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
+      Don't know the size of pointer arg number 1
+
+   long InsertNextTuple (const double *tuple);
+      Don't know the size of pointer arg number 1
+
+   void InsertTuple (const long i, const float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void InsertTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   double *ResizeAndExtend (const long sz);
+      Can't Handle 'double *' return type without a hint
+
+   void SetArray (double *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   void SetTuple (const long i, const float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetVoidArray (void *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   double *WritePointer (const long id, const long number);
+      Can't Handle 'double *' return type without a hint
 
 
 =cut
@@ -2549,95 +1878,19 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   void *GetSymbolAddress (vtkLibHandle , char *);
-   char *LastError ();
-   char *LibExtension ();
-   char *LibPrefix ();
+   const char *GetClassName ();
+   static const char *LastError ();
+   static const char *LibExtension ();
+   static const char *LibPrefix ();
    vtkDynamicLoader *New ();
 
-=cut
 
-package Graphics::VTK::DoubleArray;
-
-
-@Graphics::VTK::DoubleArray::ISA = qw( Graphics::VTK::DataArray );
-
-=head1 Graphics::VTK::DoubleArray
-
-=over 1
-
-=item *
-
-Inherits from DataArray
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   int Allocate (int sz, int ext);
-   void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
-   int GetDataType ();
-   double GetValue (int id);
-   void *GetVoidPointer (int id);
-   void Initialize ();
-   int InsertNextValue (double f);
-   void InsertValue (int id, double f);
-   vtkDoubleArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, double value);
-   void Squeeze ();
-
-
-B<vtkDoubleArray Unsupported Funcs:>
+B<vtkDynamicLoader Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   double *GetPointer (int id);
-      Can't Handle 'double *' return type without a hint
-
-   float *GetTuple (int i);
-      Can't Handle 'float *' return type without a hint
-
-   void GetTuple (int i, float *tuple);
-      Don't know the size of pointer arg number 2
-
-   void GetTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   int InsertNextTuple (float *tuple);
-      Don't know the size of pointer arg number 1
-
-   int InsertNextTuple (double *tuple);
-      Don't know the size of pointer arg number 1
-
-   void InsertTuple (int i, float *tuple);
-      Don't know the size of pointer arg number 2
-
-   void InsertTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetArray (double *array, int size, int save);
-      Don't know the size of pointer arg number 1
-
-   void SetTuple (int i, float *tuple);
-      Don't know the size of pointer arg number 2
-
-   void SetTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   void SetVoidArray (void *array, int size, int save);
-      Don't know the size of pointer arg number 1
-
-   double *WritePointer (int id, int number);
-      Can't Handle 'double *' return type without a hint
+   static void *GetSymbolAddress (vtkLibHandle , const char *);
+      Can't Handle 'static void *' return type without a hint
 
 
 =cut
@@ -2660,16 +1913,15 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetNextEdge (int &p1, int &p2);
-   int GetNumberOfEdges ();
-   int InitEdgeInsertion (int numPoints, int storeAttributes);
-   int InitPointInsertion (vtkPoints *newPts, int estSize);
+   const char *GetClassName ();
+   long GetNumberOfEdges ();
+   int InitEdgeInsertion (long numPoints, int storeAttributes);
+   int InitPointInsertion (vtkPoints *newPts, long estSize);
    void InitTraversal ();
    void Initialize ();
-   void InsertEdge (int p1, int p2, int attributeId);
-   int InsertEdge (int p1, int p2);
-   int IsEdge (int p1, int p2);
+   void InsertEdge (long p1, long p2, int attributeId);
+   long InsertEdge (long p1, long p2);
+   int IsEdge (long p1, long p2);
    vtkEdgeTable *New ();
    void Reset ();
 
@@ -2678,14 +1930,17 @@ B<vtkEdgeTable Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int InsertUniquePoint (int p1, int p2, float x[3], int &ptId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   int GetNextEdge (long &p1, long &p2);
+      Don't know the size of pointer arg number 1
+
+   int InsertUniquePoint (long p1, long p2, float x[3], long &ptId);
+      Don't know the size of pointer arg number 3
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   vtkIdList *TablevtkIdList *Attributesint StoreAttributesint TableMaxIdint TableSizeint Position[2]int Extendint NumberOfEdgesvtkPoints *PointsvtkIdList *Resize (int size);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   vtkIdList *Resize (long size);
+      Can't Handle 'vtkIdList **' return type yet
 
 
 =cut
@@ -2708,18 +1963,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *pts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts1, vtkCellArray *lines, vtkCellArray *verts2, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *pts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts1, vtkCellArray *lines, vtkCellArray *verts2, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int );
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkEmptyCell *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkEmptyCell Unsupported Funcs:>
@@ -2727,22 +1981,19 @@ B<vtkEmptyCell Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -2765,26 +2016,35 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetExtent ();
       (Returns a 6-element Perl list)
    int GetGhostLevel ();
    int GetNumberOfPieces ();
    int GetPiece ();
+   int GetSplitMode ();
    int  *GetWholeExtent ();
       (Returns a 6-element Perl list)
    vtkExtentTranslator *New ();
    virtual int PieceToExtent ();
-   void SetExtent (int  , int , int , int , int , int );
+   virtual int PieceToExtentByPoints ();
+   void SetExtent (int , int , int , int , int , int );
    void SetGhostLevel (int );
    void SetNumberOfPieces (int );
    void SetPiece (int );
-   void SetWholeExtent (int  , int , int , int , int , int );
+   void SetSplitModeToBlock ();
+   void SetSplitModeToXSlab ();
+   void SetSplitModeToYSlab ();
+   void SetSplitModeToZSlab ();
+   void SetWholeExtent (int , int , int , int , int , int );
 
 
 B<vtkExtentTranslator Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual int PieceToExtentThreadSafe (int piece, int numPieces, int ghostLevel, int *wholeExtent, int *resultExtent, int splitMode, int byPoints);
+      Don't know the size of pointer arg number 4
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -2795,7 +2055,10 @@ Functions which are not supported supported for this class by the PerlVTK module
    void SetWholeExtent (int  a[6]);
       Method is redundant. Same as SetWholeExtent( int, int, int, int, int, int)
 
-   int SplitExtent (int piece, int numPieces, int *extent);
+   int SplitExtent (int piece, int numPieces, int *extent, int splitMode);
+      Don't know the size of pointer arg number 3
+
+   int SplitExtentByPoints (int piece, int numPieces, int *extent, int splitMode);
       Don't know the size of pointer arg number 3
 
 
@@ -2819,35 +2082,37 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int AddArray (vtkDataArray *array, char *name);
    int AddArray (vtkDataArray *array);
-   int AddNoReplaceArray (vtkDataArray *array, char *name);
-   int AddReplaceArray (vtkDataArray *array, char *name);
-   int Allocate (int sz, int ext);
-   void DeepCopy (vtkFieldData *da);
+   int Allocate (const long sz, const long ext);
+   void AllocateArrays (int num);
+   virtual void CopyAllOff ();
+   virtual void CopyAllOn ();
+   void CopyFieldOff (const char *name);
+   void CopyFieldOn (const char *name);
+   virtual void DeepCopy (vtkFieldData *da);
    virtual unsigned long GetActualMemorySize ();
-   vtkDataArray *GetArray (char *arrayName, int &index);
-   vtkDataArray *GetArray (char *arrayName);
+   vtkDataArray *GetArray (const char *arrayName, int &index);
+   vtkDataArray *GetArray (const char *arrayName);
    vtkDataArray *GetArray (int i);
    int GetArrayContainingComponent (int i, int &arrayComp);
-   char *GetArrayName (int i);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetArrayName (int i);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    void GetField (vtkIdList *ptId, vtkFieldData *f);
-   void GetField (vtkIdList &ptId, vtkFieldData &f);
+   unsigned long GetMTime ();
    int GetNumberOfArrays ();
    int GetNumberOfComponents ();
-   int GetNumberOfTuples ();
-   void Initialize ();
-   void InsertComponent (int i, int j, float c);
+   long GetNumberOfTuples ();
+   virtual void Initialize ();
+   void InsertComponent (const long i, const int j, const float c);
    vtkFieldData *New ();
+   virtual void PassData (vtkFieldData *fd);
+   virtual void RemoveArray (const char *name);
    void Reset ();
-   void SetArray (int i, vtkDataArray *);
-   void SetArrayName (int i, char *name);
-   void SetComponent (int i, int j, float c);
+   void SetComponent (const long i, const int j, const float c);
    void SetNumberOfArrays (int num);
-   void SetNumberOfTuples (int number);
-   void ShallowCopy (vtkFieldData *da);
+   void SetNumberOfTuples (const long number);
+   virtual void ShallowCopy (vtkFieldData *da);
    void Squeeze ();
 
 
@@ -2855,29 +2120,23 @@ B<vtkFieldData Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void DeepCopy (vtkFieldData &da);
-      Method is marked 'Do Not Use' in its descriptions
-
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
-
-   void ShallowCopy (vtkFieldData &da);
-      Method is marked 'Do Not Use' in its descriptions
 
 
 =cut
@@ -2902,11 +2161,11 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void AppendOff ();
    void AppendOn ();
-   virtual void DisplayText (char *);
+   virtual void DisplayText (const char *);
    void FlushOff ();
    void FlushOn ();
    int GetAppend ();
-   const char *GetClassName();
+   const char *GetClassName ();
    char *GetFileName ();
    int GetFlush ();
    vtkFileOutputWindow *New ();
@@ -2943,23 +2202,22 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *fa);
-   void DeepCopy (vtkDataArray &fa);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    int GetDataType ();
-   float GetValue (int id);
-   void *GetVoidPointer (int id);
+   float GetValue (const long id);
    void Initialize ();
-   void InsertComponent (int i, int j, float c);
-   int InsertNextValue (float f);
-   void InsertValue (int id, float f);
+   void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const float f);
+   void InsertValue (const long id, const float f);
    vtkFloatArray *New ();
-   void SetComponent (int i, int j, float c);
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, float value);
+   virtual void Resize (long numTuples);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const float value);
    void Squeeze ();
 
 
@@ -2967,263 +2225,157 @@ B<vtkFloatArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float *GetPointer (int id);
+   float *GetPointer (const long id);
       Can't Handle 'float *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (float *array, int size, int save);
+   float *ResizeAndExtend (const long sz);
+      Can't Handle 'float *' return type without a hint
+
+   void SetArray (float *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
-      Method is marked 'Do Not Use' in its descriptions
+   void SetVoidArray (void *array, long size, int save);
+      Don't know the size of pointer arg number 1
 
-   float *WritePointer (int id, int number);
+   float *WritePointer (const long id, const long number);
       Can't Handle 'float *' return type without a hint
 
 
 =cut
 
-package Graphics::VTK::FloatNormals;
+package Graphics::VTK::FunctionParser;
 
 
-@Graphics::VTK::FloatNormals::ISA = qw( Graphics::VTK::Normals );
+@Graphics::VTK::FunctionParser::ISA = qw( Graphics::VTK::Object );
 
-=head1 Graphics::VTK::FloatNormals
+=head1 Graphics::VTK::FunctionParser
 
 =over 1
 
 =item *
 
-Inherits from Normals
+Inherits from Object
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   vtkFloatNormals *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
+   const char *GetClassName ();
+   char *GetFunction ();
+   int GetNumberOfScalarVariables ();
+   int GetNumberOfVectorVariables ();
+   double GetScalarResult ();
+   char *GetScalarVariableName (int i);
+   double GetScalarVariableValue (const char *variableName);
+   double GetScalarVariableValue (int i);
+   double *GetVectorResult ();
+      (Returns a 3-element Perl list)
+   char *GetVectorVariableName (int i);
+   double *GetVectorVariableValue (const char *variableName);
+      (Returns a 3-element Perl list)
+   double *GetVectorVariableValue (int i);
+      (Returns a 3-element Perl list)
+   int IsScalarResult ();
+   int IsVectorResult ();
+   vtkFunctionParser *New ();
+   void SetFunction (const char *function);
+   void SetScalarVariableValue (const char *variableName, double value);
+   void SetScalarVariableValue (int i, double value);
+   void SetVectorVariableValue (const char *variableName, double xValue, double yValue, double zValue);
+   void SetVectorVariableValue (int i, double xValue, double yValue, double zValue);
 
 
-B<vtkFloatNormals Unsupported Funcs:>
+B<vtkFunctionParser Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
+   void GetVectorResult (double result[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
+   void GetVectorVariableValue (const char *variableName, double value[3]);
+      Don't know the size of pointer arg number 2
+
+   void GetVectorVariableValue (int i, double value[3]);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetVectorVariableValue (const char *variableName, const double values[3]);
+      Don't know the size of pointer arg number 2
+
+   void SetVectorVariableValue (int i, const double values[3]);
+      Don't know the size of pointer arg number 2
 
 
 =cut
 
-package Graphics::VTK::FloatPoints;
+package Graphics::VTK::FunctionSet;
 
 
-@Graphics::VTK::FloatPoints::ISA = qw( Graphics::VTK::Points );
+@Graphics::VTK::FunctionSet::ISA = qw( Graphics::VTK::Object );
 
-=head1 Graphics::VTK::FloatPoints
+=head1 Graphics::VTK::FunctionSet
 
 =over 1
 
 =item *
 
-Inherits from Points
+Inherits from Object
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   vtkFloatPoints *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
+   const char *GetClassName ();
+   virtual int GetNumberOfFunctions ();
+   virtual int GetNumberOfIndependentVariables ();
 
 
-B<vtkFloatPoints Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
-
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
-
-
-=cut
-
-package Graphics::VTK::FloatScalars;
-
-
-@Graphics::VTK::FloatScalars::ISA = qw( Graphics::VTK::Scalars );
-
-=head1 Graphics::VTK::FloatScalars
-
-=over 1
-
-=item *
-
-Inherits from Scalars
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkFloatScalars *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
-
-
-B<vtkFloatScalars Unsupported Funcs:>
+B<vtkFunctionSet Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
+   virtual int FunctionValues (float *x, float *f) = 0;
+      Don't know the size of pointer arg number 1
 
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
-
-
-=cut
-
-package Graphics::VTK::FloatTCoords;
-
-
-@Graphics::VTK::FloatTCoords::ISA = qw( Graphics::VTK::TCoords );
-
-=head1 Graphics::VTK::FloatTCoords
-
-=over 1
-
-=item *
-
-Inherits from TCoords
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkFloatTCoords *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
-
-
-B<vtkFloatTCoords Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
-
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
-
-
-=cut
-
-package Graphics::VTK::FloatTensors;
-
-
-@Graphics::VTK::FloatTensors::ISA = qw( Graphics::VTK::Tensors );
-
-=head1 Graphics::VTK::FloatTensors
-
-=over 1
-
-=item *
-
-Inherits from Tensors
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkFloatTensors *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
-
-
-B<vtkFloatTensors Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
-
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
-
-
-=cut
-
-package Graphics::VTK::FloatVectors;
-
-
-@Graphics::VTK::FloatVectors::ISA = qw( Graphics::VTK::Vectors );
-
-=head1 Graphics::VTK::FloatVectors
-
-=over 1
-
-=item *
-
-Inherits from Vectors
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   vtkFloatVectors *New ();
-   void SetData (vtkDataArray *);
-   void SetDataType (int dataType);
-
-
-B<vtkFloatVectors Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   float *GetPointer (int id);
-      Can't Handle 'float *' return type without a hint
-
-   float *WritePointer (int id, int number);
-      Can't Handle 'float *' return type without a hint
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
@@ -3249,9 +2401,12 @@ B<Functions Supported for this class by the PerlVTK module:>
    int CircuitCheck (vtkAbstractTransform *transform);
    void Concatenate (vtkMatrix4x4 *matrix);
    void Concatenate (vtkAbstractTransform *transform);
-   const char *GetClassName();
+   const char *GetClassName ();
+   vtkAbstractTransform *GetConcatenatedTransform (int i);
    vtkAbstractTransform *GetInput ();
+   int GetInverseFlag ();
    unsigned long GetMTime ();
+   int GetNumberOfConcatenatedTransforms ();
    void Identity ();
    void Inverse ();
    vtkAbstractTransform *MakeTransform ();
@@ -3273,41 +2428,41 @@ B<vtkGeneralTransform Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void Concatenate (double elements[16]);
+   void Concatenate (const double elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]);
+   void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void InternalTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
 
-   void InternalTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void InternalTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void RotateWXYZ (double angle, double axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const double axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void RotateWXYZ (double angle, float axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const float axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void Scale (double s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const double s[3]);
+      Method is redundant. Same as Scale( double, double, double)
 
-   void Scale (float s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const float s[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void Translate (double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Translate (const double x[3]);
+      Method is redundant. Same as Translate( double, double, double)
 
-   void Translate (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Translate (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
 
 =cut
@@ -3330,12 +2485,12 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    void DeepCopy (vtkCell *c);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetInterpolationOrder ();
@@ -3350,6 +2505,7 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetCellTypeToPolyLine ();
    void SetCellTypeToPolyVertex ();
    void SetCellTypeToPolygon ();
+   void SetCellTypeToPyramid ();
    void SetCellTypeToQuad ();
    void SetCellTypeToTetra ();
    void SetCellTypeToTriangle ();
@@ -3358,7 +2514,6 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetCellTypeToVoxel ();
    void SetCellTypeToWedge ();
    void ShallowCopy (vtkCell *c);
-   void ShallowCopy (vtkCell &c);
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
 
 
@@ -3367,64 +2522,56 @@ B<vtkGenericCell Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void DeepCopy (vtkCell &c);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetCellTypeToPyramid ();
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 1
 
 
 =cut
 
-package Graphics::VTK::GhostLevels;
+package Graphics::VTK::Heap;
 
 
-@Graphics::VTK::GhostLevels::ISA = qw( Graphics::VTK::AttributeData );
+@Graphics::VTK::Heap::ISA = qw( Graphics::VTK::Object );
 
-=head1 Graphics::VTK::GhostLevels
+=head1 Graphics::VTK::Heap
 
 =over 1
 
 =item *
 
-Inherits from AttributeData
+Inherits from Object
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   unsigned char GetGhostLevel (int id);
-   void GetGhostLevels (vtkIdList *ptId, vtkGhostLevels *fn);
-   int GetNumberOfGhostLevels ();
-   void InsertGhostLevel (int id, unsigned char lev);
-   int InsertNextGhostLevel (unsigned char lev);
-   vtkGhostLevels *New ();
-   void SetGhostLevel (int id, unsigned char lev);
-   void SetNumberOfGhostLevels (int number);
+   const char *GetClassName ();
+   int GetNumberOfAllocations ();
+   vtkHeap *New ();
+   char *vtkStrDup (const char *str);
 
 
-B<vtkGhostLevels Unsupported Funcs:>
+B<vtkHeap Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
+
+   void *AllocateMemory (size_t n);
+      Can't Handle 'void *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3435,7 +2582,7 @@ Functions which are not supported supported for this class by the PerlVTK module
 package Graphics::VTK::Hexahedron;
 
 
-@Graphics::VTK::Hexahedron::ISA = qw( Graphics::VTK::Cell );
+@Graphics::VTK::Hexahedron::ISA = qw( Graphics::VTK::Cell3D );
 
 =head1 Graphics::VTK::Hexahedron
 
@@ -3443,25 +2590,22 @@ package Graphics::VTK::Hexahedron;
 
 =item *
 
-Inherits from Cell
+Inherits from Cell3D
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *tetras, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
-   int GetCellDimension ();
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkHexahedron *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkHexahedron Unsupported Funcs:>
@@ -3469,93 +2613,85 @@ B<vtkHexahedron Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int *GetFaceArray (int faceId);
-      Can't Handle 'int *' return type without a hint
+   static int *GetEdgeArray (int edgeId);
+      Can't Handle 'static int *' return type without a hint
 
-   void InterpolationDerivs (float pcoords[3], float derivs[24]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void GetEdgePoints (int edgeId, int &pts);
+      Don't know the size of pointer arg number 2
 
-   void InterpolationFunctions (float pcoords[3], float weights[8]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int *GetFaceArray (int faceId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetFacePoints (int faceId, int &pts);
+      Don't know the size of pointer arg number 2
+
+   static void InterpolationDerivs (float pcoords[3], float derivs[24]);
+      Don't know the size of pointer arg number 1
+
+   static void InterpolationFunctions (float pcoords[3], float weights[8]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void JacobianInverse (float pcoords[3], double *inverse, float derivs[24]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
 
-package Graphics::VTK::IdentityTransform;
+package Graphics::VTK::HomogeneousTransform;
 
 
-@Graphics::VTK::IdentityTransform::ISA = qw( Graphics::VTK::LinearTransform );
+@Graphics::VTK::HomogeneousTransform::ISA = qw( Graphics::VTK::AbstractTransform );
 
-=head1 Graphics::VTK::IdentityTransform
+=head1 Graphics::VTK::HomogeneousTransform
 
 =over 1
 
 =item *
 
-Inherits from LinearTransform
+Inherits from AbstractTransform
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   void Inverse ();
-   vtkAbstractTransform *MakeTransform ();
-   vtkIdentityTransform *New ();
-   void TransformNormals (vtkNormals *inNms, vtkNormals *outNms);
+   const char *GetClassName ();
+   vtkHomogeneousTransform *GetHomogeneousInverse ();
+   void GetMatrix (vtkMatrix4x4 *m);
+   vtkMatrix4x4 *GetMatrix ();
    void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
-   void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkNormals *inNms, vtkNormals *outNms, vtkVectors *inVrs, vtkVectors *outVrs);
-   void TransformVectors (vtkVectors *inVrs, vtkVectors *outVrs);
+   virtual void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkDataArray *inNms, vtkDataArray *outNms, vtkDataArray *inVrs, vtkDataArray *outVrs);
 
 
-B<vtkIdentityTransform Unsupported Funcs:>
+B<vtkHomogeneousTransform Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void InternalTransformDerivative (float in[3], float out[3], float derivative[3][3]);
+   void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void InternalTransformDerivative (double in[3], double out[3], double derivative[3][3]);
+   void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void InternalTransformNormal (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void InternalTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
 
-   void InternalTransformNormal (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformPoint (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformVector (float in[3], float out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InternalTransformVector (double in[3], double out[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void InternalTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3581,22 +2717,22 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int strategy);
+   int Allocate (const int sz, const int strategy);
    void DeepCopy (vtkIdList *ids);
-   void DeleteId (int id);
-   const char *GetClassName();
-   int GetId (int i);
-   int GetNumberOfIds ();
+   void DeleteId (long id);
+   const char *GetClassName ();
+   long GetId (const int i);
+   long GetNumberOfIds ();
    void Initialize ();
-   void InsertId (int i, int id);
-   int InsertNextId (int id);
-   int InsertUniqueId (int id);
+   void InsertId (const long i, const long id);
+   long InsertNextId (const long id);
+   long InsertUniqueId (const long id);
    void IntersectWith (vtkIdList &otherIds);
-   int IsId (int id);
+   long IsId (long id);
    vtkIdList *New ();
    void Reset ();
-   void SetId (int i, int id);
-   void SetNumberOfIds (int number);
+   void SetId (const long i, const long id);
+   void SetNumberOfIds (const long number);
    void Squeeze ();
 
 
@@ -3604,14 +2740,168 @@ B<vtkIdList Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int *GetPointer (int i);
-      Can't Handle 'int *' return type without a hint
+   long *GetPointer (const long i);
+      Can't Handle 'long *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   int *WritePointer (int i, int number);
-      Can't Handle 'int *' return type without a hint
+   long *Resize (const long sz);
+      Can't Handle 'long *' return type without a hint
+
+   long *WritePointer (const long i, const long number);
+      Can't Handle 'long *' return type without a hint
+
+
+=cut
+
+package Graphics::VTK::IdTypeArray;
+
+
+@Graphics::VTK::IdTypeArray::ISA = qw( Graphics::VTK::DataArray );
+
+=head1 Graphics::VTK::IdTypeArray
+
+=over 1
+
+=item *
+
+Inherits from DataArray
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   int Allocate (const long sz, const long ext);
+   void DeepCopy (vtkDataArray *ia);
+   const char *GetClassName ();
+   int GetDataType ();
+   long GetValue (const long id);
+   void Initialize ();
+   long InsertNextValue (const long i);
+   void InsertValue (const long id, const long i);
+   vtkIdTypeArray *New ();
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const long value);
+   void Squeeze ();
+
+
+B<vtkIdTypeArray Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   long *GetPointer (const long id);
+      Can't Handle 'long *' return type without a hint
+
+   float *GetTuple (const long i);
+      Can't Handle 'float *' return type without a hint
+
+   void GetTuple (const long i, float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void GetTuple (const long i, double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
+      Don't know the size of pointer arg number 1
+
+   long InsertNextTuple (const double *tuple);
+      Don't know the size of pointer arg number 1
+
+   void InsertTuple (const long i, const float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void InsertTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   long *ResizeAndExtend (const long sz);
+      Can't Handle 'long *' return type without a hint
+
+   void SetArray (long *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   void SetTuple (const long i, const float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetVoidArray (void *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   long *WritePointer (const long id, const long number);
+      Can't Handle 'long *' return type without a hint
+
+
+=cut
+
+package Graphics::VTK::IdentityTransform;
+
+
+@Graphics::VTK::IdentityTransform::ISA = qw( Graphics::VTK::LinearTransform );
+
+=head1 Graphics::VTK::IdentityTransform
+
+=over 1
+
+=item *
+
+Inherits from LinearTransform
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   void Inverse ();
+   vtkAbstractTransform *MakeTransform ();
+   vtkIdentityTransform *New ();
+   void TransformNormals (vtkDataArray *inNms, vtkDataArray *outNms);
+   void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
+   void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkDataArray *inNms, vtkDataArray *outNms, vtkDataArray *inVrs, vtkDataArray *outVrs);
+   void TransformVectors (vtkDataArray *inVrs, vtkDataArray *outVrs);
+
+
+B<vtkIdentityTransform Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void InternalTransformNormal (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformNormal (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformVector (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformVector (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
@@ -3636,17 +2926,19 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void AllocateScalars ();
    void ComputeBounds ();
+   void CopyAndCastFrom (vtkImageData *inData, int x0, int x1, int y0, int y1, int z0, int z1);
    void CopyStructure (vtkDataSet *ds);
    void CopyTypeSpecificInformation (vtkDataObject *image);
+   virtual void Crop ();
    void DeepCopy (vtkDataObject *src);
-   int FindPoint (float x, float y, float z);
+   long FindPoint (float x, float y, float z);
    unsigned long GetActualMemorySize ();
    void GetAxisUpdateExtent (int axis, int &min, int &max);
-   void GetCell (int cellId, vtkGenericCell *cell);
-   vtkCell *GetCell (int cellId);
-   void GetCellPoints (int cellId, vtkIdList *ptIds);
-   int GetCellType (int cellId);
-   const char *GetClassName();
+   void GetCell (long cellId, vtkGenericCell *cell);
+   vtkCell *GetCell (long cellId);
+   void GetCellPoints (long cellId, vtkIdList *ptIds);
+   int GetCellType (long cellId);
+   const char *GetClassName ();
    int GetDataDimension ();
    int GetDataObjectType ();
    int *GetDimensions ();
@@ -3655,38 +2947,48 @@ B<Functions Supported for this class by the PerlVTK module:>
    int  *GetExtent ();
       (Returns a 6-element Perl list)
    void GetIncrements (int &incX, int &incY, int &incZ);
+   int *GetIncrements ();
+      (Returns a 3-element Perl list)
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
-   int GetNumberOfPoints ();
+   long GetNumberOfCells ();
+   long GetNumberOfPoints ();
    int GetNumberOfScalarComponents ();
    float  *GetOrigin ();
       (Returns a 3-element Perl list)
-   void GetPointCells (int ptId, vtkIdList *cellIds);
+   float *GetPoint (long ptId);
+      (Returns a 3-element Perl list)
+   void GetPointCells (long ptId, vtkIdList *cellIds);
    float GetScalarComponentAsFloat (int x, int y, int z, int component);
-   void *GetScalarPointer (int x, int y, int z);
-   void *GetScalarPointer ();
    int GetScalarSize ();
    int GetScalarType ();
    double GetScalarTypeMax ();
    double GetScalarTypeMin ();
    float  *GetSpacing ();
       (Returns a 3-element Perl list)
-   void GetVoxelGradient (int i, int j, int k, vtkScalars *s, vtkVectors *g);
-   vtkImageToStructuredPoints *MakeImageToStructuredPoints ();
+   void GetVoxelGradient (int i, int j, int k, vtkDataArray *s, vtkDataArray *g);
    vtkImageData *New ();
    virtual void PrepareForNewData ();
    void SetAxisUpdateExtent (int axis, int min, int max);
    void SetDimensions (int i, int j, int k);
    void SetExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    void SetNumberOfScalarComponents (int n);
-   void SetOrigin (float  , float , float );
+   void SetOrigin (float , float , float );
    void SetScalarType (int );
-   void SetSpacing (float  , float , float );
+   void SetScalarTypeToChar ();
+   void SetScalarTypeToDouble ();
+   void SetScalarTypeToFloat ();
+   void SetScalarTypeToInt ();
+   void SetScalarTypeToLong ();
+   void SetScalarTypeToShort ();
+   void SetScalarTypeToUnsignedChar ();
+   void SetScalarTypeToUnsignedInt ();
+   void SetScalarTypeToUnsignedLong ();
+   void SetScalarTypeToUnsignedShort ();
+   void SetSpacing (float , float , float );
    void SetUpdateExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    void SetUpdateExtent (int piece, int numPieces, int ghostLevel);
    void SetUpdateExtent (int piece, int numPieces);
    void ShallowCopy (vtkDataObject *src);
-   vtkImageData *UpdateAndReturnData ();
    void UpdateData ();
 
 
@@ -3694,80 +2996,68 @@ B<vtkImageData Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int ComputeCellId (int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long ComputeCellId (int ijk[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   int Dimensions[3]int DataDescriptionint Increments[3]float Origin[3]float Spacing[3]int ScalarTypeint NumberOfScalarComponentsvoid ComputeIncrements ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int ComputePointId (int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long ComputePointId (int ijk[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
    int ComputeStructuredCoordinates (float x[3], int ijk[3], float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void CopyAndCastFrom (vtkImageData *inData, int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   vtkCell *FindAndGetCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   vtkCell *FindAndGetCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindPoint (float x[3]);
+      Method is redundant. Same as FindPoint( float, float, float)
 
-   void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
+   void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
 
    void GetContinuousIncrements (int extent[6], int &incX, int &incY, int &incZ);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void GetDimensions (int dims[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int *GetIncrements ();
-      Can't Handle 'int *' return type without a hint
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetIncrements (int inc[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   float *GetPoint (int ptId);
-      Can't Handle 'float *' return type without a hint
+   void GetPointGradient (int i, int j, int k, vtkDataArray *s, float g[3]);
+      Don't know the size of pointer arg number 5
 
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetPointGradient (int i, int j, int k, vtkScalars *s, float g[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetPoint (long id, float x[3]);
+      Don't know the size of pointer arg number 2
 
    void *GetScalarPointer (int coordinates[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't Handle 'void *' return type without a hint
 
    void *GetScalarPointerForExtent (int coordinates[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't Handle 'void *' return type without a hint
 
-   void GetVoxelGradient (int i, int j, int k, vtkScalars *s, vtkVectors &g);
-      Method is marked 'Do Not Use' in its descriptions
+   void *GetScalarPointer (int x, int y, int z);
+      Can't Handle 'void *' return type without a hint
+
+   void *GetScalarPointer ();
+      Can't Handle 'void *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetDimensions (int dims[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetDimensions( int, int, int)
 
    void SetExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetExtent( int, int, int, int, int, int)
 
    void SetOrigin (float  a[3]);
       Method is redundant. Same as SetOrigin( float, float, float)
@@ -3776,90 +3066,57 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetSpacing( float, float, float)
 
    void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
 
 =cut
 
-package Graphics::VTK::ImageSource;
+package Graphics::VTK::ImplicitFunction;
 
 
-@Graphics::VTK::ImageSource::ISA = qw( Graphics::VTK::Source );
+@Graphics::VTK::ImplicitFunction::ISA = qw( Graphics::VTK::Object );
 
-=head1 Graphics::VTK::ImageSource
+=head1 Graphics::VTK::ImplicitFunction
 
 =over 1
 
 =item *
 
-Inherits from Source
+Inherits from Object
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   vtkImageData *GetOutput (int idx);
-   vtkImageData *GetOutput ();
-   vtkImageSource *New ();
-   virtual void PropagateUpdateExtent (vtkDataObject *output);
-   void SetOutput (vtkImageData *output);
+   float EvaluateFunction (float x, float y, float z);
+   float *FunctionGradient (float x, float y, float z);
+      (Returns a 3-element Perl list)
+   float FunctionValue (float x, float y, float z);
+   const char *GetClassName ();
+   unsigned long GetMTime ();
+   vtkAbstractTransform *GetTransform ();
+   void SetTransform (vtkAbstractTransform *);
 
 
-B<vtkImageSource Unsupported Funcs:>
+B<vtkImplicitFunction Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void ComputeRequiredInputUpdateExtent (int *, int *);
+   virtual float EvaluateFunction (float x[3]) = 0;
+      Method is redundant. Same as EvaluateFunction( float, float, float)
+
+   virtual void EvaluateGradient (float x[3], float g[3]) = 0;
       Don't know the size of pointer arg number 1
 
-   int ExecuteExtent[6]void Execute ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void FunctionGradient (const float x[3], float g[3]);
+      Don't know the size of pointer arg number 1
 
-   int *GetExecuteExtent ();
-      Can't Handle 'int *' return type without a hint
+   float *FunctionGradient (const float x[3]);
+      Method is redundant. Same as FunctionGradient_( float, float, float)
 
-   virtual void InterceptCacheUpdate ();
-      Method is marked 'Do Not Use' in its descriptions
-
-
-=cut
-
-package Graphics::VTK::ImageToStructuredPoints;
-
-
-@Graphics::VTK::ImageToStructuredPoints::ISA = qw( Graphics::VTK::Source );
-
-=head1 Graphics::VTK::ImageToStructuredPoints
-
-=over 1
-
-=item *
-
-Inherits from Source
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkImageData *GetInput ();
-   vtkStructuredPoints *GetOutput (int idx);
-   vtkStructuredPoints *GetOutput ();
-   vtkImageData *GetVectorInput ();
-   vtkImageToStructuredPoints *New ();
-   void SetInput (vtkImageData *input);
-   void SetVectorInput (vtkImageData *input);
-
-
-B<vtkImageToStructuredPoints Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int Translate[3]void Execute ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   float FunctionValue (const float x[3]);
+      Method is redundant. Same as FunctionValue( float, float, float)
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -3886,7 +3143,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkImplicitFunction *);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkImplicitFunction *GetNextItem ();
    vtkImplicitFunctionCollection *New ();
 
@@ -3909,7 +3166,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void Delete ();
-   virtual char *GetClassName ();
+   virtual const char *GetClassName ();
    vtkIndent *New ();
 
 
@@ -3919,6 +3176,45 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    vtkIndent GetNextIndent ();
       Can't return vtk Object Types that aren't a pointer
+
+
+=cut
+
+package Graphics::VTK::InitialValueProblemSolver;
+
+
+@Graphics::VTK::InitialValueProblemSolver::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::InitialValueProblemSolver
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkFunctionSet *GetFunctionSet ();
+   virtual void SetFunctionSet (vtkFunctionSet *functionset);
+
+
+B<vtkInitialValueProblemSolver Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
+      Don't know the size of pointer arg number 1
+
+   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
@@ -3941,20 +3237,20 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *ia);
-   void DeepCopy (vtkDataArray &ia);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   int GetValue (int id);
-   void *GetVoidPointer (int id);
+   int GetValue (const long id);
    void Initialize ();
-   int InsertNextValue (int i);
-   void InsertValue (int id, int i);
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const int i);
+   void InsertValue (const long id, const int i);
    vtkIntArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, int value);
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const int value);
    void Squeeze ();
 
 
@@ -3962,47 +3258,105 @@ B<vtkIntArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int *GetPointer (int id);
+   int *GetPointer (const long id);
       Can't Handle 'int *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (int *array, int size, int save);
-      Don't know the size of pointer arg number 1
-
-   void SetTuple (int i, float *tuple);
-      Don't know the size of pointer arg number 2
-
-   void SetTuple (int i, double *tuple);
-      Don't know the size of pointer arg number 2
-
-   void SetVoidArray (void *array, int size, int save);
-      Don't know the size of pointer arg number 1
-
-   int *WritePointer (int id, int number);
+   int *ResizeAndExtend (const long sz);
       Can't Handle 'int *' return type without a hint
+
+   void SetArray (int *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   void SetTuple (const long i, const float *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetTuple (const long i, const double *tuple);
+      Don't know the size of pointer arg number 2
+
+   void SetVoidArray (void *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   int *WritePointer (const long id, const long number);
+      Can't Handle 'int *' return type without a hint
+
+
+=cut
+
+package Graphics::VTK::InterpolatedVelocityField;
+
+
+@Graphics::VTK::InterpolatedVelocityField::ISA = qw( Graphics::VTK::FunctionSet );
+
+=head1 Graphics::VTK::InterpolatedVelocityField
+
+=over 1
+
+=item *
+
+Inherits from FunctionSet
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void CachingOff ();
+   void CachingOn ();
+   void ClearLastCellId ();
+   int GetCacheHit ();
+   int GetCacheMiss ();
+   int GetCaching ();
+   const char *GetClassName ();
+   vtkDataSet *GetDataSet ();
+   long GetLastCellId ();
+   vtkInterpolatedVelocityField *New ();
+   void SetCaching (int );
+   virtual void SetDataSet (vtkDataSet *dataset);
+   void SetLastCellId (long );
+
+
+B<vtkInterpolatedVelocityField Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual int FunctionValues (float *x, float *f);
+      Don't know the size of pointer arg number 1
+
+   int GetLastLocalCoordinates (float pcoords[3]);
+      Can't handle methods with single array args (like a[3]) yet.
+
+   int GetLastWeights (float *w);
+      Don't know the size of pointer arg number 1
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
@@ -4025,18 +3379,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *lines, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *lines, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int );
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkLine *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkLine Unsupported Funcs:>
@@ -4044,34 +3397,189 @@ B<vtkLine Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   float DistanceToLine (float x[3], float p1[3], float p2[3], float &t, float closestPoint[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float DistanceToLine (float x[3], float p1[3], float p2[3], float &t, float closestPoint[3]);
+      Don't know the size of pointer arg number 1
 
-   float DistanceToLine (float x[3], float p1[3], float p2[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float DistanceToLine (float x[3], float p1[3], float p2[3]);
+      Don't know the size of pointer arg number 1
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float weights[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[2]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
+      Don't know the size of pointer arg number 1
+
+   static int Intersection (float p1[3], float p2[3], float x1[3], float x2[3], float &u, float &v);
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::LinearTransform;
+
+
+@Graphics::VTK::LinearTransform::ISA = qw( Graphics::VTK::HomogeneousTransform );
+
+=head1 Graphics::VTK::LinearTransform
+
+=over 1
+
+=item *
+
+Inherits from HomogeneousTransform
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkLinearTransform *GetLinearInverse ();
+   double *TransformDoubleNormal (double x, double y, double z);
+      (Returns a 3-element Perl list)
+   double *TransformDoubleVector (double x, double y, double z);
+      (Returns a 3-element Perl list)
+   float *TransformFloatNormal (float x, float y, float z);
+      (Returns a 3-element Perl list)
+   float *TransformFloatVector (float x, float y, float z);
+      (Returns a 3-element Perl list)
+   double *TransformNormal (double x, double y, double z);
+      (Returns a 3-element Perl list)
+   virtual void TransformNormals (vtkDataArray *inNms, vtkDataArray *outNms);
+   void TransformPoints (vtkPoints *inPts, vtkPoints *outPts);
+   void TransformPointsNormalsVectors (vtkPoints *inPts, vtkPoints *outPts, vtkDataArray *inNms, vtkDataArray *outNms, vtkDataArray *inVrs, vtkDataArray *outVrs);
+   double *TransformVector (double x, double y, double z);
+      (Returns a 3-element Perl list)
+   virtual void TransformVectors (vtkDataArray *inVrs, vtkDataArray *outVrs);
+
+
+B<vtkLinearTransform Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   int Intersection (float p1[3], float p2[3], float x1[3], float x2[3], float &u, float &v);
+   void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   virtual void InternalTransformNormal (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   virtual void InternalTransformNormal (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   virtual void InternalTransformVector (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   virtual void InternalTransformVector (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   double *TransformDoubleNormal (const double normal[3]);
+      Method is redundant. Same as TransformDoubleNormal( double, double, double)
+
+   double *TransformDoubleVector (const double vec[3]);
+      Method is redundant. Same as TransformDoubleVector( double, double, double)
+
+   float *TransformFloatNormal (const float normal[3]);
+      Method is redundant. Same as TransformFloatNormal( float, float, float)
+
+   float *TransformFloatVector (const float vec[3]);
+      Method is redundant. Same as TransformFloatVector( float, float, float)
+
+   void TransformNormal (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void TransformNormal (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   double *TransformNormal (const double normal[3]);
+      Method is redundant. Same as TransformNormal__( double, double, double)
+
+   double *TransformVector (const double normal[3]);
+      Method is redundant. Same as TransformVector( double, double, double)
+
+   void TransformVector (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void TransformVector (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::Locator;
+
+
+@Graphics::VTK::Locator::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::Locator
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void AutomaticOff ();
+   void AutomaticOn ();
+   virtual void BuildLocator () = 0;
+   virtual void FreeSearchStructure () = 0;
+   virtual void GenerateRepresentation (int level, vtkPolyData *pd) = 0;
+   int GetAutomatic ();
+   long unsigned GetBuildTime ();
+   const char *GetClassName ();
+   vtkDataSet *GetDataSet ();
+   int GetLevel ();
+   int GetMaxLevel ();
+   int GetMaxLevelMaxValue ();
+   int GetMaxLevelMinValue ();
+   int GetRetainCellLists ();
+   float GetTolerance ();
+   float GetToleranceMaxValue ();
+   float GetToleranceMinValue ();
+   virtual void Initialize ();
+   void RetainCellListsOff ();
+   void RetainCellListsOn ();
+   void SetAutomatic (int );
+   void SetDataSet (vtkDataSet *);
+   void SetMaxLevel (int );
+   void SetRetainCellLists (int );
+   void SetTolerance (float );
+   virtual void Update ();
+
+
+B<vtkLocator Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
 
 
 =cut
@@ -4094,26 +3602,16 @@ Inherits from LookupTable
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkLogLookupTable *New ();
-   void SetTableRange (float min, float max);
 
 
 B<vtkLogLookupTable Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void MapScalarsThroughTable2 (void *input, unsigned char *output, int inputDataType, int numberOfValues, int inputIncrement, int outputIncrement);
-      Don't know the size of pointer arg number 1
-
-   unsigned char *MapValue (float v);
-      Can't Handle 'unsigned char *' return type without a hint
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
-
-   void SetTableRange (float r[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
 
 =cut
@@ -4136,20 +3634,20 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   long GetValue (int id);
-   void *GetVoidPointer (int id);
+   long GetValue (const long id);
    void Initialize ();
-   int InsertNextValue (long );
-   void InsertValue (int id, long i);
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const long );
+   void InsertValue (const long id, const long i);
    vtkLongArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, long value);
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const long value);
    void Squeeze ();
 
 
@@ -4157,46 +3655,52 @@ B<vtkLongArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   long *GetPointer (int id);
+   long *GetPointer (const long id);
       Can't Handle 'long *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (long *array, int size, int save);
+   long *ResizeAndExtend (const long sz);
+      Can't Handle 'long *' return type without a hint
+
+   void SetArray (long *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   long *WritePointer (int id, int number);
+   long *WritePointer (const long id, const long number);
       Can't Handle 'long *' return type without a hint
 
 
@@ -4224,15 +3728,20 @@ B<Functions Supported for this class by the PerlVTK module:>
    virtual void Build ();
    float  *GetAlphaRange ();
       (Returns a 2-element Perl list)
-   const char *GetClassName();
+   const char *GetClassName ();
    float *GetColor (float x);
       (Returns a 3-element Perl list)
    float  *GetHueRange ();
       (Returns a 2-element Perl list)
    int GetNumberOfColors ();
+   int GetNumberOfColorsMaxValue ();
+   int GetNumberOfColorsMinValue ();
+   int GetNumberOfTableValues ();
    float GetOpacity (float v);
+   int GetRamp ();
    float  *GetSaturationRange ();
       (Returns a 2-element Perl list)
+   int GetScale ();
    float  *GetTableRange ();
       (Returns a 2-element Perl list)
    float *GetTableValue (int id);
@@ -4240,15 +3749,21 @@ B<Functions Supported for this class by the PerlVTK module:>
    float  *GetValueRange ();
       (Returns a 2-element Perl list)
    vtkLookupTable *New ();
-   void SetAlphaRange (float  , float );
-   void SetHueRange (float  , float );
+   void SetAlphaRange (float , float );
+   void SetHueRange (float , float );
    void SetNumberOfColors (int );
    void SetNumberOfTableValues (int number);
+   void SetRamp (int );
+   void SetRampToLinear ();
+   void SetRampToSCurve ();
    void SetRange (float min, float max);
-   void SetSaturationRange (float  , float );
+   void SetSaturationRange (float , float );
+   void SetScale (int scale);
+   void SetScaleToLinear ();
+   void SetScaleToLog10 ();
    virtual void SetTableRange (float min, float max);
    void SetTableValue (int indx, float r, float g, float b, float a);
-   void SetValueRange (float  , float );
+   void SetValueRange (float , float );
 
 
 B<vtkLookupTable Unsupported Funcs:>
@@ -4256,16 +3771,16 @@ B<vtkLookupTable Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void GetColor (float x, float rgb[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   unsigned char *GetPointer (int id);
+   unsigned char *GetPointer (const int id);
       Can't Handle 'unsigned char *' return type without a hint
 
    float *GetRange ();
       Can't Handle 'float *' return type without a hint
 
    void GetTableValue (int id, float rgba[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void MapScalarsThroughTable2 (void *input, unsigned char *output, int inputDataType, int numberOfValues, int inputIncrement, int outputIncrement);
       Don't know the size of pointer arg number 1
@@ -4283,21 +3798,21 @@ Functions which are not supported supported for this class by the PerlVTK module
       Method is redundant. Same as SetHueRange( float, float)
 
    void SetRange (float rng[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetRange( float, float)
 
    void SetSaturationRange (float  a[2]);
       Method is redundant. Same as SetSaturationRange( float, float)
 
    void SetTableRange (float r[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetTableRange( float, float)
 
    void SetTableValue (int indx, float rgba[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void SetValueRange (float  a[2]);
       Method is redundant. Same as SetValueRange( float, float)
 
-   unsigned char *WritePointer (int id, int number);
+   unsigned char *WritePointer (const int id, const int number);
       Can't Handle 'unsigned char *' return type without a hint
 
 
@@ -4321,7 +3836,7 @@ Inherits from AbstractMapper
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkMapper2D *New ();
    virtual void RenderOpaqueGeometry (vtkViewport *, vtkActor2D *);
    virtual void RenderOverlay (vtkViewport *, vtkActor2D *);
@@ -4356,216 +3871,221 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   float DegreesToRadians ();
-   double Determinant2x2 (double a, double b, double c, double d);
-   double Determinant3x3 (double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3);
-   double DoubleDegreesToRadians ();
-   const char *GetClassName();
+   static float DegreesToRadians ();
+   static double Determinant2x2 (double a, double b, double c, double d);
+   static double Determinant3x3 (double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3);
+   static double DoubleDegreesToRadians ();
+   const char *GetClassName ();
    vtkMath *New ();
-   float Pi ();
-   float Random (float min, float max);
-   float Random ();
-   void RandomSeed (long s);
-   double *SolveCubic (double c0, double c1, double c2, double c3);
-      (Returns a 4-element Perl list)
-   double *SolveQuadratic (double c0, double c1, double c2);
-      (Returns a 3-element Perl list)
+   static float Pi ();
+   static float Random (float min, float max);
+   static float Random ();
+   static void RandomSeed (long s);
 
 
 B<vtkMath Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void Cross (float x[3], float y[3], float z[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Cross (double x[3], double y[3], double z[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Determinant2x2 (float c1[2], float c2[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double Determinant3x3 (float A[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double Determinant3x3 (double A[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Determinant3x3 (float c1[3], float c2[3], float c3[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Diagonalize3x3 (float A[3][3], float w[3], float V[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Diagonalize3x3 (double A[3][3], double w[3], double V[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Distance2BetweenPoints (float x[3], float y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double Distance2BetweenPoints (double x[3], double y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Dot (float x[3], float y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Dot2D (float x[3], float y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double Dot2D (double x[3], double y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double Dot (double x[3], double y[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   double EstimateMatrixCondition (double *A, int size);
+   static void Cross (const float x[3], const float y[3], float z[3]);
       Don't know the size of pointer arg number 1
 
-   void Identity3x3 (float A[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Identity3x3 (double A[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Invert3x3 (float A[3][3], float AI[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Invert3x3 (double A[3][3], double AI[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InvertMatrix (double *A, double *AI, int size);
+   static void Cross (const double x[3], const double y[3], double z[3]);
       Don't know the size of pointer arg number 1
 
-   int InvertMatrix (double *A, double *AI, int size, int *tmp1Size, double *tmp2Size);
+   static float Determinant2x2 (const float c1[2], const float c2[2]);
       Don't know the size of pointer arg number 1
 
-   int Jacobi (float *a, float *w, float *v);
+   static double Determinant3x3 (float A[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   static double Determinant3x3 (double A[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   static float Determinant3x3 (const float c1[3], const float c2[3], const float c3[3]);
       Don't know the size of pointer arg number 1
 
-   int JacobiN (float *a, int n, float *w, float *v);
+   static void Diagonalize3x3 (const float A[3][3], float w[3], float V[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   static void Diagonalize3x3 (const double A[3][3], double w[3], double V[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   static float Distance2BetweenPoints (const float x[3], const float y[3]);
       Don't know the size of pointer arg number 1
 
-   int JacobiN (double *a, int n, double *w, double *v);
+   static double Distance2BetweenPoints (const double x[3], const double y[3]);
       Don't know the size of pointer arg number 1
 
-   int Jacobi (double *a, double *w, double *v);
+   static float Dot (const float x[3], const float y[3]);
       Don't know the size of pointer arg number 1
 
-   void LUFactor3x3 (float A[3][3], int index[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void LUFactor3x3 (double A[3][3], int index[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int LUFactorLinearSystem (double *A, int *index, int size);
+   static float Dot2D (const float x[3], const float y[3]);
       Don't know the size of pointer arg number 1
 
-   int LUFactorLinearSystem (double *A, int *index, int size, double *tmpSize);
+   static double Dot2D (const double x[3], const double y[3]);
       Don't know the size of pointer arg number 1
 
-   void LUSolve3x3 (float A[3][3], int index[3], float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void LUSolve3x3 (double A[3][3], int index[3], double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void LUSolveLinearSystem (double *A, int *index, double *x, int size);
+   static double Dot (const double x[3], const double y[3]);
       Don't know the size of pointer arg number 1
 
-   void LinearSolve3x3 (float A[3][3], float x[3], float y[3]);
+   static double EstimateMatrixCondition (double *A, int size);
+      Don't know the size of pointer arg number 1
+
+   static void Identity3x3 (float A[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void LinearSolve3x3 (double A[3][3], double x[3], double y[3]);
+   static void Identity3x3 (double A[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Matrix3x3ToQuaternion (float A[3][3], float quat[4]);
+   static void Invert3x3 (const float A[3][3], float AI[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Matrix3x3ToQuaternion (double A[3][3], double quat[4]);
+   static void Invert3x3 (const double A[3][3], double AI[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Multiply3x3 (float A[3][3], float x[3], float y[3]);
+   static int InvertMatrix (double *A, double *AI, int size);
+      Don't know the size of pointer arg number 1
+
+   static int InvertMatrix (double *A, double *AI, int size, int *tmp1Size, double *tmp2Size);
+      Don't know the size of pointer arg number 1
+
+   static int Jacobi (float *a, float *w, float *v);
+      Don't know the size of pointer arg number 1
+
+   static int JacobiN (float *a, int n, float *w, float *v);
+      Don't know the size of pointer arg number 1
+
+   static int JacobiN (double *a, int n, double *w, double *v);
+      Don't know the size of pointer arg number 1
+
+   static int Jacobi (double *a, double *w, double *v);
+      Don't know the size of pointer arg number 1
+
+   static void LUFactor3x3 (float A[3][3], int index[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Multiply3x3 (double A[3][3], double x[3], double y[3]);
+   static void LUFactor3x3 (double A[3][3], int index[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Multiply3x3 (float A[3][3], float B[3][3], float C[3][3]);
+   static int LUFactorLinearSystem (double *A, int *index, int size);
+      Don't know the size of pointer arg number 1
+
+   static int LUFactorLinearSystem (double *A, int *index, int size, double *tmpSize);
+      Don't know the size of pointer arg number 1
+
+   static void LUSolve3x3 (const float A[3][3], const int index[3], float x[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Multiply3x3 (double A[3][3], double B[3][3], double C[3][3]);
+   static void LUSolve3x3 (const double A[3][3], const int index[3], double x[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   float Norm (float x[3]);
+   static void LUSolveLinearSystem (double *A, int *index, double *x, int size);
+      Don't know the size of pointer arg number 1
+
+   static void LinearSolve3x3 (const float A[3][3], const float x[3], float y[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   float Norm2D (float x[3]);
+   static void LinearSolve3x3 (const double A[3][3], const double x[3], double y[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   double Norm2D (double x[3]);
+   static void Matrix3x3ToQuaternion (const float A[3][3], float quat[4]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   double Norm (double x[3]);
+   static void Matrix3x3ToQuaternion (const double A[3][3], double quat[4]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   float Normalize (float x[3]);
+   static void Multiply3x3 (const float A[3][3], const float in[3], float out[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   float Normalize2D (float x[3]);
+   static void Multiply3x3 (const double A[3][3], const double in[3], double out[3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   double Normalize2D (double x[3]);
+   static void Multiply3x3 (const float A[3][3], const float B[3][3], float C[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   double Normalize (double x[3]);
+   static void Multiply3x3 (const double A[3][3], const double B[3][3], double C[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Orthogonalize3x3 (float A[3][3], float B[3][3]);
+   static float Norm (const float *x, int n);
+      Don't know the size of pointer arg number 1
+
+   static float Norm2D (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static double Norm2D (const double x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static float Norm (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static double Norm (const double x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static float Normalize (float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static float Normalize2D (float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static double Normalize2D (double x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static double Normalize (double x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   static void Orthogonalize3x3 (const float A[3][3], float B[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Orthogonalize3x3 (double A[3][3], double B[3][3]);
+   static void Orthogonalize3x3 (const double A[3][3], double B[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Perpendiculars (double x[3], double y[3], double z[3], double theta);
+   static void Perpendiculars (const double x[3], double y[3], double z[3], double theta);
+      Don't know the size of pointer arg number 1
+
+   static void Perpendiculars (const float x[3], float y[3], float z[3], double theta);
+      Don't know the size of pointer arg number 1
+
+   static void QuaternionToMatrix3x3 (const float quat[4], float A[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Perpendiculars (float x[3], float y[3], float z[3], double theta);
+   static void QuaternionToMatrix3x3 (const double quat[4], double A[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void QuaternionToMatrix3x3 (float quat[4], float A[3][3]);
+   static void SingularValueDecomposition3x3 (const float A[3][3], float U[3][3], float w[3], float VT[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void QuaternionToMatrix3x3 (double quat[4], double A[3][3]);
+   static void SingularValueDecomposition3x3 (const double A[3][3], double U[3][3], double w[3], double VT[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void SingularValueDecomposition3x3 (float A[3][3], float U[3][3], float w[3], float VT[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static double *SolveCubic (double c0, double c1, double c2, double c3);
+      Can't Handle 'static double *' return type without a hint
 
-   void SingularValueDecomposition3x3 (double A[3][3], double U[3][3], double w[3], double VT[3][3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int SolveCubic (double c0, double c1, double c2, double c3, double *r1, double *r2, double *r3, int *num_roots);
+   static int SolveCubic (double c0, double c1, double c2, double c3, double *r1, double *r2, double *r3, int *num_roots);
       Don't know the size of pointer arg number 5
 
-   int SolveLeastSquares (int numberOfSamples, double *xt, int xOrder, double *yt, int yOrder, double *mt);
+   static int SolveLeastSquares (int numberOfSamples, double *xt, int xOrder, double *yt, int yOrder, double *mt);
       Don't know the size of pointer arg number 2
 
-   double *SolveLinear (double c0, double c1);
-      Can't Handle 'double *' return type without a hint
+   static double *SolveLinear (double c0, double c1);
+      Can't Handle 'static double *' return type without a hint
 
-   int SolveLinearSystem (double *A, double *x, int size);
+   static int SolveLinearSystem (double *A, double *x, int size);
       Don't know the size of pointer arg number 1
 
-   int SolveLinear (double c0, double c1, double *r1, int *num_roots);
+   static int SolveLinear (double c0, double c1, double *r1, int *num_roots);
       Don't know the size of pointer arg number 3
 
-   int SolveQuadratic (double c0, double c1, double c2, double *r1, double *r2, int *num_roots);
+   static double *SolveQuadratic (double c0, double c1, double c2);
+      Can't Handle 'static double *' return type without a hint
+
+   static int SolveQuadratic (double c0, double c1, double c2, double *r1, double *r2, int *num_roots);
       Don't know the size of pointer arg number 4
 
-   void Transpose3x3 (float A[3][3], float AT[3][3]);
+   static void Transpose3x3 (const float A[3][3], float AT[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   void Transpose3x3 (double A[3][3], double AT[3][3]);
+   static void Transpose3x3 (const double A[3][3], double AT[3][3]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
 
@@ -4592,13 +4112,15 @@ B<Functions Supported for this class by the PerlVTK module:>
    void Adjoint (vtkMatrix4x4 *in, vtkMatrix4x4 *out);
    void DeepCopy (vtkMatrix4x4 *source);
    double Determinant ();
-   const char *GetClassName();
+   const char *GetClassName ();
+   double GetElement (int i, int j) const;
    void Identity ();
-   void Invert (vtkMatrix4x4 *in, vtkMatrix4x4 *out);
+   static void Invert (vtkMatrix4x4 *in, vtkMatrix4x4 *out);
    void Invert ();
-   void Multiply4x4 (vtkMatrix4x4 *a, vtkMatrix4x4 *b, vtkMatrix4x4 *c);
+   static void Multiply4x4 (vtkMatrix4x4 *a, vtkMatrix4x4 *b, vtkMatrix4x4 *c);
+   vtkMatrix4x4 *New ();
    void SetElement (int i, int j, double value);
-   void Transpose (vtkMatrix4x4 *in, vtkMatrix4x4 *out);
+   static void Transpose (vtkMatrix4x4 *in, vtkMatrix4x4 *out);
    void Transpose ();
    void Zero ();
 
@@ -4607,35 +4129,23 @@ B<vtkMatrix4x4 Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void DeepCopy (double Elements[16]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void DeepCopy (const double Elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   double GetElement (int i, int j);
-      Method is marked 'Do Not Use' in its descriptions
+   double *MultiplyDoublePoint (const double in[4]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   double *MultiplyDoublePoint (double in[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   float *MultiplyFloatPoint (const float in[4]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   float *MultiplyFloatPoint (float in[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void MultiplyPoint (const float in[4], float out[4]);
+      Don't know the size of pointer arg number 1
 
-   void MultiplyPoint (float in[4], float out[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void MultiplyPoint (const double in[4], double out[4]);
+      Don't know the size of pointer arg number 1
 
-   void MultiplyPoint (double in[4], double out[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *MultiplyPoint (float in[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   vtkMatrix4x4 *New ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PointMultiply (float in[4], float out[4]);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void PointMultiply (double in[4], double out[4]);
-      Method is marked 'Do Not Use' in its descriptions
+   float *MultiplyPoint (const float in[4]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -4661,7 +4171,7 @@ Inherits from HomogeneousTransform
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkMatrix4x4 *GetInput ();
    unsigned long GetMTime ();
    void Inverse ();
@@ -4699,7 +4209,7 @@ Inherits from LinearTransform
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkMatrix4x4 *GetInput ();
    unsigned long GetMTime ();
    void Inverse ();
@@ -4715,38 +4225,6 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::MergePoints2D;
-
-
-@Graphics::VTK::MergePoints2D::ISA = qw( Graphics::VTK::PointLocator2D );
-
-=head1 Graphics::VTK::MergePoints2D
-
-=over 1
-
-=item *
-
-Inherits from PointLocator2D
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkMergePoints2D *New ();
-
-
-B<vtkMergePoints2D Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   int IsInsertedPoint (float x[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
 
 =cut
@@ -4769,13 +4247,15 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetGlobalDefaultNumberOfThreads ();
-   int GetGlobalMaximumNumberOfThreads ();
+   const char *GetClassName ();
+   static int GetGlobalDefaultNumberOfThreads ();
+   static int GetGlobalMaximumNumberOfThreads ();
    int GetNumberOfThreads ();
+   int GetNumberOfThreadsMaxValue ();
+   int GetNumberOfThreadsMinValue ();
    vtkMultiThreader *New ();
-   void SetGlobalDefaultNumberOfThreads (int val);
-   void SetGlobalMaximumNumberOfThreads (int val);
+   static void SetGlobalDefaultNumberOfThreads (int val);
+   static void SetGlobalMaximumNumberOfThreads (int val);
    void SetNumberOfThreads (int );
 
 
@@ -4807,7 +4287,7 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    void Lock (void );
    vtkMutexLock *New ();
    void Unlock (void );
@@ -4819,72 +4299,6 @@ Functions which are not supported supported for this class by the PerlVTK module
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Normals;
-
-
-@Graphics::VTK::Normals::ISA = qw( Graphics::VTK::AttributeData );
-
-=head1 Graphics::VTK::Normals
-
-=over 1
-
-=item *
-
-Inherits from AttributeData
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   float *GetNormal (int id);
-      (Returns a 3-element Perl list)
-   void GetNormals (vtkIdList &ptId, vtkNormals &fn);
-   void GetNormals (vtkIdList *ptId, vtkNormals *fn);
-   int GetNumberOfNormals ();
-   int InsertNextNormal (double nx, double ny, double nz);
-   void InsertNormal (int id, double nx, double ny, double nz);
-   vtkNormals *New (int dataType);
-   vtkNormals *New ();
-   void SetNormal (int id, double nx, double ny, double nz);
-   void SetNumberOfNormals (int number);
-
-
-B<vtkNormals Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetNormal (int id, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetNormal (int id, double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InsertNextNormal (float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InsertNextNormal (double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InsertNormal (int id, double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InsertNormal (int id, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetNormal (int id, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetNormal (int id, double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
 
 =cut
@@ -4905,26 +4319,26 @@ Inherits from
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void BreakOnError ();
+   static void BreakOnError ();
    virtual void DebugOff ();
    virtual void DebugOn ();
    virtual void Delete ();
-   virtual char *GetClassName ();
+   virtual const char *GetClassName ();
    unsigned char GetDebug ();
-   int GetGlobalWarningDisplay ();
+   static int GetGlobalWarningDisplay ();
    virtual unsigned long GetMTime ();
    int GetReferenceCount ();
-   void GlobalWarningDisplayOff ();
-   void GlobalWarningDisplayOn ();
-   int HasObserver (char *event);
-   int IsTypeOf (char *name);
+   static void GlobalWarningDisplayOff ();
+   static void GlobalWarningDisplayOn ();
+   int HasObserver (const char *event);
+   static int IsTypeOf (const char *name);
    virtual void Modified ();
    vtkObject *New ();
    void Register (vtkObject *o);
    void RemoveObserver (unsigned long tag);
-   vtkObject *SafeDownCast (vtkObject *o);
+   static vtkObject *SafeDownCast (vtkObject *o);
    void SetDebug (unsigned char debugFlag);
-   void SetGlobalWarningDisplay (int val);
+   static void SetGlobalWarningDisplay (int val);
    void SetReferenceCount (int );
    virtual void UnRegister (vtkObject *o);
 
@@ -4960,6 +4374,132 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
+package Graphics::VTK::ObjectFactory;
+
+
+@Graphics::VTK::ObjectFactory::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::ObjectFactory
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   static vtkObject *CreateInstance (const char *vtkclassname);
+   virtual void Disable (const char *className);
+   const char *GetClassName ();
+   virtual const char *GetClassOverrideName (int index);
+   virtual const char *GetClassOverrideWithName (int index);
+   virtual const char *GetDescription () = 0;
+   virtual int GetEnableFlag (const char *className, const char *subclassName);
+   virtual int GetEnableFlag (int index);
+   char *GetLibraryPath ();
+   virtual int GetNumberOfOverrides ();
+   virtual const char *GetOverrideDescription (int index);
+   static void GetOverrideInformation (const char *name, vtkOverrideInformationCollection *);
+   static vtkObjectFactoryCollection *GetRegisteredFactories ();
+   virtual const char *GetVTKSourceVersion () = 0;
+   virtual int HasOverride (const char *className, const char *subclassName);
+   virtual int HasOverride (const char *className);
+   static int HasOverrideAny (const char *className);
+   static void ReHash ();
+   static void RegisterFactory (vtkObjectFactory *);
+   static void SetAllEnableFlags (int flag, const char *className, const char *subclassName);
+   static void SetAllEnableFlags (int flag, const char *className);
+   virtual void SetEnableFlag (int flag, const char *className, const char *subclassName);
+   static void UnRegisterAllFactories ();
+   static void UnRegisterFactory (vtkObjectFactory *);
+
+
+B<vtkObjectFactory Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::ObjectFactoryCollection;
+
+
+@Graphics::VTK::ObjectFactoryCollection::ISA = qw( Graphics::VTK::Collection );
+
+=head1 Graphics::VTK::ObjectFactoryCollection
+
+=over 1
+
+=item *
+
+Inherits from Collection
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void AddItem (vtkObjectFactory *t);
+   const char *GetClassName ();
+   vtkObjectFactory *GetNextItem ();
+   vtkObjectFactoryCollection *New ();
+
+=cut
+
+package Graphics::VTK::OrderedTriangulator;
+
+
+@Graphics::VTK::OrderedTriangulator::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::OrderedTriangulator
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   long AddTetras (int classification, vtkUnstructuredGrid *ugrid);
+   long AddTetras (int classification, vtkCellArray *connectivity);
+   const char *GetClassName ();
+   int GetPreSorted ();
+   long GetTetras (int classification, vtkUnstructuredGrid *ugrid);
+   vtkOrderedTriangulator *New ();
+   void PreSortedOff ();
+   void PreSortedOn ();
+   void SetPreSorted (int );
+   void Triangulate ();
+   void UpdatePointType (long internalId, int type);
+
+
+B<vtkOrderedTriangulator Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void InitTriangulation (float bounds[6], int numPts);
+      Don't know the size of pointer arg number 1
+
+   long InsertPoint (long id, float x[3], int type);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
 package Graphics::VTK::OutputWindow;
 
 
@@ -4978,13 +4518,17 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   virtual void DisplayText (char *);
-   const char *GetClassName();
-   vtkOutputWindow *GetInstance ();
+   virtual void DisplayDebugText (const char *);
+   virtual void DisplayErrorText (const char *);
+   virtual void DisplayGenericWarningText (const char *);
+   virtual void DisplayText (const char *);
+   virtual void DisplayWarningText (const char *);
+   const char *GetClassName ();
+   static vtkOutputWindow *GetInstance ();
    vtkOutputWindow *New ();
    void PromptUserOff ();
    void PromptUserOn ();
-   void SetInstance (vtkOutputWindow *instance);
+   static void SetInstance (vtkOutputWindow *instance);
    void SetPromptUser (int );
 
 
@@ -4995,6 +4539,70 @@ Functions which are not supported supported for this class by the PerlVTK module
    virtual void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
+
+=cut
+
+package Graphics::VTK::OverrideInformation;
+
+
+@Graphics::VTK::OverrideInformation::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::OverrideInformation
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   const char *GetClassOverrideName ();
+   const char *GetClassOverrideWithName ();
+   const char *GetDescription ();
+   vtkObjectFactory *GetObjectFactory ();
+   vtkOverrideInformation *New ();
+   void SetClassOverrideName (char *);
+   void SetClassOverrideWithName (char *);
+   void SetDescription (char *);
+
+
+B<vtkOverrideInformation Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::OverrideInformationCollection;
+
+
+@Graphics::VTK::OverrideInformationCollection::ISA = qw( Graphics::VTK::Collection );
+
+=head1 Graphics::VTK::OverrideInformationCollection
+
+=over 1
+
+=item *
+
+Inherits from Collection
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void AddItem (vtkOverrideInformation *);
+   const char *GetClassName ();
+   vtkOverrideInformation *GetNextItem ();
+   vtkOverrideInformationCollection *New ();
 
 =cut
 
@@ -5022,9 +4630,12 @@ B<Functions Supported for this class by the PerlVTK module:>
    void Concatenate (vtkMatrix4x4 *matrix);
    void Concatenate (vtkHomogeneousTransform *transform);
    void Frustum (double xmin, double xmax, double ymin, double ymax, double znear, double zfar);
-   const char *GetClassName();
+   const char *GetClassName ();
+   vtkHomogeneousTransform *GetConcatenatedTransform (int i);
    vtkHomogeneousTransform *GetInput ();
+   int GetInverseFlag ();
    unsigned long GetMTime ();
+   int GetNumberOfConcatenatedTransforms ();
    void Identity ();
    void Inverse ();
    vtkAbstractTransform *MakeTransform ();
@@ -5051,35 +4662,35 @@ B<vtkPerspectiveTransform Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void Concatenate (double elements[16]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Concatenate (const double elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void RotateWXYZ (double angle, double axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const double axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void RotateWXYZ (double angle, float axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const float axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void Scale (double s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const double s[3]);
+      Method is redundant. Same as Scale( double, double, double)
 
-   void Scale (float s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const float s[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void SetMatrix (double elements[16]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void SetMatrix (const double elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void SetupCamera (double position[3], double focalpoint[3], double viewup[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void SetupCamera (const double position[3], const double focalpoint[3], const double viewup[3]);
+      Don't know the size of pointer arg number 1
 
-   void Translate (double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Translate (const double x[3]);
+      Method is redundant. Same as Translate( double, double, double)
 
-   void Translate (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Translate (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
 
 =cut
@@ -5102,18 +4713,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkPixel *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkPixel Unsupported Funcs:>
@@ -5121,28 +4731,25 @@ B<vtkPixel Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   void InterpolationDerivs (float pcoords[3], float derivs[8]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationDerivs (float pcoords[3], float derivs[8]);
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float weights[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[4]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -5166,49 +4773,49 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    float EvaluateFunction (float x, float y, float z);
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetNormal ();
       (Returns a 3-element Perl list)
    float  *GetOrigin ();
       (Returns a 3-element Perl list)
    vtkPlane *New ();
-   void SetNormal (float  , float , float );
-   void SetOrigin (float  , float , float );
+   void SetNormal (float , float , float );
+   void SetOrigin (float , float , float );
 
 
 B<vtkPlane Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float DistanceToPlane (float x[3], float n[3], float p0[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float DistanceToPlane (float x[3], float n[3], float p0[3]);
+      Don't know the size of pointer arg number 1
 
-   float Evaluate (float normal[3], float origin[3], float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float Evaluate (float normal[3], float origin[3], float x[3]);
+      Don't know the size of pointer arg number 1
 
    float EvaluateFunction (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as EvaluateFunction( float, float, float)
 
    void EvaluateGradient (float x[3], float g[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   float Evaluate (double normal[3], double origin[3], double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float Evaluate (double normal[3], double origin[3], double x[3]);
+      Don't know the size of pointer arg number 1
 
-   void GeneralizedProjectPoint (float x[3], float origin[3], float normal[3], float xproj[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void GeneralizedProjectPoint (float x[3], float origin[3], float normal[3], float xproj[3]);
+      Don't know the size of pointer arg number 1
 
-   int IntersectWithLine (float p1[3], float p2[3], float n[3], float p0[3], float &t, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int IntersectWithLine (float p1[3], float p2[3], float n[3], float p0[3], float &t, float x[3]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void ProjectPoint (float x[3], float origin[3], float normal[3], float xproj[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void ProjectPoint (float x[3], float origin[3], float normal[3], float xproj[3]);
+      Don't know the size of pointer arg number 1
 
-   void ProjectPoint (double x[3], double origin[3], double normal[3], double xproj[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void ProjectPoint (double x[3], double origin[3], double normal[3], double xproj[3]);
+      Don't know the size of pointer arg number 1
 
    void SetNormal (float  a[3]);
       Method is redundant. Same as SetNormal( float, float, float)
@@ -5238,9 +4845,61 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkPlane *);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkPlane *GetNextItem ();
    vtkPlaneCollection *New ();
+
+=cut
+
+package Graphics::VTK::Planes;
+
+
+@Graphics::VTK::Planes::ISA = qw( Graphics::VTK::ImplicitFunction );
+
+=head1 Graphics::VTK::Planes
+
+=over 1
+
+=item *
+
+Inherits from ImplicitFunction
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   float EvaluateFunction (float x, float y, float z);
+   const char *GetClassName ();
+   vtkDataArray *GetNormals ();
+   int GetNumberOfPlanes ();
+   vtkPlane *GetPlane (int i);
+   vtkPoints *GetPoints ();
+   vtkPlanes *New ();
+   void SetBounds (float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
+   void SetNormals (vtkDataArray *normals);
+   void SetPoints (vtkPoints *);
+
+
+B<vtkPlanes Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   float EvaluateFunction (float x[3]);
+      Method is redundant. Same as EvaluateFunction( float, float, float)
+
+   void EvaluateGradient (float x[3], float n[3]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetBounds (float bounds[6]);
+      Method is redundant. Same as SetBounds( float, float, float, float, float, float)
+
+   void SetFrustumPlanes (float planes[24]);
+      Can't handle methods with single array args (like a[3]) yet.
+
 
 =cut
 
@@ -5262,9 +4921,9 @@ Inherits from DataSetAttributes
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkPointData *New ();
-   void NullPoint (int ptId);
+   void NullPoint (long ptId);
 
 
 B<vtkPointData Unsupported Funcs:>
@@ -5297,19 +4956,21 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void BuildLocator ();
    virtual void FindClosestNPoints (int N, float x, float y, float z, vtkIdList *result);
-   int FindClosestPoint (float x, float y, float z);
+   long FindClosestPoint (float x, float y, float z);
    virtual void FindDistributedPoints (int N, float x, float y, float z, vtkIdList *result, int M);
    virtual void FindPointsWithinRadius (float R, float x, float y, float z, vtkIdList *result);
    void FreeSearchStructure ();
    void GenerateRepresentation (int level, vtkPolyData *pd);
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetDivisions ();
       (Returns a 3-element Perl list)
    int GetNumberOfPointsPerBucket ();
+   int GetNumberOfPointsPerBucketMaxValue ();
+   int GetNumberOfPointsPerBucketMinValue ();
    void Initialize ();
-   int IsInsertedPoint (float x, float y, float z);
+   long IsInsertedPoint (float x, float y, float z);
    vtkPointLocator *New ();
-   void SetDivisions (int  , int , int );
+   void SetDivisions (int , int , int );
    void SetNumberOfPointsPerBucket (int );
 
 
@@ -5317,62 +4978,62 @@ B<vtkPointLocator Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float Distance2ToBounds (float x[3], float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   float Distance2ToBounds (const float x[3], const float bounds[6]);
+      Don't know the size of pointer arg number 1
 
-   float Distance2ToBucket (float x[3], int nei[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   float Distance2ToBucket (const float x[3], const int nei[3]);
+      Don't know the size of pointer arg number 1
 
-   virtual int FindClosestInsertedPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual long FindClosestInsertedPoint (const float x[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   virtual void FindClosestNPoints (int N, float x[3], vtkIdList *result);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void FindClosestNPoints (int N, const float x[3], vtkIdList *result);
+      Don't know the size of pointer arg number 2
 
-   virtual int FindClosestPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual long FindClosestPoint (const float x[3]);
+      Method is redundant. Same as FindClosestPoint( float, float, float)
 
-   int FindClosestPointWithinRadius (float radius, float x[3], float &dist2);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindClosestPointWithinRadius (float radius, const float x[3], float &dist2);
+      Don't know the size of pointer arg number 2
 
-   int FindClosestPointWithinRadius (float radius, float x[3], float inputDataLength, float &dist2);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindClosestPointWithinRadius (float radius, const float x[3], float inputDataLength, float &dist2);
+      Don't know the size of pointer arg number 2
 
-   virtual void FindDistributedPoints (int N, float x[3], vtkIdList *result, int M);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void FindDistributedPoints (int N, const float x[3], vtkIdList *result, int M);
+      Don't know the size of pointer arg number 2
 
-   virtual void FindPointsWithinRadius (float R, float x[3], vtkIdList *result);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void FindPointsWithinRadius (float R, const float x[3], vtkIdList *result);
+      Don't know the size of pointer arg number 2
 
-   void GetBucketNeighbors (vtkNeighborPoints *buckets, int ijk[3], int ndivs[3], int level);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetBucketNeighbors (vtkNeighborPoints *buckets, const int ijk[3], const int ndivs[3], int level);
+      Don't know the size of pointer arg number 2
 
-   void GetOverlappingBuckets (vtkNeighborPoints *buckets, float x[3], int ijk[3], float dist, int level);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetOverlappingBuckets (vtkNeighborPoints *buckets, const float x[3], const int ijk[3], float dist, int level);
+      Don't know the size of pointer arg number 2
 
-   void GetOverlappingBuckets (vtkNeighborPoints *buckets, float x[3], float dist, int prevMinLevel[3], int prevMaxLevel[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetOverlappingBuckets (vtkNeighborPoints *buckets, const float x[3], float dist, int prevMinLevel[3], int prevMaxLevel[3]);
+      Don't know the size of pointer arg number 2
 
-   virtual vtkIdList *GetPointsInBucket (float x[3], int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual vtkIdList *GetPointsInBucket (const float x[3], int ijk[3]);
+      Don't know the size of pointer arg number 1
 
-   virtual int InitPointInsertion (vtkPoints *newPts, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual int InitPointInsertion (vtkPoints *newPts, const float bounds[6]);
+      Don't know the size of pointer arg number 2
 
-   virtual int InitPointInsertion (vtkPoints *newPts, float bounds[6], int estSize);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual int InitPointInsertion (vtkPoints *newPts, const float bounds[6], long estSize);
+      Don't know the size of pointer arg number 2
 
-   virtual int InsertNextPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual long InsertNextPoint (const float x[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   virtual void InsertPoint (int ptId, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void InsertPoint (long ptId, const float x[3]);
+      Don't know the size of pointer arg number 2
 
-   virtual int InsertUniquePoint (float x[3], int &ptId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual int InsertUniquePoint (const float x[3], long &ptId);
+      Don't know the size of pointer arg number 1
 
-   virtual int IsInsertedPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual long IsInsertedPoint (const float x[3]);
+      Method is redundant. Same as IsInsertedPoint( float, float, float)
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -5407,14 +5068,16 @@ B<Functions Supported for this class by the PerlVTK module:>
    virtual void FindPointsWithinRadius (float R, float x, float y, vtkIdList *result);
    void FreeSearchStructure ();
    void GenerateRepresentation (int level, vtkPolyData *pd);
-   const char *GetClassName();
+   const char *GetClassName ();
    int  *GetDivisions ();
       (Returns a 2-element Perl list)
    int GetNumberOfPointsPerBucket ();
+   int GetNumberOfPointsPerBucketMaxValue ();
+   int GetNumberOfPointsPerBucketMinValue ();
    vtkPoints *GetPoints ();
    void Initialize ();
    vtkPointLocator2D *New ();
-   void SetDivisions (int  , int );
+   void SetDivisions (int , int );
    void SetNumberOfPointsPerBucket (int );
    void SetPoints (vtkPoints *);
 
@@ -5424,25 +5087,25 @@ B<vtkPointLocator2D Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    virtual void FindClosestNPoints (int N, float x[2], vtkIdList *result);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    virtual int FindClosestPoint (float x[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    virtual void FindDistributedPoints (int N, float x[2], vtkIdList *result, int M);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    virtual void FindPointsWithinRadius (float R, float x[2], vtkIdList *result);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void GetBucketNeighbors (int ijk[2], int ndivs[2], int level);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void GetOverlappingBuckets (float x[2], int ijk[2], float dist, int level);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    virtual int IsInsertedPoint (float x[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -5453,10 +5116,69 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
+package Graphics::VTK::PointSet;
+
+
+@Graphics::VTK::PointSet::ISA = qw( Graphics::VTK::DataSet );
+
+=head1 Graphics::VTK::PointSet
+
+=over 1
+
+=item *
+
+Inherits from DataSet
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void ComputeBounds ();
+   void CopyStructure (vtkDataSet *pd);
+   void DeepCopy (vtkDataObject *src);
+   long FindPoint (float x, float y, float z);
+   unsigned long GetActualMemorySize ();
+   const char *GetClassName ();
+   unsigned long GetMTime ();
+   virtual int GetNetReferenceCount ();
+   long GetNumberOfPoints ();
+   float *GetPoint (long ptId);
+      (Returns a 3-element Perl list)
+   vtkPoints *GetPoints ();
+   void Initialize ();
+   void SetPoints (vtkPoints *);
+   void ShallowCopy (vtkDataObject *src);
+   void Squeeze ();
+   void UnRegister (vtkObject *o);
+
+
+B<vtkPointSet Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   long FindCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
+
+   long FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
+
+   long FindPoint (float x[3]);
+      Method is redundant. Same as FindPoint( float, float, float)
+
+   void GetPoint (long ptId, float x[3]);
+      Don't know the size of pointer arg number 2
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
 package Graphics::VTK::Points;
 
 
-@Graphics::VTK::Points::ISA = qw( Graphics::VTK::AttributeData );
+@Graphics::VTK::Points::ISA = qw( Graphics::VTK::Object );
 
 =head1 Graphics::VTK::Points
 
@@ -5464,27 +5186,48 @@ package Graphics::VTK::Points;
 
 =item *
 
-Inherits from AttributeData
+Inherits from Object
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
+   virtual int Allocate (const long sz, const long ext);
    virtual void ComputeBounds ();
+   virtual void DeepCopy (vtkPoints *ad);
+   unsigned long GetActualMemorySize ();
    float *GetBounds ();
       (Returns a 6-element Perl list)
-   const char *GetClassName();
-   int GetNumberOfPoints ();
-   float *GetPoint (int id);
+   const char *GetClassName ();
+   vtkDataArray *GetData ();
+   virtual int GetDataType ();
+   long GetNumberOfPoints ();
+   float *GetPoint (long id);
       (Returns a 3-element Perl list)
-   void GetPoints (vtkIdList &ptId, vtkPoints &fp);
    void GetPoints (vtkIdList *ptId, vtkPoints *fp);
-   int InsertNextPoint (double x, double y, double z);
-   void InsertPoint (int id, double x, double y, double z);
+   virtual void Initialize ();
+   long InsertNextPoint (double x, double y, double z);
+   void InsertPoint (long id, double x, double y, double z);
    vtkPoints *New ();
-   void SetNumberOfPoints (int number);
-   void SetPoint (int id, double x, double y, double z);
+   virtual void Reset ();
+   virtual void SetData (vtkDataArray *);
+   virtual void SetDataType (int dataType);
+   void SetDataTypeToBit ();
+   void SetDataTypeToChar ();
+   void SetDataTypeToDouble ();
+   void SetDataTypeToFloat ();
+   void SetDataTypeToInt ();
+   void SetDataTypeToLong ();
+   void SetDataTypeToShort ();
+   void SetDataTypeToUnsignedChar ();
+   void SetDataTypeToUnsignedInt ();
+   void SetDataTypeToUnsignedLong ();
+   void SetDataTypeToUnsignedShort ();
+   void SetNumberOfPoints (long number);
+   void SetPoint (long id, double x, double y, double z);
+   virtual void ShallowCopy (vtkPoints *ad);
+   virtual void Squeeze ();
 
 
 B<vtkPoints Unsupported Funcs:>
@@ -5492,34 +5235,37 @@ B<vtkPoints Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    void GetBounds (float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void GetPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetPoint (long id, float x[3]);
+      Don't know the size of pointer arg number 2
 
-   void GetPoint (int id, double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetPoint (long id, double x[3]);
+      Don't know the size of pointer arg number 2
 
-   int InsertNextPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void *GetVoidPointer (const int id);
+      Can't Handle 'void *' return type without a hint
 
-   int InsertNextPoint (double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long InsertNextPoint (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void InsertPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long InsertNextPoint (const double x[3]);
+      Method is redundant. Same as InsertNextPoint( double, double, double)
 
-   void InsertPoint (int id, double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void InsertPoint (long id, const float x[3]);
+      Don't know the size of pointer arg number 2
+
+   void InsertPoint (long id, const double x[3]);
+      Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void SetPoint (long id, const float x[3]);
+      Don't know the size of pointer arg number 2
 
-   void SetPoint (int id, double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void SetPoint (long id, const double x[3]);
+      Don't know the size of pointer arg number 2
 
 
 =cut
@@ -5542,40 +5288,40 @@ Inherits from PointSet
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void AddCellReference (int cellId);
-   void AddReferenceToCell (int ptId, int cellId);
-   void Allocate (int numCells, int extSize);
+   void AddCellReference (long cellId);
+   void AddReferenceToCell (long ptId, long cellId);
+   void Allocate (vtkPolyData *inPolyData, long numCells, int extSize);
+   void Allocate (long numCells, int extSize);
    void BuildCells ();
    void BuildLinks ();
    void ComputeBounds ();
    void CopyCells (vtkPolyData *pd, vtkIdList *idList, vtkPointLocator *locatorNULL);
    void CopyStructure (vtkDataSet *ds);
    void DeepCopy (vtkDataObject *src);
-   void DeleteCell (int cellId);
+   void DeleteCell (long cellId);
    void DeleteCells ();
    void DeleteLinks ();
-   void DeletePoint (int ptId);
+   void DeletePoint (long ptId);
    unsigned long GetActualMemorySize ();
-   void GetCell (int cellId, vtkGenericCell *cell);
-   vtkCell *GetCell (int cellId);
-   void GetCellEdgeNeighbors (int cellId, int p1, int p2, vtkIdList &cellIds);
-   void GetCellEdgeNeighbors (int cellId, int p1, int p2, vtkIdList *cellIds);
-   void GetCellNeighbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds);
-   void GetCellPoints (int cellId, vtkIdList *ptIds);
-   int GetCellType (int cellId);
-   const char *GetClassName();
+   void GetCell (long cellId, vtkGenericCell *cell);
+   vtkCell *GetCell (long cellId);
+   void GetCellEdgeNeighbors (long cellId, long p1, long p2, vtkIdList *cellIds);
+   void GetCellNeighbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds);
+   void GetCellPoints (long cellId, vtkIdList *ptIds);
+   int GetCellType (long cellId);
+   const char *GetClassName ();
    int GetDataObjectType ();
    int GetGhostLevel ();
    vtkCellArray *GetLines ();
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
-   int GetNumberOfLines ();
+   long GetNumberOfCells ();
+   long GetNumberOfLines ();
    int GetNumberOfPieces ();
-   int GetNumberOfPolys ();
-   int GetNumberOfStrips ();
-   int GetNumberOfVerts ();
+   long GetNumberOfPolys ();
+   long GetNumberOfStrips ();
+   long GetNumberOfVerts ();
    int GetPiece ();
-   void GetPointCells (int ptId, vtkIdList *cellIds);
+   void GetPointCells (long ptId, vtkIdList *cellIds);
    vtkCellArray *GetPolys ();
    vtkCellArray *GetStrips ();
    void GetUpdateExtent (int &piece, int &numPieces, int &ghostLevel);
@@ -5585,15 +5331,16 @@ B<Functions Supported for this class by the PerlVTK module:>
    virtual void Initialize ();
    int InsertNextCell (int type, vtkIdList *pts);
    int IsEdge (int v1, int v2);
-   int IsPointUsedByCell (int ptId, int cellId);
+   int IsPointUsedByCell (long ptId, long cellId);
    int IsTriangle (int v1, int v2, int v3);
    vtkPolyData *New ();
-   void RemoveCellReference (int cellId);
-   void RemoveReferenceToCell (int ptId, int cellId);
-   void ReplaceCellPoint (int cellId, int oldPtId, int newPtId);
+   void RemoveCellReference (long cellId);
+   void RemoveGhostCells (int level);
+   void RemoveReferenceToCell (long ptId, long cellId);
+   void ReplaceCellPoint (long cellId, long oldPtId, long newPtId);
    void Reset ();
-   void ResizeCellList (int ptId, int size);
-   void ReverseCell (int cellId);
+   void ResizeCellList (long ptId, int size);
+   void ReverseCell (long cellId);
    void SetLines (vtkCellArray *l);
    void SetPolys (vtkCellArray *p);
    void SetStrips (vtkCellArray *s);
@@ -5609,70 +5356,35 @@ B<vtkPolyData Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
 
-   void GetCellPoints (int cellId, int &npts, int &pts);
-      Don't know the size of pointer arg number 3
+   void GetCellPoints (long cellId, long &npts, long &pts);
+      Don't know the size of pointer arg number 2
 
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetPointCells (int ptId, unsigned short &ncells, int &cells);
+   void GetPointCells (long ptId, unsigned short &ncells, long &cells);
       Arg types of 'unsigned short &' not supported yet
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   int InsertNextCell (int type, int npts, int *pts);
+   int InsertNextCell (int type, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
-   int InsertNextCell (int type, vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
-
-   int InsertNextLinkedCell (int type, int npts, int *pts);
+   int InsertNextLinkedCell (int type, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
    int InsertNextLinkedPoint (float x[3], int numLinks);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void ReplaceCell (int cellId, int npts, int *pts);
+   void ReplaceCell (long cellId, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
-   void ReplaceLinkedCell (int cellId, int npts, int *pts);
+   void ReplaceLinkedCell (long cellId, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
    void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
-
-=cut
-
-package Graphics::VTK::PolyDataSource;
-
-
-@Graphics::VTK::PolyDataSource::ISA = qw( Graphics::VTK::Source );
-
-=head1 Graphics::VTK::PolyDataSource
-
-=over 1
-
-=item *
-
-Inherits from Source
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkPolyData *GetOutput (int idx);
-   vtkPolyData *GetOutput ();
-   vtkPolyDataSource *New ();
-   void SetOutput (vtkPolyData *output);
 
 =cut
 
@@ -5694,19 +5406,18 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *lines, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
-   int GenerateSlidingNormals (vtkPoints *, vtkCellArray *, vtkNormals *);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *lines, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
+   int GenerateSlidingNormals (vtkPoints *, vtkCellArray *, vtkDataArray *);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int );
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkPolyLine *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkPolyLine Unsupported Funcs:>
@@ -5714,25 +5425,22 @@ B<vtkPolyLine Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -5755,18 +5463,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int );
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkPolyVertex *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkPolyVertex Unsupported Funcs:>
@@ -5774,25 +5481,22 @@ B<vtkPolyVertex Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -5815,11 +5519,11 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *tris, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *tris, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
@@ -5827,7 +5531,6 @@ B<Functions Supported for this class by the PerlVTK module:>
    vtkPolygon *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
    int Triangulate (vtkIdList *outTris);
-   int Triangulate (vtkIdList &outTris);
 
 
 B<vtkPolygon Unsupported Funcs:>
@@ -5835,49 +5538,40 @@ B<vtkPolygon Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+   static void ComputeNormal (vtkPoints *p, int numPts, long *pts, float n[3]);
+      Don't know the size of pointer arg number 3
 
-   void ComputeNormal (vtkPoints *p, int numPts, int *pts, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void ComputeNormal (vtkPoints *p, float n[3]);
+      Don't know the size of pointer arg number 2
 
-   void ComputeNormal (vtkPoints *p, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormal (int numPts, float *pts, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void ComputeNormal (int numPts, float *pts, float n[3]);
+      Don't know the size of pointer arg number 2
 
    void ComputeWeights (float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float Toleranceint SuccessfulTriangulationfloat Normal[3]vtkIdList *TrisvtkTriangle *TrianglevtkQuad *QuadvtkScalars *TriScalarsvtkLine *Lineint EarCutTriangulation ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int IntersectPolygonWithPolygon (int npts, float *pts, float bounds[6], int npts2, float *pts2, float bounds2[3], float tol, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int IntersectPolygonWithPolygon (int npts, float *pts, float bounds[6], int npts2, float *pts2, float bounds2[3], float tol, float x[3]);
+      Don't know the size of pointer arg number 2
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int ParameterizePolygon (float p0[3], float p10[3], float &l10, float p20[3], float &l20, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int PointInPolygon (float x[3], int numPts, float *pts, float bounds[6], float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
-      Method is marked 'Do Not Use' in its descriptions
+   static int PointInPolygon (float x[3], int numPts, float *pts, float bounds[6], float n[3]);
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -5900,17 +5594,13 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Allocate (int sz, int ext);
-   float DeleteId (int id);
-   const char *GetClassName();
-   int GetNumberOfItems ();
-   float GetPriority (int id);
-   void Insert (float priority, int id);
+   void Allocate (const long sz, const long ext);
+   float DeleteId (long id);
+   const char *GetClassName ();
+   long GetNumberOfItems ();
+   float GetPriority (long id);
+   void Insert (float priority, long id);
    vtkPriorityQueue *New ();
-   int Peek (float &priority, int location);
-   int Peek (int location);
-   int Pop (float &priority, int location);
-   int Pop (int location);
    void Reset ();
 
 
@@ -5945,9 +5635,11 @@ B<Functions Supported for this class by the PerlVTK module:>
    void AbortExecuteOff ();
    void AbortExecuteOn ();
    int GetAbortExecute ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetNumberOfInputs ();
    float GetProgress ();
+   float GetProgressMaxValue ();
+   float GetProgressMinValue ();
    char *GetProgressText ();
    vtkProcessObject *New ();
    void RemoveAllInputs ();
@@ -5965,8 +5657,8 @@ B<vtkProcessObject Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int AbortExecutevtkDataObject *GetInputs ();
-      Can't Handle 'vtkDataObject**' return type yet
+   vtkDataObject *GetInputs ();
+      Can't Handle 'vtkDataObject **' return type yet
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -6005,10 +5697,9 @@ B<Functions Supported for this class by the PerlVTK module:>
    void DragableOn ();
    virtual void GetActors (vtkPropCollection *);
    virtual void GetActors2D (vtkPropCollection *);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDragable ();
    virtual vtkMatrix4x4 *GetMatrix ();
-   virtual vtkMatrix4x4 *GetMatrixPointer ();
    virtual vtkAssemblyPath *GetNextPath ();
    virtual int GetNumberOfPaths ();
    int GetPickable ();
@@ -6065,17 +5756,17 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddPart (vtkProp *);
-   const char *GetClassName();
+   float *GetBounds ();
+      (Returns a 6-element Perl list)
+   const char *GetClassName ();
    unsigned long GetMTime ();
    vtkAssemblyPath *GetNextPath ();
    int GetNumberOfPaths ();
    vtkPropCollection *GetParts ();
    void InitPathTraversal ();
-   int InitializeRayCasting (vtkViewport *);
    vtkPropAssembly *New ();
    void ReleaseGraphicsResources (vtkWindow *);
    void RemovePart (vtkProp *);
-   int RenderIntoImage (vtkViewport *);
    int RenderOpaqueGeometry (vtkViewport *ren);
    int RenderOverlay (vtkViewport *);
    int RenderTranslucentGeometry (vtkViewport *ren);
@@ -6086,17 +5777,8 @@ B<vtkPropAssembly Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int CastViewRay (VTKRayCastRayInfo *);
-      Don't know the size of pointer arg number 1
-
-   float *GetBounds ();
-      Can't Handle 'float *' return type without a hint
-
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
-
-   vtkPropCollection *Partsfloat Bounds[6]vtkTimeStamp PathTimevoid UpdatePaths ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
 
 
 =cut
@@ -6120,7 +5802,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkProp *a);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkProp *GetLastProp ();
    vtkProp *GetNextProp ();
    int GetNumberOfPaths ();
@@ -6147,19 +5829,31 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void DeepCopy (vtkProperty2D *p);
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetColor ();
       (Returns a 3-element Perl list)
    int GetDisplayLocation ();
+   int GetDisplayLocationMaxValue ();
+   int GetDisplayLocationMinValue ();
+   int GetLineStipplePattern ();
+   int GetLineStippleRepeatFactor ();
+   int GetLineStippleRepeatFactorMaxValue ();
+   int GetLineStippleRepeatFactorMinValue ();
    float GetLineWidth ();
+   float GetLineWidthMaxValue ();
+   float GetLineWidthMinValue ();
    float GetOpacity ();
    float GetPointSize ();
+   float GetPointSizeMaxValue ();
+   float GetPointSizeMinValue ();
    vtkProperty2D *New ();
    virtual void Render (vtkViewport *);
-   void SetColor (float  , float , float );
+   void SetColor (float , float , float );
    void SetDisplayLocation (int );
    void SetDisplayLocationToBackground ();
    void SetDisplayLocationToForeground ();
+   void SetLineStipplePattern (int );
+   void SetLineStippleRepeatFactor (int );
    void SetLineWidth (float );
    void SetOpacity (float );
    void SetPointSize (float );
@@ -6181,7 +5875,7 @@ Functions which are not supported supported for this class by the PerlVTK module
 package Graphics::VTK::Pyramid;
 
 
-@Graphics::VTK::Pyramid::ISA = qw( Graphics::VTK::Cell );
+@Graphics::VTK::Pyramid::ISA = qw( Graphics::VTK::Cell3D );
 
 =head1 Graphics::VTK::Pyramid
 
@@ -6189,18 +5883,17 @@ package Graphics::VTK::Pyramid;
 
 =item *
 
-Inherits from Cell
+Inherits from Cell3D
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *cells, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetNumberOfEdges ();
@@ -6214,34 +5907,43 @@ B<vtkPyramid Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int *GetFaceArray (int faceId);
-      Can't Handle 'int *' return type without a hint
+   static int *GetEdgeArray (int edgeId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetEdgePoints (int edgeId, int &pts);
+      Don't know the size of pointer arg number 2
+
+   static int *GetFaceArray (int faceId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetFacePoints (int faceId, int &pts);
+      Don't know the size of pointer arg number 2
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
-   void InterpolationDerivs (float pcoords[3], float derivs[15]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationDerivs (float pcoords[3], float derivs[15]);
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float weights[5]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[5]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int JacobianInverse (float pcoords[3], double *inverse, float derivs[15]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -6264,18 +5966,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkQuad *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkQuad Unsupported Funcs:>
@@ -6283,28 +5984,25 @@ B<vtkQuad Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   void InterpolationDerivs (float pcoords[3], float derivs[8]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationDerivs (float pcoords[3], float derivs[8]);
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float sf[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float sf[4]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -6328,7 +6026,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    float EvaluateFunction (float x, float y, float z);
-   const char *GetClassName();
+   const char *GetClassName ();
    float  *GetCoefficients ();
       (Returns a 10-element Perl list)
    vtkQuadric *New ();
@@ -6340,16 +6038,16 @@ B<vtkQuadric Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    float EvaluateFunction (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as EvaluateFunction( float, float, float)
 
    void EvaluateGradient (float x[3], float g[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetCoefficients (float a[10]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetCoefficients( float, float, float, float, float, float, float, float, float, float)
 
 
 =cut
@@ -6377,12 +6075,12 @@ B<Functions Supported for this class by the PerlVTK module:>
    void DeepCopy (vtkDataObject *src);
    int FindPoint (float x, float y, float z);
    unsigned long GetActualMemorySize ();
-   void GetCell (int cellId, vtkGenericCell *cell);
-   vtkCell *GetCell (int cellId);
-   void GetCellNeighbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds);
-   void GetCellPoints (int cellId, vtkIdList *ptIds);
-   int GetCellType (int cellId);
-   const char *GetClassName();
+   void GetCell (long cellId, vtkGenericCell *cell);
+   vtkCell *GetCell (long cellId);
+   void GetCellNeighbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds);
+   void GetCellPoints (long cellId, vtkIdList *ptIds);
+   int GetCellType (long cellId);
+   const char *GetClassName ();
    int GetDataDimension ();
    int GetDataObjectType ();
    int  *GetDimensions ();
@@ -6390,13 +6088,14 @@ B<Functions Supported for this class by the PerlVTK module:>
    int  *GetExtent ();
       (Returns a 6-element Perl list)
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
-   int GetNumberOfPoints ();
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-   void GetPointCells (int ptId, vtkIdList *cellIds);
-   vtkScalars *GetXCoordinates ();
-   vtkScalars *GetYCoordinates ();
-   vtkScalars *GetZCoordinates ();
+   long GetNumberOfCells ();
+   long GetNumberOfPoints ();
+   float *GetPoint (long ptId);
+      (Returns a 3-element Perl list)
+   void GetPointCells (long ptId, vtkIdList *cellIds);
+   vtkDataArray *GetXCoordinates ();
+   vtkDataArray *GetYCoordinates ();
+   vtkDataArray *GetZCoordinates ();
    void Initialize ();
    vtkRectilinearGrid *New ();
    void SetDimensions (int i, int j, int k);
@@ -6404,9 +6103,9 @@ B<Functions Supported for this class by the PerlVTK module:>
    void SetUpdateExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    void SetUpdateExtent (int piece, int numPieces, int ghostLevel);
    void SetUpdateExtent (int piece, int numPieces);
-   void SetXCoordinates (vtkScalars *);
-   void SetYCoordinates (vtkScalars *);
-   void SetZCoordinates (vtkScalars *);
+   void SetXCoordinates (vtkDataArray *);
+   void SetYCoordinates (vtkDataArray *);
+   void SetZCoordinates (vtkDataArray *);
    void ShallowCopy (vtkDataObject *src);
 
 
@@ -6414,53 +6113,47 @@ B<vtkRectilinearGrid Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int ComputeCellId (int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long ComputeCellId (int ijk[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   int ComputePointId (int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long ComputePointId (int ijk[3]);
+      Can't handle methods with single array args (like a[3]) yet.
 
    int ComputeStructuredCoordinates (float x[3], int ijk[3], float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   vtkCell *FindAndGetCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   vtkCell *FindAndGetCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindCell (float x[3], vtkCell *cell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindCell (float x[3], vtkCell *cell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, int cellId, float tol2, int &subId, float pcoords[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindCell (float x[3], vtkCell *cell, vtkGenericCell *gencell, long cellId, float tol2, int &subId, float pcoords[3], float *weights);
+      Don't know the size of pointer arg number 1
 
-   int FindPoint (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   long FindPoint (float x[3]);
+      Method is redundant. Same as FindPoint( float, float, float)
 
-   void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
 
-   int Dimensions[3]int DataDescriptionvtkScalars *XCoordinatesvtkScalars *YCoordinatesvtkScalars *ZCoordinatesfloat PointReturn[3]void GetCellNeighbors (int cellId, vtkIdList &ptIds, vtkIdList &cellIds);
+   void GetCellNeighbors (long cellId, vtkIdList &ptIds, vtkIdList &cellIds);
       Method is marked 'Do Not Use' in its descriptions
 
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   float *GetPoint (int ptId);
-      Can't Handle 'float *' return type without a hint
-
-   void GetPoint (int id, float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetPoint (long id, float x[3]);
+      Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetDimensions (int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetDimensions( int, int, int)
 
    void SetExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetExtent( int, int, int, int, int, int)
 
    void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
 
 =cut
@@ -6483,7 +6176,7 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkReferenceCount *New ();
 
 
@@ -6497,70 +6190,137 @@ Functions which are not supported supported for this class by the PerlVTK module
 
 =cut
 
-package Graphics::VTK::Scalars;
+package Graphics::VTK::RungeKutta2;
 
 
-@Graphics::VTK::Scalars::ISA = qw( Graphics::VTK::AttributeData );
+@Graphics::VTK::RungeKutta2::ISA = qw( Graphics::VTK::InitialValueProblemSolver );
 
-=head1 Graphics::VTK::Scalars
+=head1 Graphics::VTK::RungeKutta2
 
 =over 1
 
 =item *
 
-Inherits from AttributeData
+Inherits from InitialValueProblemSolver
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void ComputeRange ();
-   virtual void CreateDefaultLookupTable ();
-   int GetActiveComponent ();
-   const char *GetClassName();
-   double GetDataTypeMax ();
-   double GetDataTypeMin ();
-   vtkLookupTable *GetLookupTable ();
-   int GetNumberOfComponents ();
-   int GetNumberOfScalars ();
-   float *GetRange ();
-      (Returns a 2-element Perl list)
-   float GetScalar (int id);
-   void GetScalars (int p1, int p2, vtkScalars *fs);
-   void GetScalars (int p1, int p2, vtkScalars &fs);
-   void GetScalars (vtkIdList *ptIds, vtkScalars *fv);
-   int InitColorTraversal (float alpha, vtkScalarsToColors *lut, int colorModeVTK_COLOR_MODE_DEFAULT);
-   int InsertNextScalar (float s);
-   void InsertScalar (int id, float s);
-   vtkScalars *New (int dataType, int numComp);
-   vtkScalars *New ();
-   void SetActiveComponent (int );
-   void SetData (vtkDataArray *);
-   void SetLookupTable (vtkLookupTable *lut);
-   void SetNumberOfComponents (int num);
-   void SetNumberOfScalars (int number);
-   void SetScalar (int id, float s);
+   const char *GetClassName ();
+   vtkRungeKutta2 *New ();
 
 
-B<vtkScalars Unsupported Funcs:>
+B<vtkRungeKutta2 Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned char *GetColor (int id);
+   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
+      Don't know the size of pointer arg number 1
+
+   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT);
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::RungeKutta4;
+
+
+@Graphics::VTK::RungeKutta4::ISA = qw( Graphics::VTK::InitialValueProblemSolver );
+
+=head1 Graphics::VTK::RungeKutta4
+
+=over 1
+
+=item *
+
+Inherits from InitialValueProblemSolver
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   vtkRungeKutta4 *New ();
+
+
+B<vtkRungeKutta4 Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
+      Don't know the size of pointer arg number 1
+
+   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT);
+      Don't know the size of pointer arg number 1
+
+   virtual void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+
+=cut
+
+package Graphics::VTK::ScalarsToColors;
+
+
+@Graphics::VTK::ScalarsToColors::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::ScalarsToColors
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   virtual void Build ();
+   virtual vtkUnsignedCharArray *ConvertUnsignedCharToRGBA (vtkUnsignedCharArray *colors, int numComp, int numTuples);
+   float GetAlpha ();
+   const char *GetClassName ();
+   float *GetColor (float v);
+      (Returns a 3-element Perl list)
+   float GetLuminance (float x);
+   virtual float GetOpacity (float );
+   vtkUnsignedCharArray *MapScalars (vtkDataArray *scalars, int colorMode, int component);
+   void SetAlpha (float alpha);
+   virtual void SetRange (float min, float max) = 0;
+
+
+B<vtkScalarsToColors Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void GetColor (float v, float rgb[3]) = 0;
+      Don't know the size of pointer arg number 2
+
+   virtual float *GetRange () = 0;
+      Can't Handle 'float *' return type without a hint
+
+   void MapScalarsThroughTable (vtkDataArray *scalars, unsigned char *output, int outputFormat);
+      Don't know the size of pointer arg number 2
+
+   virtual void MapScalarsThroughTable2 (void *input, unsigned char *output, int inputDataType, int numberOfValues, int inputIncrement, int outputFormat) = 0;
+      Don't know the size of pointer arg number 1
+
+   void MapScalarsThroughTable (vtkDataArray *scalars, unsigned char *output);
+      Don't know the size of pointer arg number 2
+
+   virtual unsigned char *MapValue (float v) = 0;
       Can't Handle 'unsigned char *' return type without a hint
-
-   void GetDataTypeRange (double range[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetRange (float range[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetScalars (vtkIdList &ptIds, vtkScalars &fv);
-      Method is marked 'Do Not Use' in its descriptions
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
+
+   void SetRange (float rng[2]);
+      Method is redundant. Same as SetRange( float, float)
 
 
 =cut
@@ -6583,23 +6343,22 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    int GetDataType ();
-   short GetValue (int id);
-   void *GetVoidPointer (int id);
+   short GetValue (const long id);
    void Initialize ();
-   void InsertComponent (int i, int j, float c);
-   int InsertNextValue (short );
-   void InsertValue (int id, short i);
+   void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const short );
+   void InsertValue (const long id, const short i);
    vtkShortArray *New ();
-   void SetComponent (int i, int j, float c);
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, short value);
+   virtual void Resize (long numTuples);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const short value);
    void Squeeze ();
 
 
@@ -6607,46 +6366,52 @@ B<vtkShortArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   short *GetPointer (int id);
+   short *GetPointer (const long id);
       Can't Handle 'short *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (short *array, int size, int save);
+   short *ResizeAndExtend (const long sz);
+      Can't Handle 'short *' return type without a hint
+
+   void SetArray (short *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   short *WritePointer (int id, int number);
+   short *WritePointer (const long id, const long number);
       Can't Handle 'short *' return type without a hint
 
 
@@ -6671,9 +6436,10 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    virtual void ComputeInputUpdateExtents (vtkDataObject *output);
-   virtual void EnlargeOutputUpdateExtents (vtkDataObject *);
-   const char *GetClassName();
+   virtual void EnlargeOutputUpdateExtents (vtkDataObject *output);
+   const char *GetClassName ();
    int GetNumberOfOutputs ();
+   int GetOutputIndex (vtkDataObject *out);
    virtual int GetReleaseDataFlag ();
    virtual int InRegisterLoop (vtkObject *);
    vtkSource *New ();
@@ -6694,50 +6460,8 @@ B<vtkSource Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   virtual void ComputeEstimatedOutputMemorySize (vtkDataObject *output, unsigned long *inputSize, unsigned long size[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeEstimatedPipelineMemorySize (vtkDataObject *output, unsigned long size[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
    vtkDataObject *GetOutputs ();
       Can't Handle 'vtkDataObject **' return type yet
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::Stack;
-
-
-@Graphics::VTK::Stack::ISA = qw( Graphics::VTK::Object );
-
-=head1 Graphics::VTK::Stack
-
-=over 1
-
-=item *
-
-Inherits from Object
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetNumberOfItems ();
-   vtkObject *GetTop ();
-   vtkStack *New ();
-   vtkObject *Pop ();
-   void Push (vtkObject *);
-
-
-B<vtkStack Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
@@ -6763,8 +6487,8 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetDataDimension (int dataDescription);
+   const char *GetClassName ();
+   static int GetDataDimension (int dataDescription);
    vtkStructuredData *New ();
 
 
@@ -6772,32 +6496,26 @@ B<vtkStructuredData Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int ComputeCellId (int dim[3], int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static long ComputeCellId (int dim[3], int ijk[3]);
+      Don't know the size of pointer arg number 1
 
-   int ComputePointId (int dim[3], int ijk[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static long ComputePointId (int dim[3], int ijk[3]);
+      Don't know the size of pointer arg number 1
 
-   void GetCellNeigbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds, int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void GetCellNeigbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds, int dim[3]);
+      Don't know the size of pointer arg number 4
 
-   void GetCellPoints (int cellId, vtkIdList *ptIds, int dataDescription, int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void GetCellPoints (long cellId, vtkIdList *ptIds, int dataDescription, int dim[3]);
+      Don't know the size of pointer arg number 4
 
-   void GetCellPoints (int cellId, vtkIdList &ptIds, int dataDescription, int dim[3]);
-      Method is marked 'Do Not Use' in its descriptions
+   static void GetPointCells (long ptId, vtkIdList *cellIds, int dim[3]);
+      Don't know the size of pointer arg number 3
 
-   void GetPointCells (int ptId, vtkIdList *cellIds, int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int SetDimensions (int inDim[3], int dim[3]);
+      Don't know the size of pointer arg number 1
 
-   void GetPointCells (int ptId, vtkIdList &cellIds, int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int SetDimensions (int inDim[3], int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int SetExtent (int inExt[3], int ext[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int SetExtent (int inExt[6], int ext[6]);
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -6820,71 +6538,76 @@ Inherits from PointSet
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void BlankPoint (int ptId);
+   void BlankPoint (long ptId);
    void BlankingOff ();
    void BlankingOn ();
    void CopyStructure (vtkDataSet *ds);
    void DeepCopy (vtkDataObject *src);
    unsigned long GetActualMemorySize ();
    int GetBlanking ();
-   void GetCell (int cellId, vtkGenericCell *cell);
-   vtkCell *GetCell (int cellId);
-   void GetCellNeighbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds);
-   void GetCellPoints (int cellId, vtkIdList *ptIds);
-   int GetCellType (int cellId);
-   const char *GetClassName();
+   void GetCell (long cellId, vtkGenericCell *cell);
+   vtkCell *GetCell (long cellId);
+   void GetCellNeighbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds);
+   void GetCellPoints (long cellId, vtkIdList *ptIds);
+   int GetCellType (long cellId);
+   const char *GetClassName ();
    int GetDataDimension ();
    int GetDataObjectType ();
-   int  *GetDimensions ();
+   virtual int *GetDimensions ();
       (Returns a 3-element Perl list)
    int  *GetExtent ();
       (Returns a 6-element Perl list)
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
-   int GetNumberOfPoints ();
-   float *GetPoint (int ptId);
+   long GetNumberOfCells ();
+   long GetNumberOfPoints ();
+   float *GetPoint (long ptId);
       (Returns a 3-element Perl list)
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-   void GetPointCells (int ptId, vtkIdList *cellIds);
+   void GetPointCells (long ptId, vtkIdList *cellIds);
+   vtkUnsignedCharArray *GetPointVisibility ();
+   float *GetScalarRange ();
+      (Returns a 2-element Perl list)
    void Initialize ();
-   int IsPointVisible (int ptId);
+   unsigned char IsCellVisible (long cellId);
+   unsigned char IsPointVisible (long ptId);
    vtkStructuredGrid *New ();
+   void SetBlanking (int blanking);
    void SetDimensions (int i, int j, int k);
    void SetExtent (int x1, int x2, int y1, int y2, int z1, int z2);
+   void SetPointVisibility (vtkUnsignedCharArray *pointVisibility);
    void SetUpdateExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    void SetUpdateExtent (int piece, int numPieces, int ghostLevel);
    void SetUpdateExtent (int piece, int numPieces);
    void ShallowCopy (vtkDataObject *src);
-   void UnBlankPoint (int ptId);
+   void UnBlankPoint (long ptId);
 
 
 B<vtkStructuredGrid Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int Dimensions[3]int DataDescriptionint BlankingvtkScalars *PointVisibilityvoid AllocatePointVisibility ();
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
 
-   void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void GetDimensions (int dim[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
+   void GetPoint (long ptId, float p[3]);
+      Don't know the size of pointer arg number 2
 
-   void GetPoint (int ptId, float p[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void GetScalarRange (float range[2]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
    void SetDimensions (int dim[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetDimensions( int, int, int)
 
    void SetExtent (int extent[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetExtent( int, int, int, int, int, int)
 
    void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
 
 =cut
@@ -6907,66 +6630,9 @@ Inherits from ImageData
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataObjectType ();
    vtkStructuredPoints *New ();
-
-=cut
-
-package Graphics::VTK::TCoords;
-
-
-@Graphics::VTK::TCoords::ISA = qw( Graphics::VTK::AttributeData );
-
-=head1 Graphics::VTK::TCoords
-
-=over 1
-
-=item *
-
-Inherits from AttributeData
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetNumberOfComponents ();
-   int GetNumberOfTCoords ();
-   float *GetTCoord (int id);
-      (Returns a 3-element Perl list)
-   void GetTCoords (vtkIdList *ptId, vtkTCoords *fv);
-   void GetTCoords (vtkIdList &ptId, vtkTCoords &fv);
-   int InsertNextTCoord (float tx, float ty, float tz);
-   void InsertTCoord (int id, float tx, float ty, float tz);
-   vtkTCoords *New (int dataType, int dim);
-   vtkTCoords *New ();
-   void SetData (vtkDataArray *);
-   void SetNumberOfComponents (int num);
-   void SetNumberOfTCoords (int number);
-   void SetTCoord (int id, float r, float s, float t);
-
-
-B<vtkTCoords Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetTCoord (int id, float tc[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InsertNextTCoord (float tc[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InsertTCoord (int id, float tc[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetTCoord (int id, float tc[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
 
 =cut
 
@@ -6990,7 +6656,9 @@ B<Functions Supported for this class by the PerlVTK module:>
 
    void AddComponent (int i, int j, float v);
    void DeepCopy (vtkTensor *t);
-   const char *GetClassName();
+   const char *GetClassName ();
+   float *GetColumn (int j);
+      (Returns a 3-element Perl list)
    float GetComponent (int i, int j);
    void Initialize ();
    vtkTensor *New ();
@@ -7001,61 +6669,8 @@ B<vtkTensor Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void DeepCopy (vtkTensor &t);
-      Method is marked 'Do Not Use' in its descriptions
-
-   float *GetColumn (int j);
-      Can't Handle 'float *' return type without a hint
-
    void vtkTensor
       No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::Tensors;
-
-
-@Graphics::VTK::Tensors::ISA = qw( Graphics::VTK::AttributeData );
-
-=head1 Graphics::VTK::Tensors
-
-=over 1
-
-=item *
-
-Inherits from AttributeData
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   int GetNumberOfTensors ();
-   void GetTensor (int id, vtkTensor &t);
-   void GetTensor (int id, vtkTensor *t);
-   vtkTensor *GetTensor (int id);
-   void GetTensors (vtkIdList *ptId, vtkTensors *fv);
-   int InsertNextTensor (vtkTensor *t);
-   int InsertNextTensor (float t11, float t12, float t13, float t21, float t22, float t23, float t31, float t32, float t33);
-   void InsertTensor (int id, vtkTensor *t);
-   void InsertTensor (int id, float t11, float t12, float t13, float t21, float t22, float t23, float t31, float t32, float t33);
-   vtkTensors *New (int dataType);
-   vtkTensors *New ();
-   void SetNumberOfTensors (int number);
-   void SetTensor (int id, vtkTensor *t);
-
-
-B<vtkTensors Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetTensors (vtkIdList &ptId, vtkTensors &fv);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
 
 
 =cut
@@ -7063,7 +6678,7 @@ Functions which are not supported supported for this class by the PerlVTK module
 package Graphics::VTK::Tetra;
 
 
-@Graphics::VTK::Tetra::ISA = qw( Graphics::VTK::Cell );
+@Graphics::VTK::Tetra::ISA = qw( Graphics::VTK::Cell3D );
 
 =head1 Graphics::VTK::Tetra
 
@@ -7071,72 +6686,79 @@ package Graphics::VTK::Tetra;
 
 =item *
 
-Inherits from Cell
+Inherits from Cell3D
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *tetras, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
-   int GetCellDimension ();
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *connectivity, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkTetra *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkTetra Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int BarycentricCoords (double x[3], double x1[3], double x2[3], double x3[3], double x4[3], double bcoords[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int BarycentricCoords (double x[3], double x1[3], double x2[3], double x3[3], double x4[3], double bcoords[4]);
+      Don't know the size of pointer arg number 1
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+   static double Circumsphere (double p1[3], double p2[3], double p3[3], double p4[3], double center[3]);
+      Don't know the size of pointer arg number 1
 
-   double Circumsphere (double p1[3], double p2[3], double p3[3], double p4[3], double center[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static double ComputeVolume (double p1[3], double p2[3], double p3[3], double p4[3]);
+      Don't know the size of pointer arg number 1
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int *GetFaceArray (int faceId);
-      Can't Handle 'int *' return type without a hint
+   static int *GetEdgeArray (int edgeId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetEdgePoints (int edgeId, int &pts);
+      Don't know the size of pointer arg number 2
+
+   static int *GetFaceArray (int faceId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetFacePoints (int faceId, int &pts);
+      Don't know the size of pointer arg number 2
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
-   void InterpolationDerivs (float derivs[12]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationDerivs (float derivs[12]);
+      Can't handle methods with single array args (like a[3]) yet.
 
-   void InterpolationFunctions (float pcoords[3], float weights[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[4]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int JacobianInverse (double *inverse, float derivs[12]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   void TetraCenter (float p1[3], float p2[3], float p3[3], float p4[3], float center[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void TetraCenter (float p1[3], float p2[3], float p3[3], float p4[3], float center[3]);
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -7158,7 +6780,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void Delete ();
-   virtual char *GetClassName ();
+   virtual const char *GetClassName ();
    unsigned long GetMTime ();
    void Modified ();
    vtkTimeStamp *New ();
@@ -7195,17 +6817,17 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void AllocateLog ();
-   void DumpLog (char *filename);
-   double GetCPUTime ();
-   const char *GetClassName();
-   double GetCurrentTime ();
+   static void AllocateLog ();
+   static void DumpLog (char *filename);
+   static double GetCPUTime ();
+   const char *GetClassName ();
+   static double GetCurrentTime ();
    double GetElapsedTime ();
-   int GetMaxEntries ();
-   void MarkEvent (char *EventString);
+   static int GetMaxEntries ();
+   static void MarkEvent (char *EventString);
    vtkTimerLog *New ();
-   void ResetLog ();
-   void SetMaxEntries (int a);
+   static void ResetLog ();
+   static void SetMaxEntries (int a);
    void StartTimer ();
    void StopTimer ();
 
@@ -7241,15 +6863,18 @@ B<Functions Supported for this class by the PerlVTK module:>
    int CircuitCheck (vtkAbstractTransform *transform);
    void Concatenate (vtkMatrix4x4 *matrix);
    void Concatenate (vtkLinearTransform *transform);
-   const char *GetClassName();
+   const char *GetClassName ();
+   vtkLinearTransform *GetConcatenatedTransform (int i);
    vtkLinearTransform *GetInput ();
    void GetInverse (vtkMatrix4x4 *inverse);
    vtkAbstractTransform *GetInverse ();
+   int GetInverseFlag ();
    unsigned long GetMTime ();
-   float *GetOrientationWXYZ ();
-      (Returns a 4-element Perl list)
+   int GetNumberOfConcatenatedTransforms ();
    float *GetOrientation ();
       (Returns a 3-element Perl list)
+   float *GetOrientationWXYZ ();
+      (Returns a 4-element Perl list)
    float *GetPosition ();
       (Returns a 3-element Perl list)
    float *GetScale ();
@@ -7258,9 +6883,6 @@ B<Functions Supported for this class by the PerlVTK module:>
    void Identity ();
    void Inverse ();
    vtkAbstractTransform *MakeTransform ();
-   void MultiplyNormals (vtkNormals *inNormals, vtkNormals *outNormals);
-   void MultiplyPoints (vtkPoints *inPts, vtkPoints *outPts);
-   void MultiplyVectors (vtkVectors *inVectors, vtkVectors *outVectors);
    vtkTransform *New ();
    void Pop ();
    void PostMultiply ();
@@ -7280,107 +6902,62 @@ B<vtkTransform Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void Concatenate (double elements[16]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Concatenate (vtkMatrix4x4 &matrix);
-      Method is marked 'Do Not Use' in its descriptions
-
-   double *GetDoublePoint ();
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetInverse (vtkMatrix4x4 &inverse);
-      Method is marked 'Do Not Use' in its descriptions
+   void Concatenate (const double elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetOrientation (double orient[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetOrientationWXYZ (double wxyz[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetOrientationWXYZ (float wxyz[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetOrientation (float orient[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   float *GetPoint ();
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetPoint (float p[4]);
-      Method is marked 'Do Not Use' in its descriptions
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetPosition (double pos[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetPosition (float pos[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetScale (double scale[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
    void GetScale (float scale[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void GetTranspose (vtkMatrix4x4 &transpose);
-      Method is marked 'Do Not Use' in its descriptions
+   void MultiplyPoint (const float in[4], float out[4]);
+      Don't know the size of pointer arg number 1
 
-   void Multiply4x4 (vtkMatrix4x4 *a, vtkMatrix4x4 *b, vtkMatrix4x4 *c);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void Multiply4x4 (double a[16], double b[16], double c[16]);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void Multiply4x4 (vtkMatrix4x4 &a, vtkMatrix4x4 &b, vtkMatrix4x4 &c);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void MultiplyPoint (float in[4], float out[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void MultiplyPoint (double in[4], double out[4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void MultiplyPoint (const double in[4], double out[4]);
+      Don't know the size of pointer arg number 1
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void RotateWXYZ (double angle, double axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const double axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void RotateWXYZ (double angle, float axis[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void RotateWXYZ (double angle, const float axis[3]);
+      Don't know the size of pointer arg number 2
 
-   void Scale (double s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const double s[3]);
+      Method is redundant. Same as Scale( double, double, double)
 
-   void Scale (float s[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   void Scale (const float s[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void SetDoublePoint (double  , double , double , double );
-      Method is marked 'Do Not Use' in its descriptions
+   void SetMatrix (const double elements[16]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
-   void SetDoublePoint (double  a[4]);
-      Method is marked 'Do Not Use' in its descriptions
+   void Translate (const double x[3]);
+      Method is redundant. Same as Translate( double, double, double)
 
-   void SetMatrix (double elements[16]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetMatrix (vtkMatrix4x4 &m);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void SetPoint (float  , float , float , float );
-      Method is marked 'Do Not Use' in its descriptions
-
-   void SetPoint (float  a[4]);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void Translate (double x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Translate (float x[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void Transpose ();
-      Method is marked 'Do Not Use' in its descriptions
+   void Translate (const float x[3]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
 
 
 =cut
@@ -7404,7 +6981,7 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void AddItem (vtkTransform *);
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkTransform *GetNextItem ();
    vtkTransformCollection *New ();
 
@@ -7428,83 +7005,79 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkTriangle *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkTriangle Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   int BarycentricCoords (double x[2], double x1[2], double x2[2], double x3[2], double bcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int BarycentricCoords (double x[2], double x1[2], double x2[2], double x3[2], double bcoords[3]);
+      Don't know the size of pointer arg number 1
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
+      Don't know the size of pointer arg number 2
+
+   static double Circumcircle (double p1[2], double p2[2], double p3[2], double center[2]);
+      Don't know the size of pointer arg number 1
+
+   static void ComputeNormal (vtkPoints *p, int numPts, long *pts, float n[3]);
+      Don't know the size of pointer arg number 3
+
+   static void ComputeNormalDirection (float v1[3], float v2[3], float v3[3], float n[3]);
+      Don't know the size of pointer arg number 1
+
+   static void ComputeNormalDirection (double v1[3], double v2[3], double v3[3], double n[3]);
+      Don't know the size of pointer arg number 1
+
+   static void ComputeNormal (float v1[3], float v2[3], float v3[3], float n[3]);
+      Don't know the size of pointer arg number 1
+
+   static void ComputeNormal (double v1[3], double v2[3], double v3[3], double n[3]);
+      Don't know the size of pointer arg number 1
+
+   static void ComputeQuadric (float x1[3], float x2[3], float x3[3], float quadric[4][4]);
       No TCL interface is provided by VTK, so we aren't going to provide one either.
 
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
-
-   double Circumcircle (double p1[2], double p2[2], double p3[2], double center[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormal (vtkPoints *p, int numPts, int *pts, float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormalDirection (float v1[3], float v2[3], float v3[3], float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormalDirection (double v1[3], double v2[3], double v3[3], double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormal (float v1[3], float v2[3], float v3[3], float n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeNormal (double v1[3], double v2[3], double v3[3], double n[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeQuadric (float x1[3], float x2[3], float x3[3], float quadric[4][4]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void ComputeQuadric (float x1[3], float x2[3], float x3[3], vtkQuadric *quadric);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void ComputeQuadric (float x1[3], float x2[3], float x3[3], vtkQuadric *quadric);
+      Don't know the size of pointer arg number 1
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int PointInTriangle (float x[3], float x1[3], float x2[3], float x3[3], float tol2);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int PointInTriangle (float x[3], float x1[3], float x2[3], float x3[3], float tol2);
+      Don't know the size of pointer arg number 1
 
-   int ProjectTo2D (double x1[3], double x2[3], double x3[3], double v1[2], double v2[2], double v3[2]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int ProjectTo2D (double x1[3], double x2[3], double x3[3], double v1[2], double v2[2], double v3[2]);
+      Don't know the size of pointer arg number 1
 
-   float TriangleArea (float p1[3], float p2[3], float p3[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static float TriangleArea (float p1[3], float p2[3], float p3[3]);
+      Don't know the size of pointer arg number 1
 
-   void TriangleCenter (float p1[3], float p2[3], float p3[3], float center[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void TriangleCenter (float p1[3], float p2[3], float p3[3], float center[3]);
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -7527,18 +7100,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkTriangleStrip *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkTriangleStrip Unsupported Funcs:>
@@ -7546,28 +7118,25 @@ B<vtkTriangleStrip Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void DecomposeStrip (int npts, int *pts, vtkCellArray *tris);
+   static void DecomposeStrip (int npts, long *pts, vtkCellArray *tris);
       Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -7590,23 +7159,22 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    int GetDataType ();
-   unsigned char GetValue (int id);
-   void *GetVoidPointer (int id);
+   unsigned char GetValue (const long id);
    void Initialize ();
-   void InsertComponent (int i, int j, float c);
-   int InsertNextValue (unsigned char c);
-   void InsertValue (int id, unsigned char c);
+   void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const unsigned char c);
+   void InsertValue (const long id, const unsigned char c);
    vtkUnsignedCharArray *New ();
-   void SetComponent (int i, int j, float c);
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, unsigned char value);
+   virtual void Resize (long numTuples);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const unsigned char value);
    void Squeeze ();
 
 
@@ -7614,46 +7182,52 @@ B<vtkUnsignedCharArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned char *GetPointer (int id);
+   unsigned char *GetPointer (const long id);
       Can't Handle 'unsigned char *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (unsigned char *array, int size, int save);
+   unsigned char *ResizeAndExtend (const long sz);
+      Can't Handle 'unsigned char *' return type without a hint
+
+   void SetArray (unsigned char *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   unsigned char *WritePointer (int id, int number);
+   unsigned char *WritePointer (const long id, const long number);
       Can't Handle 'unsigned char *' return type without a hint
 
 
@@ -7677,20 +7251,21 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
    void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   unsigned int GetValue (int id);
-   void *GetVoidPointer (int id);
+   unsigned int GetValue (const long id);
    void Initialize ();
-   int InsertNextValue (unsigned int );
-   void InsertValue (int id, unsigned int i);
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const unsigned int );
+   void InsertValue (const long id, const unsigned int i);
    vtkUnsignedIntArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, unsigned int value);
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const unsigned int value);
    void Squeeze ();
 
 
@@ -7698,43 +7273,52 @@ B<vtkUnsignedIntArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned int *GetPointer (int id);
+   unsigned int *GetPointer (const long id);
       Can't Handle 'unsigned int *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (unsigned int *array, int size, int save);
+   unsigned int *ResizeAndExtend (const long sz);
+      Can't Handle 'unsigned int *' return type without a hint
+
+   void SetArray (unsigned int *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   unsigned int *WritePointer (int id, int number);
+   void SetVoidArray (void *array, long size, int save);
+      Don't know the size of pointer arg number 1
+
+   unsigned int *WritePointer (const long id, const long number);
       Can't Handle 'unsigned int *' return type without a hint
 
 
@@ -7758,20 +7342,21 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
    void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   unsigned long GetValue (int id);
-   void *GetVoidPointer (int id);
+   unsigned long GetValue (const long id);
    void Initialize ();
-   int InsertNextValue (unsigned long );
-   void InsertValue (int id, unsigned long i);
+   virtual void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const unsigned long );
+   void InsertValue (const long id, const unsigned long i);
    vtkUnsignedLongArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, unsigned long value);
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const unsigned long value);
    void Squeeze ();
 
 
@@ -7779,46 +7364,52 @@ B<vtkUnsignedLongArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned long *GetPointer (int id);
+   unsigned long *GetPointer (const long id);
       Can't Handle 'unsigned long *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (unsigned long *array, int size, int save);
+   unsigned long *ResizeAndExtend (const long sz);
+      Can't Handle 'unsigned long *' return type without a hint
+
+   void SetArray (unsigned long *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   unsigned long *WritePointer (int id, int number);
+   unsigned long *WritePointer (const long id, const long number);
       Can't Handle 'unsigned long *' return type without a hint
 
 
@@ -7842,23 +7433,23 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *ia);
    void DeepCopy (vtkDataArray &ia);
-   const char *GetClassName();
-   float GetComponent (int i, int j);
+   const char *GetClassName ();
+   float GetComponent (const long i, const int j);
    int GetDataType ();
-   unsigned short GetValue (int id);
-   void *GetVoidPointer (int id);
+   unsigned short GetValue (const long id);
    void Initialize ();
-   void InsertComponent (int i, int j, float c);
-   int InsertNextValue (unsigned short );
-   void InsertValue (int id, unsigned short i);
+   void InsertComponent (const long i, const int j, const float c);
+   long InsertNextValue (const unsigned short );
+   void InsertValue (const long id, const unsigned short i);
    vtkUnsignedShortArray *New ();
-   void SetComponent (int i, int j, float c);
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
-   void SetValue (int id, unsigned short value);
+   virtual void Resize (long numTuples);
+   void SetComponent (const long i, const int j, const float c);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
+   void SetValue (const long id, const unsigned short value);
    void Squeeze ();
 
 
@@ -7866,46 +7457,52 @@ B<vtkUnsignedShortArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   unsigned short *GetPointer (int id);
+   unsigned short *GetPointer (const long id);
       Can't Handle 'unsigned short *' return type without a hint
 
-   float *GetTuple (int i);
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetArray (unsigned short *array, int size, int save);
+   unsigned short *ResizeAndExtend (const long sz);
+      Can't Handle 'unsigned short *' return type without a hint
+
+   void SetArray (unsigned short *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   void SetTuple (int i, float *tuple);
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetVoidArray (void *array, int size, int save);
+   void SetVoidArray (void *array, long size, int save);
       Don't know the size of pointer arg number 1
 
-   unsigned short *WritePointer (int id, int number);
+   unsigned short *WritePointer (const long id, const long number);
       Can't Handle 'unsigned short *' return type without a hint
 
 
@@ -7929,41 +7526,44 @@ Inherits from PointSet
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void AddReferenceToCell (int ptId, int cellId);
-   void Allocate (int numCells, int extSize);
+   void AddReferenceToCell (long ptId, long cellId);
+   virtual void Allocate (long numCells, int extSize);
    void BuildLinks ();
-   void CopyStructure (vtkDataSet *ds);
-   void DeepCopy (vtkDataObject *src);
+   virtual void CopyStructure (vtkDataSet *ds);
+   virtual void DeepCopy (vtkDataObject *src);
    unsigned long GetActualMemorySize ();
-   void GetCell (int cellId, vtkGenericCell *cell);
-   vtkCell *GetCell (int cellId);
+   virtual void GetCell (long cellId, vtkGenericCell *cell);
+   virtual vtkCell *GetCell (long cellId);
    vtkCellLinks *GetCellLinks ();
-   virtual void GetCellNeighbors (int cellId, vtkIdList *ptIds, vtkIdList *cellIds);
-   void GetCellPoints (int cellId, vtkIdList *ptIds);
-   int GetCellType (int cellId);
+   virtual void GetCellNeighbors (long cellId, vtkIdList *ptIds, vtkIdList *cellIds);
+   virtual void GetCellPoints (long cellId, vtkIdList *ptIds);
+   int GetCellType (long cellId);
    vtkCellArray *GetCells ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataObjectType ();
    int GetGhostLevel ();
+   void GetIdsOfCellsOfType (int type, vtkIntArray *array);
+   void GetListOfUniqueCellTypes (vtkUnsignedCharArray *uniqueTypes);
    int GetMaxCellSize ();
-   int GetNumberOfCells ();
+   long GetNumberOfCells ();
    int GetNumberOfPieces ();
    int GetPiece ();
-   void GetPointCells (int ptId, vtkIdList *cellIds);
+   void GetPointCells (long ptId, vtkIdList *cellIds);
    void GetUpdateExtent (int &piece, int &numPieces, int &ghostLevel);
    int  *GetUpdateExtent ();
       (Returns a 6-element Perl list)
    void Initialize ();
-   int InsertNextCell (int type, vtkIdList &pts);
    int InsertNextCell (int type, vtkIdList *ptIds);
+   int IsHomogeneous ();
    vtkUnstructuredGrid *New ();
-   void RemoveReferenceToCell (int ptId, int cellId);
+   void RemoveReferenceToCell (long ptId, long cellId);
    void Reset ();
-   void ResizeCellList (int ptId, int size);
+   void ResizeCellList (long ptId, int size);
+   void SetCells (vtkUnsignedCharArray *cellTypes, vtkIntArray *cellLocations, vtkCellArray *cells);
    void SetUpdateExtent (int x1, int x2, int y1, int y2, int z1, int z2);
    void SetUpdateExtent (int piece, int numPieces, int ghostLevel);
    void SetUpdateExtent (int piece, int numPieces);
-   void ShallowCopy (vtkDataObject *src);
+   virtual void ShallowCopy (vtkDataObject *src);
    void Squeeze ();
 
 
@@ -7971,106 +7571,32 @@ B<vtkUnstructuredGrid Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void GetCellBounds (int cellId, float bounds[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void GetCellBounds (long cellId, float bounds[6]);
+      Don't know the size of pointer arg number 2
 
-   vtkVertex *VertexvtkPolyVertex *PolyVertexvtkLine *LinevtkPolyLine *PolyLinevtkTriangle *TrianglevtkTriangleStrip *TriangleStripvtkPixel *PixelvtkQuad *QuadvtkPolygon *PolygonvtkTetra *TetravtkVoxel *VoxelvtkHexahedron *HexahedronvtkWedge *WedgevtkPyramid *PyramidvtkCellTypes *CellsvtkCellArray *ConnectivityvtkCellLinks *Linksvoid GetCellNeighbors (int cellId, vtkIdList &ptIds, vtkIdList &cellIds);
+   void GetCellNeighbors (long cellId, vtkIdList &ptIds, vtkIdList &cellIds);
       Method is marked 'Do Not Use' in its descriptions
 
-   void GetCellPoints (int cellId, int &npts, int &pts);
+   virtual void GetCellPoints (long cellId, long &npts, long &pts);
+      Don't know the size of pointer arg number 2
+
+   int InsertNextCell (int type, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
-   void GetCellPoints (int cellId, vtkIdList &ptIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   void GetPointCells (int ptId, vtkIdList &cellIds);
-      Method is marked 'Do Not Use' in its descriptions
-
-   int InsertNextCell (int type, int npts, int *pts);
-      Don't know the size of pointer arg number 3
-
-   int InsertNextLinkedCell (int type, int npts, int *pts);
+   int InsertNextLinkedCell (int type, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void ReplaceCell (int cellId, int npts, int *pts);
+   void ReplaceCell (long cellId, int npts, long *pts);
       Don't know the size of pointer arg number 3
 
    void SetCells (int *types, vtkCellArray *cells);
       Don't know the size of pointer arg number 1
 
    void SetUpdateExtent (int ext[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-
-=cut
-
-package Graphics::VTK::Vectors;
-
-
-@Graphics::VTK::Vectors::ISA = qw( Graphics::VTK::AttributeData );
-
-=head1 Graphics::VTK::Vectors
-
-=over 1
-
-=item *
-
-Inherits from AttributeData
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   void ComputeMaxNorm ();
-   const char *GetClassName();
-   double GetMaxNorm ();
-   int GetNumberOfVectors ();
-   float *GetVector (int id);
-      (Returns a 3-element Perl list)
-   void GetVectors (vtkIdList &ptId, vtkVectors &fv);
-   void GetVectors (vtkIdList *ptId, vtkVectors *fv);
-   int InsertNextVector (double vx, double vy, double vz);
-   void InsertVector (int id, double vx, double vy, double vz);
-   vtkVectors *New (int dataType);
-   vtkVectors *New ();
-   void SetNumberOfVectors (int number);
-   void SetVector (int id, double vx, double vy, double vz);
-
-
-B<vtkVectors Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   void GetVector (int id, float v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void GetVector (int id, double v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InsertNextVector (float v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int InsertNextVector (double v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InsertVector (int id, float v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void InsertVector (int id, double v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-   void SetVector (int id, float v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   void SetVector (int id, double v[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Method is redundant. Same as SetUpdateExtent( int, int, int, int, int, int)
 
 
 =cut
@@ -8093,12 +7619,12 @@ Inherits from Object
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   const char *GetClassName();
-   int GetVTKBuildVersion ();
-   int GetVTKMajorVersion ();
-   int GetVTKMinorVersion ();
-   char *GetVTKSourceVersion ();
-   char *GetVTKVersion ();
+   const char *GetClassName ();
+   static int GetVTKBuildVersion ();
+   static int GetVTKMajorVersion ();
+   static int GetVTKMinorVersion ();
+   static const char *GetVTKSourceVersion ();
+   static const char *GetVTKVersion ();
    vtkVersion *New ();
 
 =cut
@@ -8121,18 +7647,17 @@ Inherits from Cell
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *pts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts1, vtkCellArray *lines, vtkCellArray *verts2, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Clip (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *pts, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd, int insideOut);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts1, vtkCellArray *lines, vtkCellArray *verts2, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int );
    vtkCell *GetFace (int );
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkVertex *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkVertex Unsupported Funcs:>
@@ -8140,25 +7665,148 @@ B<vtkVertex Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float weights[1]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[1]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::Viewport;
+
+
+@Graphics::VTK::Viewport::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::Viewport
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void AddActor2D (vtkProp *p);
+   void AddProp (vtkProp *);
+   void ComputeAspect ();
+   virtual void DisplayToLocalDisplay (float &x, float &y);
+   virtual void DisplayToNormalizedDisplay (float &u, float &v);
+   virtual void DisplayToView ();
+   void DisplayToWorld ();
+   vtkActor2DCollection *GetActors2D ();
+   float  *GetAspect ();
+      (Returns a 2-element Perl list)
+   float  *GetBackground ();
+      (Returns a 3-element Perl list)
+   virtual float *GetCenter ();
+      (Returns a 2-element Perl list)
+   const char *GetClassName ();
+   float  *GetDisplayPoint ();
+      (Returns a 3-element Perl list)
+   int GetIsPicking ();
+   int *GetOrigin ();
+      (Returns a 2-element Perl list)
+   float GetPickX ();
+   float GetPickY ();
+   virtual float GetPickedZ () = 0;
+   float  *GetPixelAspect ();
+      (Returns a 2-element Perl list)
+   vtkPropCollection *GetProps ();
+   int *GetSize ();
+      (Returns a 2-element Perl list)
+   virtual vtkWindow *GetVTKWindow () = 0;
+   float  *GetViewPoint ();
+      (Returns a 3-element Perl list)
+   float  *GetViewport ();
+      (Returns a 4-element Perl list)
+   float  *GetWorldPoint ();
+      (Returns a 4-element Perl list)
+   virtual int IsInViewport (int x, int y);
+   virtual void LocalDisplayToDisplay (float &x, float &y);
+   virtual void NormalizedDisplayToDisplay (float &u, float &v);
+   virtual void NormalizedDisplayToViewport (float &x, float &y);
+   virtual void NormalizedViewportToView (float &x, float &y, float &z);
+   virtual void NormalizedViewportToViewport (float &u, float &v);
+   virtual vtkAssemblyPath *PickProp (float selectionX, float selectionY) = 0;
+   vtkAssemblyPath *PickPropFrom (float selectionX, float selectionY, vtkPropCollection *);
+   void RemoveActor2D (vtkProp *p);
+   void RemoveProp (vtkProp *);
+   void SetAspect (float , float );
+   void SetBackground (float , float , float );
+   void SetDisplayPoint (float , float , float );
+   void SetEndRenderMethod (void (*func)(void *) , void *arg);
+   void SetPixelAspect (float , float );
+   void SetStartRenderMethod (void (*func)(void *) , void *arg);
+   void SetViewPoint (float , float , float );
+   void SetViewport (float , float , float , float );
+   void SetWorldPoint (float , float , float , float );
+   virtual void ViewToDisplay ();
+   virtual void ViewToNormalizedViewport (float &x, float &y, float &z);
+   virtual void ViewToWorld (float &, float &, float &);
+   virtual void ViewToWorld ();
+   virtual void ViewportToNormalizedDisplay (float &x, float &y);
+   virtual void ViewportToNormalizedViewport (float &u, float &v);
+   void WorldToDisplay ();
+   virtual void WorldToView (float &, float &, float &);
+   virtual void WorldToView ();
+
+
+B<vtkViewport Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   void GetDisplayPoint (double *a);
+      Don't know the size of pointer arg number 1
+
+   void GetWorldPoint (double *a);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void SetAspect (float  a[2]);
+      Method is redundant. Same as SetAspect( float, float)
+
+   void SetBackground (float  a[3]);
+      Method is redundant. Same as SetBackground( float, float, float)
+
+   void SetDisplayPoint (float  a[3]);
+      Method is redundant. Same as SetDisplayPoint( float, float, float)
+
+   void SetEndRenderMethodArgDelete (void (*func)(void *) );
       No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void SetPixelAspect (float  a[2]);
+      Method is redundant. Same as SetPixelAspect( float, float)
+
+   void SetStartRenderMethodArgDelete (void (*func)(void *) );
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void SetViewPoint (float  a[3]);
+      Method is redundant. Same as SetViewPoint( float, float, float)
+
+   void SetViewport (float  a[4]);
+      Method is redundant. Same as SetViewport( float, float, float, float)
+
+   void SetWorldPoint (float  a[4]);
+      Method is redundant. Same as SetWorldPoint( float, float, float, float)
 
 
 =cut
@@ -8181,64 +7829,75 @@ Inherits from DataArray
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   int Allocate (int sz, int ext);
+   int Allocate (const long sz, const long ext);
    void DeepCopy (vtkDataArray *da);
-   void DeepCopy (vtkDataArray &da);
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetDataType ();
-   void *GetPointer (int id);
-   void *GetValue (int id);
-   void *GetVoidPointer (int id);
    void Initialize ();
    vtkVoidArray *New ();
-   void SetNumberOfTuples (int number);
-   void SetNumberOfValues (int number);
+   virtual void Resize (long numTuples);
+   void SetNumberOfTuples (const long number);
+   void SetNumberOfValues (const long number);
    void Squeeze ();
-   void *WritePointer (int id, int number);
 
 
 B<vtkVoidArray Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   float *GetTuple (int i);
+   void *GetPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   float *GetTuple (const long i);
       Can't Handle 'float *' return type without a hint
 
-   void GetTuple (int i, float *tuple);
+   void GetTuple (const long i, float *tuple);
       Don't know the size of pointer arg number 2
 
-   void GetTuple (int i, double *tuple);
+   void GetTuple (const long i, double *tuple);
       Don't know the size of pointer arg number 2
 
-   int InsertNextTuple (float *tuple);
+   void *GetValue (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   void *GetVoidPointer (const long id);
+      Can't Handle 'void *' return type without a hint
+
+   long InsertNextTuple (const float *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextTuple (double *tuple);
+   long InsertNextTuple (const double *tuple);
       Don't know the size of pointer arg number 1
 
-   int InsertNextValue (void *v);
+   long InsertNextValue (void *v);
       Don't know the size of pointer arg number 1
 
-   void InsertTuple (int i, float *tuple);
+   void InsertTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertTuple (int i, double *tuple);
+   void InsertTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void InsertValue (int id, void *p);
+   void InsertValue (const long id, void *p);
       Don't know the size of pointer arg number 2
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
-   void SetTuple (int i, float *tuple);
+   void *ResizeAndExtend (const long sz);
+      Can't Handle 'void *' return type without a hint
+
+   void SetTuple (const long i, const float *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetTuple (int i, double *tuple);
+   void SetTuple (const long i, const double *tuple);
       Don't know the size of pointer arg number 2
 
-   void SetValue (int id, void *value);
+   void SetValue (const long id, void *value);
       Don't know the size of pointer arg number 2
+
+   void *WritePointer (const long id, const long number);
+      Can't Handle 'void *' return type without a hint
 
 
 =cut
@@ -8246,7 +7905,7 @@ Functions which are not supported supported for this class by the PerlVTK module
 package Graphics::VTK::Voxel;
 
 
-@Graphics::VTK::Voxel::ISA = qw( Graphics::VTK::Cell );
+@Graphics::VTK::Voxel::ISA = qw( Graphics::VTK::Cell3D );
 
 =head1 Graphics::VTK::Voxel
 
@@ -8254,25 +7913,23 @@ package Graphics::VTK::Voxel;
 
 =item *
 
-Inherits from Cell
+Inherits from Cell3D
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *tetras, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetNumberOfEdges ();
    int GetNumberOfFaces ();
    vtkVoxel *New ();
    int Triangulate (int index, vtkIdList *ptIds, vtkPoints *pts);
-   int Triangulate (int index, vtkIdList &ptIds, vtkPoints &pts);
 
 
 B<vtkVoxel Unsupported Funcs:>
@@ -8280,31 +7937,134 @@ B<vtkVoxel Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int CellBoundary (int subId, float pcoords[3], vtkIdList &pts);
-      Method is marked 'Do Not Use' in its descriptions
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int *GetFaceArray (int faceId);
-      Can't Handle 'int *' return type without a hint
+   static int *GetEdgeArray (int edgeId);
+      Can't Handle 'static int *' return type without a hint
 
-   void InterpolationDerivs (float pcoords[3], float derivs[24]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   virtual void GetEdgePoints (int edgeId, int &pts);
+      Don't know the size of pointer arg number 2
 
-   void InterpolationFunctions (float pcoords[3], float weights[8]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static int *GetFaceArray (int faceId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetFacePoints (int faceId, int &pts);
+      Don't know the size of pointer arg number 2
+
+   static void InterpolationDerivs (float pcoords[3], float derivs[24]);
+      Don't know the size of pointer arg number 1
+
+   static void InterpolationFunctions (float pcoords[3], float weights[8]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::WarpTransform;
+
+
+@Graphics::VTK::WarpTransform::ISA = qw( Graphics::VTK::AbstractTransform );
+
+=head1 Graphics::VTK::WarpTransform
+
+=over 1
+
+=item *
+
+Inherits from AbstractTransform
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   const char *GetClassName ();
+   int GetInverseFlag ();
+   int GetInverseIterations ();
+   double GetInverseTolerance ();
+   void Inverse ();
+   void SetInverseIterations (int );
+   void SetInverseTolerance (double );
+
+
+B<vtkWarpTransform Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void ForwardTransformDerivative (const float in[3], float out[3], float derivative[3][3]) = 0;
       No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   virtual void ForwardTransformDerivative (const double in[3], double out[3], double derivative[3][3]) = 0;
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   virtual void ForwardTransformPoint (const float in[3], float out[3]) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual void ForwardTransformPoint (const double in[3], double out[3]) = 0;
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void InternalTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   void InternalTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   void InternalTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   virtual void InverseTransformDerivative (const float in[3], float out[3], float derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   virtual void InverseTransformDerivative (const double in[3], double out[3], double derivative[3][3]);
+      No TCL interface is provided by VTK, so we aren't going to provide one either.
+
+   virtual void InverseTransformPoint (const float in[3], float out[3]);
+      Don't know the size of pointer arg number 1
+
+   virtual void InverseTransformPoint (const double in[3], double out[3]);
+      Don't know the size of pointer arg number 1
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   void TemplateTransformInverse (const float in[3], float out[3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformInverse (const double in[3], double out[3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformInverse (const float in[3], float out[3], float derivative[3][3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformInverse (const double in[3], double out[3], double derivative[3][3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformPoint (const float in[3], float out[3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformPoint (const double in[3], double out[3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformPoint (const float in[3], float out[3], float derivative[3][3]);
+      Method is marked 'Do Not Use' in its descriptions
+
+   void TemplateTransformPoint (const double in[3], double out[3], double derivative[3][3]);
+      Method is marked 'Do Not Use' in its descriptions
 
 
 =cut
@@ -8312,7 +8072,7 @@ Functions which are not supported supported for this class by the PerlVTK module
 package Graphics::VTK::Wedge;
 
 
-@Graphics::VTK::Wedge::ISA = qw( Graphics::VTK::Cell );
+@Graphics::VTK::Wedge::ISA = qw( Graphics::VTK::Cell3D );
 
 =head1 Graphics::VTK::Wedge
 
@@ -8320,18 +8080,17 @@ package Graphics::VTK::Wedge;
 
 =item *
 
-Inherits from Cell
+Inherits from Cell3D
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void Clip (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *wedges, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd, int insideOut);
-   void Contour (float value, vtkScalars *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, int cellId, vtkCellData *outCd);
+   void Contour (float value, vtkDataArray *cellScalars, vtkPointLocator *locator, vtkCellArray *verts, vtkCellArray *lines, vtkCellArray *polys, vtkPointData *inPd, vtkPointData *outPd, vtkCellData *inCd, long cellId, vtkCellData *outCd);
    int GetCellDimension ();
    int GetCellType ();
-   const char *GetClassName();
+   const char *GetClassName ();
    vtkCell *GetEdge (int edgeId);
    vtkCell *GetFace (int faceId);
    int GetNumberOfEdges ();
@@ -8345,34 +8104,139 @@ B<vtkWedge Unsupported Funcs:>
 Functions which are not supported supported for this class by the PerlVTK module.
 
    int CellBoundary (int subId, float pcoords[3], vtkIdList *pts);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void Derivatives (int subId, float pcoords[3], float *values, int dim, float *derivs);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    void EvaluateLocation (int &subId, float pcoords[3], float x[3], float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 2
 
    int EvaluatePosition (float x[3], float *closestPoint, int &subId, float pcoords[3], float &dist2, float *weights);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
-   int *GetFaceArray (int faceId);
-      Can't Handle 'int *' return type without a hint
+   static int *GetEdgeArray (int edgeId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetEdgePoints (int edgeId, int &pts);
+      Don't know the size of pointer arg number 2
+
+   static int *GetFaceArray (int faceId);
+      Can't Handle 'static int *' return type without a hint
+
+   virtual void GetFacePoints (int faceId, int &pts);
+      Don't know the size of pointer arg number 2
 
    int GetParametricCenter (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Can't handle methods with single array args (like a[3]) yet.
 
-   void InterpolationDerivs (float pcoords[3], float derivs[18]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationDerivs (float pcoords[3], float derivs[18]);
+      Don't know the size of pointer arg number 1
 
-   void InterpolationFunctions (float pcoords[3], float weights[6]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+   static void InterpolationFunctions (float pcoords[3], float weights[6]);
+      Don't know the size of pointer arg number 1
 
    int IntersectWithLine (float p1[3], float p2[3], float tol, float &t, float x[3], float pcoords[3], int &subId);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
 
    int JacobianInverse (float pcoords[3], double *inverse, float derivs[18]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
+      Don't know the size of pointer arg number 1
+
+
+=cut
+
+package Graphics::VTK::Window;
+
+
+@Graphics::VTK::Window::ISA = qw( Graphics::VTK::Object );
+
+=head1 Graphics::VTK::Window
+
+=over 1
+
+=item *
+
+Inherits from Object
+
+=back
+
+B<Functions Supported for this class by the PerlVTK module:>
+(To find more about their use check the VTK documentation at http://www.kitware.com.)
+
+   void DoubleBufferOff ();
+   void DoubleBufferOn ();
+   void EraseOff ();
+   void EraseOn ();
+   const char *GetClassName ();
+   int GetDPI ();
+   int GetDPIMaxValue ();
+   int GetDPIMinValue ();
+   int GetDoubleBuffer ();
+   int GetErase ();
+   int GetMapped ();
+   int GetOffScreenRendering ();
+   virtual int *GetPosition ();
+      (Returns a 2-element Perl list)
+   virtual int *GetSize ();
+      (Returns a 2-element Perl list)
+   char *GetWindowName ();
+   virtual void MakeCurrent ();
+   void MappedOff ();
+   void MappedOn ();
+   void OffScreenRenderingOff ();
+   void OffScreenRenderingOn ();
+   virtual void Render () = 0;
+   void SetDPI (int );
+   void SetDoubleBuffer (int );
+   void SetErase (int );
+   void SetMapped (int );
+   void SetOffScreenRendering (int );
+   virtual void SetParentInfo (char *) = 0;
+   virtual void SetPosition (int , int );
+   virtual void SetSize (int , int );
+   virtual void SetWindowInfo (char *) = 0;
+   virtual void SetWindowName (char *);
+
+
+B<vtkWindow Unsupported Funcs:>
+
+Functions which are not supported supported for this class by the PerlVTK module.
+
+   virtual void *GetGenericContext () = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual void *GetGenericDisplayId () = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual void *GetGenericDrawable () = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual void *GetGenericParentId () = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual void *GetGenericWindowId () = 0;
+      Can't Handle 'void *' return type without a hint
+
+   virtual unsigned char *GetPixelData (int , int , int , int , int );
+      Can't Handle 'unsigned char *' return type without a hint
+
+   void PrintSelf (ostream &os, vtkIndent indent);
+      I/O Streams not Supported yet
+
+   virtual void SetDisplayId (void *) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual void SetParentId (void *) = 0;
+      Don't know the size of pointer arg number 1
+
+   virtual void SetPosition (int a[2]);
+      Method is redundant. Same as SetPosition( int, int)
+
+   virtual void SetSize (int a[2]);
+      Method is redundant. Same as SetSize( int, int)
+
+   virtual void SetWindowId (void *) = 0;
+      Don't know the size of pointer arg number 1
 
 
 =cut
@@ -8396,194 +8260,84 @@ B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
    void Build ();
-   const char *GetClassName();
+   const char *GetClassName ();
    int GetInverseVideo ();
    float GetLevel ();
-   unsigned char  *GetMaximumColor ();
+   float  *GetMaximumTableValue ();
       (Returns a 4-element Perl list)
-   unsigned char  *GetMinimumColor ();
+   float  *GetMinimumTableValue ();
       (Returns a 4-element Perl list)
    float GetWindow ();
    void InverseVideoOff ();
    void InverseVideoOn ();
    vtkWindowLevelLookupTable *New ();
-   void SetInverseVideo (int );
-   void SetLevel (float );
-   void SetMaximumColor (unsigned char  , unsigned char , unsigned char , unsigned char );
-   void SetMinimumColor (unsigned char  , unsigned char , unsigned char , unsigned char );
-   void SetWindow (float );
+   void SetInverseVideo (int iv);
+   void SetLevel (float level);
+   void SetMaximumColor (int r, int g, int b, int a);
+   void SetMaximumTableValue (float , float , float , float );
+   void SetMinimumColor (int r, int g, int b, int a);
+   void SetMinimumTableValue (float , float , float , float );
+   void SetWindow (float window);
 
 
 B<vtkWindowLevelLookupTable Unsupported Funcs:>
 
 Functions which are not supported supported for this class by the PerlVTK module.
 
-   void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
+   void GetMaximumColor (unsigned char rgba[4]);
+      Arg types of 'unsigned char *' not supported yet
+   unsigned char *GetMaximumColor ();
+      Can't Handle 'unsigned char *' return type without a hint
 
-   void SetMaximumColor (unsigned char  a[4]);
-      Arg types of 'unsigned char  *' not supported yet
-   void SetMinimumColor (unsigned char  a[4]);
-      Arg types of 'unsigned char  *' not supported yet
-
-=cut
-
-package Graphics::VTK::WindowToImageFilter;
-
-
-@Graphics::VTK::WindowToImageFilter::ISA = qw( Graphics::VTK::ImageSource );
-
-=head1 Graphics::VTK::WindowToImageFilter
-
-=over 1
-
-=item *
-
-Inherits from ImageSource
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkWindow *GetInput ();
-   vtkWindowToImageFilter *New ();
-   void SetInput (vtkWindow *input);
-
-
-B<vtkWindowToImageFilter Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
+   void GetMinimumColor (unsigned char rgba[4]);
+      Arg types of 'unsigned char *' not supported yet
+   unsigned char *GetMinimumColor ();
+      Can't Handle 'unsigned char *' return type without a hint
 
    void PrintSelf (ostream &os, vtkIndent indent);
       I/O Streams not Supported yet
 
+   void SetMaximumColor (const unsigned char rgba[4]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void SetMaximumTableValue (float  a[4]);
+      Method is redundant. Same as SetMaximumTableValue( float, float, float, float)
+
+   void SetMinimumColor (const unsigned char rgba[4]);
+      Can't handle methods with single array args (like a[3]) in overloaded methods yet.
+
+   void SetMinimumTableValue (float  a[4]);
+      Method is redundant. Same as SetMinimumTableValue( float, float, float, float)
+
 
 =cut
 
-package Graphics::VTK::InterpolatedVelocityField;
+package Graphics::VTK::XMLFileOutputWindow;
 
 
-@Graphics::VTK::InterpolatedVelocityField::ISA = qw( Graphics::VTK::FunctionSet );
+@Graphics::VTK::XMLFileOutputWindow::ISA = qw( Graphics::VTK::FileOutputWindow );
 
-=head1 Graphics::VTK::InterpolatedVelocityField
+=head1 Graphics::VTK::XMLFileOutputWindow
 
 =over 1
 
 =item *
 
-Inherits from FunctionSet
+Inherits from FileOutputWindow
 
 =back
 
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   void CachingOff ();
-   void CachingOn ();
-   void ClearLastCellId ();
-   int GetCacheHit ();
-   int GetCacheMiss ();
-   int GetCaching ();
-   const char *GetClassName();
-   vtkDataSet *GetDataSet ();
-   int GetLastCellId ();
-   vtkInterpolatedVelocityField *New ();
-   void SetCaching (int );
-   virtual void SetDataSet (vtkDataSet *dataset);
-   void SetLastCellId (int );
-
-
-B<vtkInterpolatedVelocityField Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual int FunctionValues (float *x, float *f);
-      Don't know the size of pointer arg number 1
-
-   int GetLastLocalCoordinates (float pcoords[3]);
-      No TCL interface is provided by VTK, so we aren't going to provide one either.
-
-   int GetLastWeights (float *w);
-      Don't know the size of pointer arg number 1
-
-   virtual void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
-
-=cut
-
-package Graphics::VTK::RungeKutta2;
-
-
-@Graphics::VTK::RungeKutta2::ISA = qw( Graphics::VTK::InitialValueProblemSolver );
-
-=head1 Graphics::VTK::RungeKutta2
-
-=over 1
-
-=item *
-
-Inherits from InitialValueProblemSolver
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkRungeKutta2 *New ();
-
-
-B<vtkRungeKutta2 Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
-      Don't know the size of pointer arg number 1
-
-   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT);
-      Don't know the size of pointer arg number 1
-
-
-=cut
-
-package Graphics::VTK::RungeKutta4;
-
-
-@Graphics::VTK::RungeKutta4::ISA = qw( Graphics::VTK::InitialValueProblemSolver );
-
-=head1 Graphics::VTK::RungeKutta4
-
-=over 1
-
-=item *
-
-Inherits from InitialValueProblemSolver
-
-=back
-
-B<Functions Supported for this class by the PerlVTK module:>
-(To find more about their use check the VTK documentation at http://www.kitware.com.)
-
-   const char *GetClassName();
-   vtkRungeKutta4 *New ();
-
-
-B<vtkRungeKutta4 Unsupported Funcs:>
-
-Functions which are not supported supported for this class by the PerlVTK module.
-
-   virtual float ComputeNextStep (float *xprev, float *xnext, float t, float delT);
-      Don't know the size of pointer arg number 1
-
-   virtual float ComputeNextStep (float *xprev, float *dxprev, float *xnext, float t, float delT);
-      Don't know the size of pointer arg number 1
-
-   virtual void PrintSelf (ostream &os, vtkIndent indent);
-      I/O Streams not Supported yet
-
+   virtual void DisplayDebugText (const char *);
+   virtual void DisplayErrorText (const char *);
+   virtual void DisplayGenericWarningText (const char *);
+   virtual void DisplayTag (const char *);
+   virtual void DisplayText (const char *);
+   virtual void DisplayWarningText (const char *);
+   const char *GetClassName ();
+   vtkXMLFileOutputWindow *New ();
 
 =cut
 
@@ -8605,8 +8359,8 @@ Inherits from OutputWindow
 B<Functions Supported for this class by the PerlVTK module:>
 (To find more about their use check the VTK documentation at http://www.kitware.com.)
 
-   virtual void DisplayText (char *);
-   const char *GetClassName();
+   virtual void DisplayText (const char *);
+   const char *GetClassName ();
    vtkWin32OutputWindow *New ();
 
 =cut

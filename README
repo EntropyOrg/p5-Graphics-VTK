@@ -4,7 +4,7 @@
 ****************************************************************
 
 			    Graphics::VTK 
-			    Version  3.2.001
+			    Version  4.0.001
 			  	 by 
 			    Roberto De Leo
 			        and
@@ -29,16 +29,16 @@
 
   You need to install two packages before trying to compile this:
   - the Tk module, that you can get from http://www.cpan.org
-  - the VTK library, version 3.2, that is freely available 
-    from ftp://public.kitware.com/pub/vtk/vtk3.2
-    (Version 3.2 is of VTK is required, not version 3.1, or 4.0. 
-    Graphics::VTK 3.2001 is specifically for VTK version 3.2.)
+  - the VTK library, version 4.0, that is freely available 
+    from ftp://public.kitware.com/pub/vtk/vtk4.0
+    (Version 4.0 is of VTK is required, not version 3.1, or 3.2. 
+    Graphics::VTK 4.0.001 is specifically for VTK version 4.0.)
     
   To test the module, you will need the VTK test data available
   at www.kitware.com. Once you have this data installed, set
-  the environment variable VTK_DATA to point to the installation
+  the environment variable VTK_DATA_ROOT to point to the installation
   path of this data. For example, if you extracted the vtk data
-  to /home/mydir/vtkdata, set VTK_DATA=/home/mydir/vtkdata
+  to /home/mydir/vtkdata, set VTK_DATA_ROOT=/home/mydir/vtkdata
 
 
   Installation
@@ -77,11 +77,10 @@
   Example Scripts
   ---------------
   
-  The directories 'examples/contrib', 'examples/graphics', 'examples/imaging',
-  and 'examples/patented' contain scripts that have been converted to perl
-  from the tcl examples in the stock VTK package. Not all
-  have been tested. A list of the scripts that are known to work is contained
-  in the README file in the 'examples' directory.
+  The example tcl scripts from the VTK 4.0 distribution have been converted
+  to perl and placed in the following directories under the 'examples' dir:
+  Annotation, DataManipulation,GUI,  ImageProcessing, IO, Modeling, Rendering,
+  Tutorial, VisualizationAlgorithms, VolumeRendering.
   
   Documentation
   -------------
@@ -98,9 +97,9 @@
   
   Due to differences between c++ methods of different VTK versions, 
   Graphics::VTK versions are closely tied to a particular VTK version.
-  For example, Graphics::VTK 3.2.001 is written to work with VTK 3.2 
-  only. When Graphics::VTK is updated to work with VTK 4.0, it will
-  have a version number similar to 4.0.001.
+  For example, Graphics::VTK 4.0.001 is written to work with VTK 4.0 
+  only. Similarly, Graphics::VTK 3.2.001 is written to work with VTK 3.2
+  only.
  
   Note that any scripts you write using Graphics::VTK 3.2.001 should
   still work with any new releases (version 3.2.001, or 4.0.001), 
