@@ -1,0 +1,16 @@
+#
+#  
+# Sample Perl VTK Config file for Solaris.  (Using Sun's Compiler)
+#   Copy this file to VTK.config and modify for your installation
+#   (Tested on SunOS 5.6)
+
+# Comment this out if not using mesa. (Win32 definitely, Linux probably not, others?)
+$CCFLAGS = " -DUSE_MESA";  
+
+%vtkConfigMacro = (
+    'CC' => 'CC',
+    'LIBS' => ['-L/apps/as_sunlang/v5.0/SUNWspro/SC5.0/lib -L/home/dbteam/vtk/lib -lVTKCommon -lVTKGraphics -lVTKPatented -lVTKImaging -lVTKContrib -lpthread -L/home/cerney/openGL/lib -lGL -ldl -lXext -lXt -lSM -lICE -lX11 -lm'],
+
+# INC should contain the paths to your VTK include files
+    'INC' => '-I./  -I/home/cerney/vtk/vtk3.2/common -I/home/cerney/vtk/vtk3.2/graphics -I/home/cerney/vtk/vtk3.2/imaging -I/home/cerney/vtk/vtk3.2/patented -I/home/cerney/vtk/vtk3.2/contrib -I/home/cerney/openGL/include'
+);

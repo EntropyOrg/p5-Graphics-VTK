@@ -1,0 +1,9 @@
+#
+
+%vtkConfigMacro = (
+    'CC' => 'c++',
+    'LIBS' => ['-L/UDIR/mingw1.1/lib -L/UDIR/mingw1.1/lib/gcc-lib/mingw32/2.95.3-6 -L/UDIR/vtk3.2 -lVTKcontrib -lVTKPatented -lVTKImaging -lVTKGraphics -lVTKCommon  -lglut32 -lglu32 -lopengl32 -lm -lstdc++'],
+
+# INC should contain the paths to your VTK include files
+    'INC' => '-I/UDIR/vtk3.2/common -I/UDIR/vtk3.2/graphics -I/UDIR/vtk3.2/imaging -I/UDIR/vtk3.2/contrib -I/UDIR/vtk3.2/patented'
+);

@@ -1,0 +1,72 @@
+my $letterStart = shift @ARGV || ''; # Letter to start at
+
+# files to skip
+my @skipFiles = ( qw /
+arrays.tcl
+cxxExamples.tcl
+TkInteractor.tcl
+otherIsA.tcl
+rose.tcl
+smoothMeshOnMesh.tcl
+vol.tcl
+volGeoDemo.tcl
+volSimpleLOD.tcl
+volSphereNormals.tcl
+volTkInteractor.tcl
+
+rtExamples.tcl
+rtImageTclExamples.tcl
+rtOtherCxxExamples.tcl
+rtOtherTclExamples.tcl
+rtProcessCPUTimes.tcl
+otherPrint.tcl
+purifyExamples.tcl
+WindowLevelInterface.tcl
+TkViewer.tcl
+TestTkImageWindowWidget.tcl
+TkImageViewerInteractor.tcl
+/);
+
+my %skipFiles;
+@skipFiles{@skipFiles} = @skipFiles;
+
+# VTK directories to parse
+#my @VTKdirs = qw/ common graphics imaging patented contrib /;
+my @VTKdirs = qw/  patented  /;
+
+my $vtkBaseDir = "/home/cerney/vtk/vtk31";
+
+
+# Go thru each VTK dir:
+foreach my $VTKdirName (@VTKdirs){
+
+	my $dirName = "$vtkBaseDir/$VTKdirName/examplesTcl";
+	
+	unless( -d $dirName){
+		warn "Path '$dirName' doesn't exist, skipping\n";
+		next;
+	}
+	
+	unless( -d $VTKdirName){
+		warn ("'$dirName' not found, creating...\n");
+		system("mkdir $dirName");
+	}
+
+	opendir(DIR, $dirName) || die "can't opendir $dirName: $!";
+	my @tclFiles  = grep { /\.tcl$/ && -f "$dirName/$_" } readdir(DIR);
+	closedir DIR;
+	
+	if( $letterStart){ # if letterStart specified, start at a particular letter
+		@tclFiles = grep $_ ge $letterStart, @tclFiles;
+	}
+	
+	# get rid of skp files:
+	@tclFiles = grep !defined($skipFiles{$_}), @tclFiles;
+	
+	my $tclfiles = join( " ", map( "$dirName/$_",@tclFiles));
+	my $command = "perl -w tcl2perl $VTKdirName $tclfiles";
+		
+	system( $command ) && die("Error executing Command '$command': $!");
+		
+	
+}
