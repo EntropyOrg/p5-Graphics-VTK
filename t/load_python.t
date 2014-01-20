@@ -8,8 +8,6 @@ BEGIN { use_ok('Graphics::VTK', ':python' ) }
 
 my $temp_png = File::Temp->new();
 
-
-
 my $ren = vtk::vtkRenderer();
 my $renWin = vtk::vtkRenderWindow();
 $renWin->AddRenderer($ren);
@@ -55,6 +53,8 @@ $pngWriter->Write();
 ok( -s $temp_png->filename, 'image file is not empty' );
 my $contents = read_file($temp_png, bindmode => ':raw' );
 ok( $contents =~ /^\x{89}PNG/, 'has PNG header' );
+
+#system('display', $temp_png->filename); # DEBUG
 
 #$iren->Start();
 
