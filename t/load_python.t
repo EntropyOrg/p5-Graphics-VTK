@@ -1,6 +1,13 @@
 use Test::Most;
+use File::Temp;
+use File::Slurp qw(read_file);
+
 
 BEGIN { use_ok('Graphics::VTK', ':python' ) }
+
+
+my $temp_png = File::Temp->new();
+
 
 
 my $ren = vtk::vtkRenderer();
@@ -33,7 +40,23 @@ $ren->AddActor($coneActor);
 # enable user interface interactor
 $iren->Initialize();
 $renWin->Render();
-$iren->Start();
+
+
+my $winImgFilt = vtk::vtkWindowToImageFilter();
+$winImgFilt->SetInput( $renWin );
+
+my $pngWriter = vtk::vtkPNGWriter();
+$pngWriter->SetInputConnection( $winImgFilt->GetOutputPort() );
+$pngWriter->SetFileName( $temp_png->filename );
+
+$winImgFilt->Modified();
+$pngWriter->Write();
+
+ok( -s $temp_png->filename, 'image file is not empty' );
+my $contents = read_file($temp_png, bindmode => ':raw' );
+ok( $contents =~ /^\x{89}PNG/, 'has PNG header' );
+
+#$iren->Start();
 
 
 done_testing;
