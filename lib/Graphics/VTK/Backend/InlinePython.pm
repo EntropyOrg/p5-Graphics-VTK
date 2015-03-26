@@ -11,6 +11,12 @@ class vtkProxy(object):
     self._target = target
     self._majorVersion = vtk.vtkVersion().GetVTKMajorVersion()
 
+  def __str__(self):
+    return str(self._target)
+
+  def __repr__(self):
+    return repr(self._target)
+
   def __getattr__(self, aname):
     target = self._target
     f = getattr(target, aname)
