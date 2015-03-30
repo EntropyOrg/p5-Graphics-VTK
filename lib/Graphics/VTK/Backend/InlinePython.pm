@@ -24,10 +24,9 @@ class vtkProxy(object):
     def wrap_it(*args):
       u_args_l = []; # final arguments
       for arg in args:
-        if isinstance(arg, vtkProxy):
-          # unwrap vtkProxy for calling
-	  arg = arg._target
-	u_args_l.append( arg ) 
+        # unwrap vtkProxy for calling
+        arg = getattr( arg, '_target', arg )
+        u_args_l.append( arg )
       u_args = tuple(u_args_l)
 
       # proxy the return value
@@ -44,7 +43,17 @@ sub AUTOLOAD {
     # check if syntax is correct
     die "Not a Python identifier: $call" unless( $call =~ /^[^\d\W]\w*\Z/ );
 
-    Inline::Python::py_eval("my_vtk.$call()", 0);
+    my $result = Inline::Python::py_eval("my_vtk.$call()", 0);
+    if( my $class = eval { $result->GetClassName() } ){
+        my $new_vtk_class = "vtk::$class";
+        bless $result, $new_vtk_class;
+        {
+            no strict 'refs';
+            push @{ "${new_vtk_class}::ISA" }, 'Inline::Python::Object';
+        }
+    }
+
+    return $result;
 }
 
 1;
